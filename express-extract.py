@@ -85,6 +85,41 @@ with engine.connect() as conn:
 
     output['nodes'] = nodes
 
+    vocabularies = []
+
+    vocabularies_result = conn.execute(sqlalchemy.text(f"select vid, name, machine_name, description, hierarchy, module, weight from taxonomy_vocabulary;"))
+    for x in vocabularies_result:
+        vocabulary = {}
+
+        vocabulary['vid'] = x.vid
+        vocabulary['name'] = x.name
+        vocabulary['machine_name'] = x.machine_name
+        vocabulary['description'] = x.description
+        vocabulary['hierarchy'] = x.hierarchy
+        vocabulary['module'] = x.module
+        vocabulary['weight'] = x.weight
+
+        terms = []
+
+        term_result = conn.execute(sqlalchemy.text(f"select tid, vid, name, description, format, weight from taxonomy_term_data WHERE vid = '{x.vid}';"))
+        for y in term_result:
+            term = {}
+
+            term['tid'] = y.tid
+            term['vid'] = y.vid
+            term['name'] = y.name
+            term['description'] = y.description
+            term['format'] = y.format
+            term['weight'] = y.weight
+
+            terms.append(term)
+
+        vocabulary['terms'] = terms
+
+        vocabularies.append(vocabulary)
+
+    output['vocabularies'] = vocabularies
+
     blocks = []
 
     block_result = conn.execute(sqlalchemy.text(f"select bid, module, delta, theme, status, weight, region, custom, visibility, pages, title, cache from block WHERE theme = '{output['theme']}';"))
@@ -112,7 +147,7 @@ with engine.connect() as conn:
         #express_block_designer_themes
         #express_layout
 
-    output['blocks'] = blocks
+    #output['blocks'] = blocks
 
 
     print(json.dumps(output, indent=2))
