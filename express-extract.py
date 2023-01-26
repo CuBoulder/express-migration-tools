@@ -139,15 +139,32 @@ with engine.connect() as conn:
         block['cache'] = x.cache
 
         if x.module == 'bean':
+            beans = []
             bean_result = conn.execute(sqlalchemy.text(f"select bid, vid, delta, label, title, type, view_mode, data, uid, created, changed FROM bean WHERE delta = '{x.delta}';"))
+            for y in bean_result:
+                bean = {}
 
+                bean['bid'] = y.bid
+                bean['vid'] = y.vid
+                bean['delta'] = y.delta
+                bean['label'] = y.label
+                bean['title'] = y.title
+                bean['type'] = y.type
+                bean['view_mode'] = y.view_mode
+                bean['data'] = y.data
+                bean['uid'] = y.uid
+                bean['created'] = y.created
+                bean['changed'] = y.changed
+
+                beans.append(bean)
+            block['bean'] = bean
 
         blocks.append(block)
         #express_block_designer
         #express_block_designer_themes
         #express_layout
 
-    #output['blocks'] = blocks
+    output['blocks'] = blocks
 
 
     print(json.dumps(output, indent=2))
