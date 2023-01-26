@@ -22,6 +22,15 @@ with engine.connect() as conn:
     files_result = conn.execute(sqlalchemy.text("select fid, uid, filename, uri, filemime, filesize, status, timestamp, type from file_managed;"))
     for x in files_result:
         file = {}
+        file['fid'] = x.fid
+        file['uid'] = x.uid
+        file['filename'] = x.filename
+        file['uri'] = x.uri
+        file['filemime'] = x.filemime
+        file['filesize'] = x.filesize
+        file['status'] = x.status
+        file['timestamp'] = x.timestamp
+        file['type'] = x.type
         files.append(file)
 
     output['files'] = files
