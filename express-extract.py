@@ -73,7 +73,7 @@ with engine.connect() as conn:
             field['field_name'] = y.field_name
             fields.append(field)
 
-            fd_result = conn.execute(sqlalchemy.text(f"select * from field_data_{y.field_name} where bundle = '{x[2]}';"))
+            fd_result = conn.execute(sqlalchemy.text(f"select * from field_data_{y.field_name} where bundle = '{x[2]}' AND entity_id = '{x[0]}' AND revision_id = '{x[1]}';"))
             data = {}
             for z in fd_result.mappings():
                 for a in z:
