@@ -4,6 +4,10 @@ import sqlalchemy
 import pymysql
 import phpserialize
 import dotenv
+import dicttoxml
+
+from lxml import etree
+from io import StringIO, BytesIO
 
 
 engine = sqlalchemy.create_engine("mariadb+pymysql://root:pass@localhost/strategicrelations?charset=utf8mb4", echo=False)
@@ -37,14 +41,32 @@ with engine.connect() as conn:
 
     users = []
 
-    users_result = conn.execute(sqlalchemy.text("select uid, name, mail, created, access, login from users;"))
+    users_result = conn.execute(sqlalchemy.text("select uid, name, mail, created, access, login, status from users;"))
     for x in users_result:
+
+        skiplist = []
+        skiplist.append('alco6164')
+        skiplist.append('mibo7729')
+        skiplist.append('jesp3304')
+        skiplist.append('fraziere')
+        skiplist.append('jesp3304')
+        skiplist.append('wetu1300')
+        skiplist.append('linebarg')
+        skiplist.append('brokaw')
+        skiplist.append('crafts')
+        skiplist.append('')
+
+        if x[1] in skiplist or x[0] == 1:
+            continue
+
         user = {}
+        user['uid'] = x[0]
         user['name'] = x[1]
         user['mail'] = x[2]
         user['created'] = x[3]
         user['access'] = x[4]
         user['login'] = x[5]
+        user['status'] = x[6]
 
         roles = []
 
@@ -159,16 +181,22 @@ with engine.connect() as conn:
                 beans.append(bean)
             block['bean'] = bean
 
-        blocks.append(block)
+        #blocks.append(block)
         #express_block_designer
         #express_block_designer_themes
         #express_layout
 
-    output['blocks'] = blocks
+    #output['blocks'] = blocks
 
 
-    print(json.dumps(output, indent=2))
+    #print(json.dumps(output, indent=2))
+    xml = dicttoxml.dicttoxml(output, attr_type=False, encoding="UTF-8")
+
+    parser = etree.XMLParser(ns_clean=True, recover=True)
+    tree = etree.parse(BytesIO(xml), parser)
+    root = tree.getroot()
 
 
+    print(etree.tostring(root, pretty_print=True).decode())
 
 
