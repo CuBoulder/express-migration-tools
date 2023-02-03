@@ -83,6 +83,7 @@ with engine.connect() as conn:
     node_result = conn.execute(sqlalchemy.text("select nid, vid, type, title, uid, created, changed from node;"))
     for x in node_result:
         node = {}
+        node['nid'] = x[0]
         node['type'] = x[2]
         node['title'] = x[3]
 
@@ -102,6 +103,34 @@ with engine.connect() as conn:
                     data[a] = z[a]
                 field['data'] = data
         node['fields'] = fields
+
+
+        layout_result = conn.execute(sqlalchemy.text(f"select layout_id, title, node_type from express_layout WHERE layout_id = '{x.nid}';"))
+
+
+
+        layout_fields = []
+
+        layout_fields.append('field_footer')
+        layout_fields.append('field_header')
+        layout_fields.append('field_inner_content_left')
+        layout_fields.append('field_inner_content_right')
+        layout_fields.append('field_intro')
+        layout_fields.append('field_sidebar_first')
+        layout_fields.append('field_sidebar_second')
+        layout_fields.append('field_slider')
+        layout_fields.append('field_wide_2')
+        layout_fields.append('field_content_bottom')
+        layout_fields.append('field_post_title')
+        layout_fields.append('field_post_title_wide')
+
+        for lf in layout_fields:
+            field_result = conn.execute(sqlalchemy.text(f"select {lf}_target_id from field_data_{lf} WHERE entity_id = '{x.nid}';"))
+
+            bean_result = conn.execute(sqlalchemy.text(f"select {lf}_target_id from bean WHERE bid = '{bid}';"))
+
+            noderevision_result = conn.execute(sqlalchemy.text(f"select {lf}_target_id from node_revision WHERE vid = '{vid}';"))
+
 
         nodes.append(node)
 
@@ -142,51 +171,52 @@ with engine.connect() as conn:
 
     output['vocabularies'] = vocabularies
 
-    blocks = []
 
-    block_result = conn.execute(sqlalchemy.text(f"select bid, module, delta, theme, status, weight, region, custom, visibility, pages, title, cache from block WHERE theme = '{output['theme']}';"))
-
-    for x in block_result:
-        block = {}
-        block['module'] = x.module
-        block['delta'] = x.delta
-        block['theme'] = x.theme
-        block['status'] = x.status
-        block['weight'] = x.weight
-        block['region'] = x.region
-        block['custom'] = x.custom
-        block['visibility'] = x.visibility
-        block['pages'] = x.pages
-        block['title'] = x.title
-        block['cache'] = x.cache
-
-        if x.module == 'bean':
-            beans = []
-            bean_result = conn.execute(sqlalchemy.text(f"select bid, vid, delta, label, title, type, view_mode, data, uid, created, changed FROM bean WHERE delta = '{x.delta}';"))
-            for y in bean_result:
-                bean = {}
-
-                bean['bid'] = y.bid
-                bean['vid'] = y.vid
-                bean['delta'] = y.delta
-                bean['label'] = y.label
-                bean['title'] = y.title
-                bean['type'] = y.type
-                bean['view_mode'] = y.view_mode
-                bean['data'] = y.data
-                bean['uid'] = y.uid
-                bean['created'] = y.created
-                bean['changed'] = y.changed
-
-                beans.append(bean)
-            block['bean'] = bean
-
-        #blocks.append(block)
-        #express_block_designer
-        #express_block_designer_themes
-        #express_layout
-
-    #output['blocks'] = blocks
+    # blocks = []
+    #
+    # block_result = conn.execute(sqlalchemy.text(f"select bid, module, delta, theme, status, weight, region, custom, visibility, pages, title, cache from block WHERE theme = '{output['theme']}';"))
+    #
+    # for x in block_result:
+    #     block = {}
+    #     block['module'] = x.module
+    #     block['delta'] = x.delta
+    #     block['theme'] = x.theme
+    #     block['status'] = x.status
+    #     block['weight'] = x.weight
+    #     block['region'] = x.region
+    #     block['custom'] = x.custom
+    #     block['visibility'] = x.visibility
+    #     block['pages'] = x.pages
+    #     block['title'] = x.title
+    #     block['cache'] = x.cache
+    #
+    #     if x.module == 'bean':
+    #         beans = []
+    #         bean_result = conn.execute(sqlalchemy.text(f"select bid, vid, delta, label, title, type, view_mode, data, uid, created, changed FROM bean WHERE delta = '{x.delta}';"))
+    #         for y in bean_result:
+    #             bean = {}
+    #
+    #             bean['bid'] = y.bid
+    #             bean['vid'] = y.vid
+    #             bean['delta'] = y.delta
+    #             bean['label'] = y.label
+    #             bean['title'] = y.title
+    #             bean['type'] = y.type
+    #             bean['view_mode'] = y.view_mode
+    #             bean['data'] = y.data
+    #             bean['uid'] = y.uid
+    #             bean['created'] = y.created
+    #             bean['changed'] = y.changed
+    #
+    #             beans.append(bean)
+    #         block['bean'] = bean
+    #
+    #     #blocks.append(block)
+    #     #express_block_designer
+    #     #express_block_designer_themes
+    #     #express_layout
+    #
+    # #output['blocks'] = blocks
 
 
     #print(json.dumps(output, indent=2))
