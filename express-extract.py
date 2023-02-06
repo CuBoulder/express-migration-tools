@@ -10,6 +10,32 @@ from lxml import etree
 from io import StringIO, BytesIO
 
 
+def extract_fields(type, id, revision_id):
+    fields = []
+    fci_result = conn.execute(sqlalchemy.text(
+        f"select a.id, a.field_id, a.field_name, a.entity_type, a.bundle, b.type from field_config_instance a, field_config b where bundle = '{type}' AND a.field_name = b.field_name;"))
+    for fci_item in fci_result:
+        field = {}
+        # field['bundle'] = fci_item.bundle
+        # field['entity_type'] = fci_item.entity_type
+        field['field_name'] = fci_item.field_name
+        field['type'] = fci_item.type
+
+        fd_result = conn.execute(sqlalchemy.text(
+            f"select * from field_data_{fci_item.field_name} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';"))
+        data = []
+        for fd_item in fd_result.mappings():
+            for col in fd_item:
+                data.append({'column_name': col, 'value': fd_item[col]})
+            data = data[7:]
+        field['data'] = data
+
+        if len(data) > 0:
+            fields.append(field)
+
+    return fields
+
+
 engine = sqlalchemy.create_engine("mariadb+pymysql://root:pass@localhost/strategicrelations?charset=utf8mb4", echo=False)
 
 with engine.connect() as conn:
@@ -80,29 +106,17 @@ with engine.connect() as conn:
 
     nodes = []
 
+    node_types = {}
+
     node_result = conn.execute(sqlalchemy.text("select nid, vid, type, title, uid, created, changed from node;"))
     for x in node_result:
         node = {}
-        node['nid'] = x[0]
-        node['type'] = x[2]
-        node['title'] = x[3]
+        node['nid'] = x.nid
+        node['vid'] = x.vid
+        node['type'] = x.type
+        node['title'] = x.title
 
-        fields = []
-        fci_result = conn.execute(sqlalchemy.text(f"select id, field_id, field_name, entity_type, bundle from field_config_instance where bundle = '{x[2]}';"))
-        for y in fci_result:
-            field = {}
-            field['bundle'] = y.bundle
-            field['entity_type'] = y.entity_type
-            field['field_name'] = y.field_name
-            fields.append(field)
-
-            fd_result = conn.execute(sqlalchemy.text(f"select * from field_data_{y.field_name} where bundle = '{x[2]}' AND entity_id = '{x[0]}' AND revision_id = '{x[1]}';"))
-            data = {}
-            for z in fd_result.mappings():
-                for a in z:
-                    data[a] = z[a]
-                field['data'] = data
-        node['fields'] = fields
+        node['fields'] = extract_fields(x.type, x.nid, x.vid)
 
 
         layout_result = conn.execute(sqlalchemy.text(f"select layout_id, title, node_type from express_layout WHERE layout_id = '{x.nid}';"))
@@ -154,47 +168,25 @@ with engine.connect() as conn:
                         bean['uid'] = b.uid
 
                         bean_fields = []
-                        fci_result = conn.execute(sqlalchemy.text(f"select id, field_id, field_name, entity_type, bundle from field_config_instance where bundle = '{b.type}';"))
-                        for fci_item in fci_result:
-                            bean_field = {}
-                            bean_field['bundle'] = fci_item.bundle
-                            bean_field['entity_type'] = fci_item.entity_type
-                            bean_field['field_name'] = fci_item.field_name
-                            bean_fields.append(bean_field)
 
-                            fd_result = conn.execute(sqlalchemy.text(f"select * from field_data_{fci_item.field_name} where bundle = '{b.type}' AND entity_id = '{b.bid}' AND revision_id = '{b.vid}';"))
-                            data = {}
-                            for fd_item in fd_result.mappings():
-                                for a in fd_item:
-                                    data[a] = fd_item[a]
-                                bean_field['data'] = data
-                        bean['fields'] = bean_fields
+                        bean['fields'] = extract_fields(b.type, b.bid, b.vid)
 
                         beans.append(bean)
 
                     field['beans'] = beans
-
-                fields.append(field)
+                if 'beans' in field:
+                    fields.append(field)
 
             layout['fields'] = fields
 
             node['layout'] = layout
 
+        if node['type'] not in node_types:
+            node_types[node['type']] = []
+        node_types[node['type']].append(node)
 
-
-
-
-
-        # for lf in layout_fields:
-        #     field_result = conn.execute(sqlalchemy.text(f"select {lf}_target_id from field_data_{lf} WHERE entity_id = '{x.nid}';"))
-
-            # bean_result = conn.execute(sqlalchemy.text(f"select {lf}_target_id from bean WHERE bid = '{bid}';"))
-            #
-            # noderevision_result = conn.execute(sqlalchemy.text(f"select {lf}_target_id from node_revision WHERE vid = '{vid}';"))
-
-
-        nodes.append(node)
-
+        #nodes.append(node)
+    nodes.append(node_types)
     output['nodes'] = nodes
 
     vocabularies = []
@@ -232,55 +224,6 @@ with engine.connect() as conn:
 
     output['vocabularies'] = vocabularies
 
-
-    # blocks = []
-    #
-    # block_result = conn.execute(sqlalchemy.text(f"select bid, module, delta, theme, status, weight, region, custom, visibility, pages, title, cache from block WHERE theme = '{output['theme']}';"))
-    #
-    # for x in block_result:
-    #     block = {}
-    #     block['module'] = x.module
-    #     block['delta'] = x.delta
-    #     block['theme'] = x.theme
-    #     block['status'] = x.status
-    #     block['weight'] = x.weight
-    #     block['region'] = x.region
-    #     block['custom'] = x.custom
-    #     block['visibility'] = x.visibility
-    #     block['pages'] = x.pages
-    #     block['title'] = x.title
-    #     block['cache'] = x.cache
-    #
-    #     if x.module == 'bean':
-    #         beans = []
-    #         bean_result = conn.execute(sqlalchemy.text(f"select bid, vid, delta, label, title, type, view_mode, data, uid, created, changed FROM bean WHERE delta = '{x.delta}';"))
-    #         for y in bean_result:
-    #             bean = {}
-    #
-    #             bean['bid'] = y.bid
-    #             bean['vid'] = y.vid
-    #             bean['delta'] = y.delta
-    #             bean['label'] = y.label
-    #             bean['title'] = y.title
-    #             bean['type'] = y.type
-    #             bean['view_mode'] = y.view_mode
-    #             bean['data'] = y.data
-    #             bean['uid'] = y.uid
-    #             bean['created'] = y.created
-    #             bean['changed'] = y.changed
-    #
-    #             beans.append(bean)
-    #         block['bean'] = bean
-    #
-    #     #blocks.append(block)
-    #     #express_block_designer
-    #     #express_block_designer_themes
-    #     #express_layout
-    #
-    # #output['blocks'] = blocks
-
-
-    #print(json.dumps(output, indent=2))
     xml = dicttoxml.dicttoxml(output, attr_type=False, encoding="UTF-8")
 
     parser = etree.XMLParser(ns_clean=True, recover=True)
