@@ -107,29 +107,90 @@ with engine.connect() as conn:
 
         layout_result = conn.execute(sqlalchemy.text(f"select layout_id, title, node_type from express_layout WHERE layout_id = '{x.nid}';"))
 
+        for y in layout_result:
+            layout = {}
+            layout['layout_id'] = y.layout_id
+            layout['title']  = y.title
+            layout['node_type'] = y.node_type
+
+            layout_field_names = []
+
+            layout_field_names.append('field_footer')
+            layout_field_names.append('field_header')
+            layout_field_names.append('field_inner_content_left')
+            layout_field_names.append('field_inner_content_right')
+            layout_field_names.append('field_intro')
+            layout_field_names.append('field_sidebar_first')
+            layout_field_names.append('field_sidebar_second')
+            layout_field_names.append('field_slider')
+            layout_field_names.append('field_wide_2')
+            layout_field_names.append('field_content_bottom')
+            layout_field_names.append('field_post_title')
+            layout_field_names.append('field_post_title_wide')
+
+            fields = []
+
+            for lfname in layout_field_names:
+                field = {}
+                field['name'] = lfname
+                field_result = conn.execute(sqlalchemy.text(f"select {lfname}_target_id from field_data_{lfname} WHERE entity_id = '{x.nid}';"))
+                for r in field_result:
+                    field['target_id'] = r[0]
+
+                    beans = []
+
+                    bean_result = conn.execute(sqlalchemy.text(f"select bid, vid, delta, label, title, type, view_mode, data, uid from bean WHERE bid = '{r[0]}';"))
+                    for b in bean_result:
+
+                        bean = {}
+                        bean['bid'] = b.bid
+                        bean['vid'] = b.vid
+                        bean['delta'] = b.delta
+                        bean['label'] = b.label
+                        bean['title'] = b.title
+                        bean['type'] = b.type
+                        bean['view_mode'] = b.view_mode
+                        bean['data'] = b.data
+                        bean['uid'] = b.uid
+
+                        bean_fields = []
+                        fci_result = conn.execute(sqlalchemy.text(f"select id, field_id, field_name, entity_type, bundle from field_config_instance where bundle = '{b.type}';"))
+                        for fci_item in fci_result:
+                            bean_field = {}
+                            bean_field['bundle'] = fci_item.bundle
+                            bean_field['entity_type'] = fci_item.entity_type
+                            bean_field['field_name'] = fci_item.field_name
+                            bean_fields.append(bean_field)
+
+                            fd_result = conn.execute(sqlalchemy.text(f"select * from field_data_{fci_item.field_name} where bundle = '{b.type}' AND entity_id = '{b.bid}' AND revision_id = '{b.vid}';"))
+                            data = {}
+                            for fd_item in fd_result.mappings():
+                                for a in fd_item:
+                                    data[a] = fd_item[a]
+                                bean_field['data'] = data
+                        bean['fields'] = bean_fields
+
+                        beans.append(bean)
+
+                    field['beans'] = beans
+
+                fields.append(field)
+
+            layout['fields'] = fields
+
+            node['layout'] = layout
 
 
-        layout_fields = []
 
-        layout_fields.append('field_footer')
-        layout_fields.append('field_header')
-        layout_fields.append('field_inner_content_left')
-        layout_fields.append('field_inner_content_right')
-        layout_fields.append('field_intro')
-        layout_fields.append('field_sidebar_first')
-        layout_fields.append('field_sidebar_second')
-        layout_fields.append('field_slider')
-        layout_fields.append('field_wide_2')
-        layout_fields.append('field_content_bottom')
-        layout_fields.append('field_post_title')
-        layout_fields.append('field_post_title_wide')
 
-        for lf in layout_fields:
-            field_result = conn.execute(sqlalchemy.text(f"select {lf}_target_id from field_data_{lf} WHERE entity_id = '{x.nid}';"))
 
-            bean_result = conn.execute(sqlalchemy.text(f"select {lf}_target_id from bean WHERE bid = '{bid}';"))
 
-            noderevision_result = conn.execute(sqlalchemy.text(f"select {lf}_target_id from node_revision WHERE vid = '{vid}';"))
+        # for lf in layout_fields:
+        #     field_result = conn.execute(sqlalchemy.text(f"select {lf}_target_id from field_data_{lf} WHERE entity_id = '{x.nid}';"))
+
+            # bean_result = conn.execute(sqlalchemy.text(f"select {lf}_target_id from bean WHERE bid = '{bid}';"))
+            #
+            # noderevision_result = conn.execute(sqlalchemy.text(f"select {lf}_target_id from node_revision WHERE vid = '{vid}';"))
 
 
         nodes.append(node)
