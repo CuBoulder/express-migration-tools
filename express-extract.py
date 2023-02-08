@@ -28,10 +28,24 @@ def extract_fields(type, id, revision_id):
             for col in fd_item:
                 data.append({'column_name': col, 'value': fd_item[col]})
             data = data[7:]
+
+        # if fci_item.type == 'link_field':
+        #     node2 = []
+        #     node = {}
+        #     for col in data:
+        #         node[col['column_name']] = col['value']
+        #     node2.append(node)
+        #     field['data'] = node2
+        #
+        #
+        # else:
         field['data'] = data
 
-        if len(data) > 0:
-            fields.append(field)
+
+
+        # if len(data) > 0:
+        #     fields.append(field)
+        fields.append(field)
 
     return fields
 
@@ -61,6 +75,9 @@ with engine.connect() as conn:
         file['status'] = x.status
         file['timestamp'] = x.timestamp
         file['type'] = x.type
+
+        file['filepath'] = '/home/tirazel/ucb-strategicrelations/files/' + x.uri[9:]
+
         files.append(file)
 
     output['files'] = files
@@ -189,42 +206,69 @@ with engine.connect() as conn:
     nodes.append(node_types)
     output['nodes'] = nodes
 
-    vocabularies = []
+    vocabularies = {}
 
-    vocabularies_result = conn.execute(sqlalchemy.text(f"select vid, name, machine_name, description, hierarchy, module, weight from taxonomy_vocabulary;"))
-    for x in vocabularies_result:
-        vocabulary = {}
+    vocabularies_mapping = [
+        {'src': 'byline', 'dst': 'byline'},
+        {'src': 'department', 'dst': 'department'},
+        {'src': 'newsletter', 'dst': 'newsletter'},
+        {'src': 'person_type', 'dst': 'ucb_person_job_type'},
+        {'src': 'tags', 'dst': 'tags'},
+        {'src': 'people_filter_1', 'dst': 'filter_1'},
+        {'src': 'people_filter_2', 'dst': 'filter_2'},
+        {'src': 'people_filter_3', 'dst': 'filter_3'},
+    ]
 
-        vocabulary['vid'] = x.vid
-        vocabulary['name'] = x.name
-        vocabulary['machine_name'] = x.machine_name
-        vocabulary['description'] = x.description
-        vocabulary['hierarchy'] = x.hierarchy
-        vocabulary['module'] = x.module
-        vocabulary['weight'] = x.weight
-
+    for vocab in vocabularies_mapping:
+        vocabulary_result = conn.execute(sqlalchemy.text(f"select vid from taxonomy_vocabulary where machine_name='{vocab['src']}';"))
         terms = []
+        for vid in vocabulary_result:
+            term_result = conn.execute(sqlalchemy.text(f"select name, description, format, weight from taxonomy_term_data WHERE vid = '{vid.vid}';"))
+            for t in term_result:
+                terms.append({'name': t.name, 'description': t.description, 'format': t.format, 'weight': t.weight})
+        vocabularies[vocab['src']] = terms
 
-        term_result = conn.execute(sqlalchemy.text(f"select tid, vid, name, description, format, weight from taxonomy_term_data WHERE vid = '{x.vid}';"))
-        for y in term_result:
-            term = {}
-
-            term['tid'] = y.tid
-            term['vid'] = y.vid
-            term['name'] = y.name
-            term['description'] = y.description
-            term['format'] = y.format
-            term['weight'] = y.weight
-
-            terms.append(term)
-
-        vocabulary['terms'] = terms
-
-        vocabularies.append(vocabulary)
+    #
+    # vocabularies_result = conn.execute(sqlalchemy.text(f"select vid, name, machine_name, description, hierarchy, module, weight from taxonomy_vocabulary;"))
+    # for x in vocabularies_result:
+    #     vocabulary = {}
+    #
+    #     vocabulary['vid'] = x.vid
+    #     vocabulary['name'] = x.name
+    #     vocabulary['machine_name'] = x.machine_name
+    #     vocabulary['description'] = x.description
+    #     vocabulary['hierarchy'] = x.hierarchy
+    #     vocabulary['module'] = x.module
+    #     vocabulary['weight'] = x.weight
+    #
+    #     terms = []
+    #
+    #     term_result = conn.execute(sqlalchemy.text(f"select tid, vid, name, description, format, weight from taxonomy_term_data WHERE vid = '{x.vid}';"))
+    #     for y in term_result:
+    #         term = {}
+    #
+    #         term['tid'] = y.tid
+    #         term['vid'] = y.vid
+    #         term['name'] = y.name
+    #         term['description'] = y.description
+    #         term['format'] = y.format
+    #         term['weight'] = y.weight
+    #
+    #         terms.append(term)
+    #
+    #     vocabulary['terms'] = terms
+    #
+    #     vocabularies.append(vocabulary)
 
     output['vocabularies'] = vocabularies
 
+
+    #print(output)
+
+    #xml = dicttoxml.dicttoxml(output, attr_type=False, cdata=True)
     xml = dicttoxml.dicttoxml(output, attr_type=False, encoding="UTF-8")
+
+    #print(xml)
 
     parser = etree.XMLParser(ns_clean=True, recover=True)
     tree = etree.parse(BytesIO(xml), parser)
