@@ -61,8 +61,19 @@ with engine.connect() as conn:
     for x in theme_result:
         output['theme'] = str(phpserialize.loads(x[0], decode_strings=True))
 
+    filemap = {}
+    filemap['images'] = ['image/jpeg', 'image/png']
+    filemap['documents'] = ['application/pdf']
+    filemap['video'] = []
+    filemap['audio'] = []
 
-    files = []
+    files = {}
+    files['images'] = []
+    files['videos'] = []
+    files['audio'] = []
+    files['documents'] = []
+
+
     files_result = conn.execute(sqlalchemy.text("select fid, uid, filename, uri, filemime, filesize, status, timestamp, type from file_managed;"))
     for x in files_result:
         file = {}
@@ -78,7 +89,14 @@ with engine.connect() as conn:
 
         file['filepath'] = '/home/tirazel/ucb-strategicrelations/files/' + x.uri[9:]
 
-        files.append(file)
+        if x.filemime in filemap['images']:
+            files['images'].append(file)
+        if x.filemime in filemap['video']:
+            files['video'].append(file)
+        if x.filemime in filemap['audio']:
+            files['audio'].append(file)
+        if x.filemime in filemap['documents']:
+            files['documents'].append(file)
 
     output['files'] = files
 
@@ -217,6 +235,9 @@ with engine.connect() as conn:
         {'src': 'people_filter_1', 'dst': 'filter_1'},
         {'src': 'people_filter_2', 'dst': 'filter_2'},
         {'src': 'people_filter_3', 'dst': 'filter_3'},
+        {'src': 'category', 'dst': 'category'},
+        {'src': 'collection_categories', 'dst': ''},
+        {'src': 'collection_type', 'dst': ''},
     ]
 
     for vocab in vocabularies_mapping:
@@ -262,19 +283,55 @@ with engine.connect() as conn:
 
     output['vocabularies'] = vocabularies
 
+    def valid_xml_char_ordinal(c):
+        codepoint = ord(c)
+        # conditions ordered by presumed frequency
+        return (
+                0x20 <= codepoint <= 0xD7FF or
+                codepoint in (0x9, 0xA, 0xD) or
+                0xE000 <= codepoint <= 0xFFFD or
+                0x10000 <= codepoint <= 0x10FFFF
+        )
+
+    def recurse_xml(root, output):
+        if isinstance(output, dict):
+            for key in output:
+                element = etree.SubElement(root, key)
+                recurse_xml(element, output[key])
+        if isinstance(output, list):
+            for item in output:
+                element = etree.SubElement(root, 'item')
+                recurse_xml(element, item)
+        if isinstance(output, int):
+            root.text = str(output)
+        if isinstance(output, str):
+            cleaned_string = ''.join(c for c in output if valid_xml_char_ordinal(c))
+            root.text = cleaned_string
+
+
+
+
+
 
     #print(output)
 
-    #xml = dicttoxml.dicttoxml(output, attr_type=False, cdata=True)
-    xml = dicttoxml.dicttoxml(output, attr_type=False, encoding="UTF-8")
+    root = etree.Element('root')
 
-    #print(xml)
-
-    parser = etree.XMLParser(ns_clean=True, recover=True)
-    tree = etree.parse(BytesIO(xml), parser)
-    root = tree.getroot()
-
+    recurse_xml(root, output)
 
     print(etree.tostring(root, pretty_print=True).decode())
+
+
+
+    # xml = dicttoxml.dicttoxml(output, attr_type=False, encoding="UTF-8")
+    #
+    # print(xml)
+    #
+    # parser = etree.XMLParser(ns_clean=True, recover=True)
+    # tree = etree.parse(BytesIO(xml), parser)
+    # root = tree.getroot()
+
+    #
+    # print(etree.tostring(root, pretty_print=True).decode())
 
 
