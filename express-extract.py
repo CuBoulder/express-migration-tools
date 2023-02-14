@@ -11,7 +11,37 @@ from io import StringIO, BytesIO
 
 
 def extract_fields(type, id, revision_id):
-    fields = []
+    # fields = []
+    # fci_result = conn.execute(sqlalchemy.text(
+    #     f"select a.id, a.field_id, a.field_name, a.entity_type, a.bundle, b.type from field_config_instance a, field_config b where bundle = '{type}' AND a.field_name = b.field_name;"))
+    # for fci_item in fci_result:
+    #     field = {}
+    #     # field['bundle'] = fci_item.bundle
+    #     # field['entity_type'] = fci_item.entity_type
+    #     field['field_name'] = fci_item.field_name
+    #     field['type'] = fci_item.type
+    #
+    #     fd_result = conn.execute(sqlalchemy.text(
+    #         f"select * from field_data_{fci_item.field_name} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';"))
+    #     data = []
+    #     for fd_item in fd_result.mappings():
+    #         for col in fd_item:
+    #             data.append({'column_name': col, 'value': fd_item[col]})
+    #         data = data[7:]
+    #
+    #     if fci_item.type == 'link_field':
+    #         node2 = []
+    #         node = {}
+    #         for col in data:
+    #             node[col['column_name']] = col['value']
+    #         node2.append(node)
+    #         field['data'] = node2
+    #
+    #
+    #     else:
+    #         field['data'] = data
+
+    fields = {}
     fci_result = conn.execute(sqlalchemy.text(
         f"select a.id, a.field_id, a.field_name, a.entity_type, a.bundle, b.type from field_config_instance a, field_config b where bundle = '{type}' AND a.field_name = b.field_name;"))
     for fci_item in fci_result:
@@ -21,31 +51,41 @@ def extract_fields(type, id, revision_id):
         field['field_name'] = fci_item.field_name
         field['type'] = fci_item.type
 
-        fd_result = conn.execute(sqlalchemy.text(
-            f"select * from field_data_{fci_item.field_name} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';"))
+        fd_columninfo_result = conn.execute(sqlalchemy.text(f"select * from field_data_{fci_item.field_name} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';"))
+        columns = []
+        for fd_columninfo_item in fd_columninfo_result.mappings():
+            for col in fd_columninfo_item:
+                columns.append({'column_name': col, 'value': fd_columninfo_item[col]})
+            columns = columns[7:]
+
+        columnlist = []
+        for column_item in columns:
+            columnlist.append(column_item['column_name'])
+
+        columnliststring = ", ".join(columnlist)
+
+        #print(columnliststring)
+        if columnliststring == '':
+            continue
+
         data = []
+
+        fd_result = conn.execute(sqlalchemy.text(f"select {columnliststring} from field_data_{fci_item.field_name} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';"))
+
         for fd_item in fd_result.mappings():
-            for col in fd_item:
-                data.append({'column_name': col, 'value': fd_item[col]})
-            data = data[7:]
+            field_item = {}
+            for colname in columns:
+                field_item[colname['column_name']] = fd_item[colname['column_name']]
 
-        # if fci_item.type == 'link_field':
-        #     node2 = []
-        #     node = {}
-        #     for col in data:
-        #         node[col['column_name']] = col['value']
-        #     node2.append(node)
-        #     field['data'] = node2
-        #
-        #
-        # else:
-        field['data'] = data
-
+            if 'entity_id' in field_item and 'delta' in field_item:
+                field_item['id'] = f"{field_item['entity_id']}_{field_item['delta']}"
+            data.append(field_item)
 
 
         # if len(data) > 0:
         #     fields.append(field)
-        fields.append(field)
+        field['data'] = data
+        fields[field['field_name']] = field
 
     return fields
 
