@@ -5,45 +5,26 @@ import pymysql
 import phpserialize
 import dotenv
 import dicttoxml
+import time
 
 from lxml import etree
 from io import StringIO, BytesIO
 
+def extract_subfields(field):
+    fd_columninfo_result = conn.execute(sqlalchemy.text(f"select column_name as 'subfield' from information_schema.COLUMNS where table_schema = DATABASE() AND table_name = 'field_data_{field}' limit 100 offset 7;"))
+    subfields = []
+    subfields.append('entity_id')
+    subfields.append('delta')
+    for item in fd_columninfo_result:
+        subfields.append(item.subfield)
+    return subfields
+
 
 def extract_fields(type, id, revision_id):
-    # fields = []
-    # fci_result = conn.execute(sqlalchemy.text(
-    #     f"select a.id, a.field_id, a.field_name, a.entity_type, a.bundle, b.type from field_config_instance a, field_config b where bundle = '{type}' AND a.field_name = b.field_name;"))
-    # for fci_item in fci_result:
-    #     field = {}
-    #     # field['bundle'] = fci_item.bundle
-    #     # field['entity_type'] = fci_item.entity_type
-    #     field['field_name'] = fci_item.field_name
-    #     field['type'] = fci_item.type
-    #
-    #     fd_result = conn.execute(sqlalchemy.text(
-    #         f"select * from field_data_{fci_item.field_name} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';"))
-    #     data = []
-    #     for fd_item in fd_result.mappings():
-    #         for col in fd_item:
-    #             data.append({'column_name': col, 'value': fd_item[col]})
-    #         data = data[7:]
-    #
-    #     if fci_item.type == 'link_field':
-    #         node2 = []
-    #         node = {}
-    #         for col in data:
-    #             node[col['column_name']] = col['value']
-    #         node2.append(node)
-    #         field['data'] = node2
-    #
-    #
-    #     else:
-    #         field['data'] = data
+
 
     fields = {}
-    fci_result = conn.execute(sqlalchemy.text(
-        f"select a.id, a.field_id, a.field_name, a.entity_type, a.bundle, b.type from field_config_instance a, field_config b where bundle = '{type}' AND a.field_name = b.field_name;"))
+    fci_result = conn.execute(sqlalchemy.text(f"select a.id, a.field_id, a.field_name, a.entity_type, a.bundle, b.type from field_config_instance a, field_config b where bundle = '{type}' AND a.field_name = b.field_name;"))
     for fci_item in fci_result:
         field = {}
         # field['bundle'] = fci_item.bundle
@@ -51,39 +32,22 @@ def extract_fields(type, id, revision_id):
         field['field_name'] = fci_item.field_name
         field['type'] = fci_item.type
 
-        fd_columninfo_result = conn.execute(sqlalchemy.text(f"select * from field_data_{fci_item.field_name} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';"))
-        columns = []
-        for fd_columninfo_item in fd_columninfo_result.mappings():
-            for col in fd_columninfo_item:
-                columns.append({'column_name': col, 'value': fd_columninfo_item[col]})
-            columns = columns[7:]
 
-        columnlist = []
-        for column_item in columns:
-            columnlist.append(column_item['column_name'])
-
-        columnliststring = ", ".join(columnlist)
-
-        #print(columnliststring)
-        if columnliststring == '':
-            continue
+        columns = extract_subfields(fci_item.field_name)
 
         data = []
 
-        fd_result = conn.execute(sqlalchemy.text(f"select {columnliststring} from field_data_{fci_item.field_name} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';"))
+        fd_result = conn.execute(sqlalchemy.text(f"select {', '.join(columns)} from field_data_{fci_item.field_name} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';"))
 
         for fd_item in fd_result.mappings():
             field_item = {}
             for colname in columns:
-                field_item[colname['column_name']] = fd_item[colname['column_name']]
+                field_item[colname] = fd_item[colname]
 
             if 'entity_id' in field_item and 'delta' in field_item:
                 field_item['id'] = f"{field_item['entity_id']}_{field_item['delta']}"
             data.append(field_item)
 
-
-        # if len(data) > 0:
-        #     fields.append(field)
         field['data'] = data
         fields[field['field_name']] = field
 
@@ -264,13 +228,70 @@ with engine.connect() as conn:
     nodes.append(node_types)
     output['nodes'] = nodes
 
+    # Menus
+
+    menus = []
+    menu_result = conn.execute(sqlalchemy.text("select menu_name, title, description from menu_custom;"))
+    for x in menu_result:
+        menu = {}
+        menu['name'] = x.menu_name
+        menu['title'] = x.title
+        menu['desciption'] = x.description
+        menu['links'] = []
+
+        menulink_result = conn.execute(sqlalchemy.text(f"select menu_name, mlid, plid, link_path, router_path, link_title, hidden, external, has_children, expanded, weight, depth, customized, p1, p2, p3, p4, p5, p6, p7, p8, p9, updated from menu_links WHERE menu_name = '{x.menu_name}';"))
+        for y in menulink_result:
+            menulink = {}
+            menulink['menu_name'] = y.menu_name
+            menulink['mlid'] = y.mlid
+            menulink['plid'] = y.plid
+            menulink['link_path'] = y.link_path
+            menulink['router_path'] = y.router_path
+            menulink['link_title'] = y.link_title
+            menulink['hidden'] = y.hidden
+            menulink['external'] = y.external
+            menulink['has_children'] = y.has_children
+            menulink['expanded'] = y.expanded
+            menulink['weight'] = y.weight
+            menulink['depth'] = y.depth
+            menulink['customized'] = y.customized
+            menulink['p1'] = y.p1
+            menulink['p2'] = y.p2
+            menulink['p3'] = y.p3
+            menulink['p4'] = y.p4
+            menulink['p5'] = y.p5
+            menulink['p6'] = y.p6
+            menulink['p7'] = y.p7
+            menulink['p8'] = y.p8
+            menulink['p9'] = y.p9
+            menulink['updated'] = y.updated
+            menu['links'].append(menulink)
+
+
+        menus.append(menu)
+    output['menus'] = menus
+
+    # Redirects
+
+    redirects = []
+    redirects_result = conn.execute(sqlalchemy.text("select rid, source, redirect from redirect;"))
+    for x in redirects_result:
+        redirect = {}
+        redirect['rid'] = x.rid
+        redirect['source'] = x.source
+        redirect['redirect'] = x.redirect
+        redirects.append(redirect)
+    output['redirects'] = redirects
+
+    # Vocabularies
+
     vocabularies = {}
 
     vocabularies_mapping = [
         {'src': 'byline', 'dst': 'byline'},
         {'src': 'department', 'dst': 'department'},
         {'src': 'newsletter', 'dst': 'newsletter'},
-        {'src': 'person_type', 'dst': 'ucb_person_job_type'},
+        {'src': 'job_type', 'dst': 'ucb_person_job_type'},
         {'src': 'tags', 'dst': 'tags'},
         {'src': 'people_filter_1', 'dst': 'filter_1'},
         {'src': 'people_filter_2', 'dst': 'filter_2'},
@@ -284,9 +305,9 @@ with engine.connect() as conn:
         vocabulary_result = conn.execute(sqlalchemy.text(f"select vid from taxonomy_vocabulary where machine_name='{vocab['src']}';"))
         terms = []
         for vid in vocabulary_result:
-            term_result = conn.execute(sqlalchemy.text(f"select name, description, format, weight from taxonomy_term_data WHERE vid = '{vid.vid}';"))
+            term_result = conn.execute(sqlalchemy.text(f"select tid, name, description, format, weight from taxonomy_term_data WHERE vid = '{vid.vid}';"))
             for t in term_result:
-                terms.append({'name': t.name, 'description': t.description, 'format': t.format, 'weight': t.weight})
+                terms.append({'tid': t.tid, 'name': t.name, 'description': t.description, 'format': t.format, 'weight': t.weight})
         vocabularies[vocab['src']] = terms
 
     #
