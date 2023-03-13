@@ -147,13 +147,21 @@ with engine.connect() as conn:
 
     node_types = {}
 
-    node_result = conn.execute(sqlalchemy.text("select nid, vid, type, title, uid, created, changed from node;"))
+    node_result = conn.execute(sqlalchemy.text("select nid, vid, type, title, uid, status, created, changed, comment, promote, sticky from node;"))
     for x in node_result:
         node = {}
         node['nid'] = x.nid
         node['vid'] = x.vid
         node['type'] = x.type
         node['title'] = x.title
+        node['uid'] = x.uid
+        node['status'] = x.status
+        node['created'] = x.created
+        node['changed'] = x.changed
+        node['comment'] = x.comment
+        node['promote'] = x.promote
+        node['sticky'] = x.sticky
+
 
         node['fields'] = extract_fields(x.type, x.nid, x.vid)
 
@@ -239,7 +247,7 @@ with engine.connect() as conn:
         menu['desciption'] = x.description
         menu['links'] = []
 
-        menulink_result = conn.execute(sqlalchemy.text(f"select menu_name, mlid, plid, link_path, router_path, link_title, hidden, external, has_children, expanded, weight, depth, customized, p1, p2, p3, p4, p5, p6, p7, p8, p9, updated from menu_links WHERE menu_name = '{x.menu_name}';"))
+        menulink_result = conn.execute(sqlalchemy.text(f"select menu_name, mlid, plid, link_path, router_path, link_title, options, hidden, external, has_children, expanded, weight, depth, customized, p1, p2, p3, p4, p5, p6, p7, p8, p9, updated from menu_links WHERE menu_name = '{x.menu_name}';"))
         for y in menulink_result:
             menulink = {}
             menulink['menu_name'] = y.menu_name
@@ -248,6 +256,7 @@ with engine.connect() as conn:
             menulink['link_path'] = y.link_path
             menulink['router_path'] = y.router_path
             menulink['link_title'] = y.link_title
+            menulink['options'] = y.options
             menulink['hidden'] = y.hidden
             menulink['external'] = y.external
             menulink['has_children'] = y.has_children
