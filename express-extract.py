@@ -6,6 +6,7 @@ import phpserialize
 import dotenv
 import dicttoxml
 import time
+import re
 
 from lxml import etree
 from io import StringIO, BytesIO
@@ -65,6 +66,12 @@ with engine.connect() as conn:
     for x in theme_result:
         output['theme'] = str(phpserialize.loads(x[0], decode_strings=True))
 
+    # Extract url_alias table
+    urlaliasmap = {}
+    urlalias_result = conn.execute(sqlalchemy.text("select source, alias from url_alias;"))
+    for x in urlalias_result:
+        urlaliasmap[x.source] = x.alias
+
     filemap = {}
     filemap['images'] = ['image/jpeg', 'image/png']
     filemap['documents'] = ['application/pdf']
@@ -91,7 +98,7 @@ with engine.connect() as conn:
         file['timestamp'] = x.timestamp
         file['type'] = x.type
 
-        file['filepath'] = '/home/tirazel/ucb-strategicrelations/files/' + x.uri[9:]
+        file['filepath'] = '/home/tirazel/Projects/migration-tools/ucb-strategicrelations/files/' + x.uri[9:]
 
         if x.filemime in filemap['images']:
             files['images'].append(file)
@@ -237,11 +244,26 @@ with engine.connect() as conn:
     output['nodes'] = nodes
 
     # Menus
+    menumap = {}
+    menumap['main-menu'] = 'main'
+    menumap['menu-footer-menu'] = 'footer'
+    menumap['menu-secondary-menu'] = 'secondary'
+
+    menusignore = []
+    menusignore.append('management')
+    menusignore.append('navigation')
+    menusignore.append('user-menu')
+
 
     menus = []
     menu_result = conn.execute(sqlalchemy.text("select menu_name, title, description from menu_custom;"))
     for x in menu_result:
         menu = {}
+
+        if x.menu_name in menusignore:
+            continue
+
+
         menu['name'] = x.menu_name
         menu['title'] = x.title
         menu['desciption'] = x.description
@@ -250,10 +272,21 @@ with engine.connect() as conn:
         menulink_result = conn.execute(sqlalchemy.text(f"select menu_name, mlid, plid, link_path, router_path, link_title, options, hidden, external, has_children, expanded, weight, depth, customized, p1, p2, p3, p4, p5, p6, p7, p8, p9, updated from menu_links WHERE menu_name = '{x.menu_name}';"))
         for y in menulink_result:
             menulink = {}
-            menulink['menu_name'] = y.menu_name
+
+            if y.menu_name in menumap:
+                menulink['menu_name'] = menumap[y.menu_name]
+            else:
+                menulink['menu_name'] = y.menu_name
+
             menulink['mlid'] = y.mlid
             menulink['plid'] = y.plid
-            menulink['link_path'] = y.link_path
+
+            if y.link_path in urlaliasmap:
+                menulink['link_path'] = urlaliasmap[y.link_path]
+            else:
+                menulink['link_path'] = y.link_path
+
+
             menulink['router_path'] = y.router_path
             menulink['link_title'] = y.link_title
             menulink['options'] = y.options
@@ -282,15 +315,36 @@ with engine.connect() as conn:
 
     # Redirects
 
-    redirects = []
-    redirects_result = conn.execute(sqlalchemy.text("select rid, source, redirect from redirect;"))
+    internalredirects = []
+    externalredirects = []
+    redirects_result = conn.execute(sqlalchemy.text("select rid, source, redirect, status from redirect;"))
     for x in redirects_result:
+        if x.status == 0:
+            continue
         redirect = {}
+
+        # redirectfilter = re.compile('node/\d*')
+
+
         redirect['rid'] = x.rid
         redirect['source'] = x.source
         redirect['redirect'] = x.redirect
-        redirects.append(redirect)
-    output['redirects'] = redirects
+
+        if redirect['source'][0:5] == 'node/':
+            redirect['source'] = urlaliasmap[redirect['source']]
+
+        if redirect['redirect'][0:5] == 'node/':
+            redirect['redirect'] = urlaliasmap[redirect['redirect']]
+
+
+        if x.redirect[0:4] != 'http':
+            redirect['redirect'] = 'internal:/' + redirect['redirect']
+            internalredirects.append(redirect)
+        else:
+            externalredirects.append(redirect)
+
+    output['internalredirects'] = internalredirects
+    output['externalredirects'] = externalredirects
 
     # Vocabularies
 
