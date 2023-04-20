@@ -316,6 +316,16 @@ with engine.connect() as conn:
     bean_articles_fields.append('field_tags')
     bean_types['articles'] = bean_articles_fields
 
+    bean_article_grid_fields = []
+    bean_article_grid_fields.append('field_article_exclude_category')
+    bean_article_grid_fields.append('field_article_exclude_tag')
+    bean_article_grid_fields.append('field_article_grid_category')
+    bean_article_grid_fields.append('field_article_grid_filter')
+    bean_article_grid_fields.append('field_article_grid_items')
+    bean_article_grid_fields.append('field_article_grid_more_link')
+    bean_article_grid_fields.append('field_article_grid_summary')
+    bean_types['article_grid'] = bean_article_grid_fields
+
     bean_block_fields = []
     bean_block_fields.append('field_block_photo')
     bean_block_fields.append('field_block_text')
@@ -326,7 +336,7 @@ with engine.connect() as conn:
     bean_block_row_fields.append('field_block_row_collection')
     bean_block_row_fields.append('field_block_row_distribution')
     bean_block_row_fields.append('field_block_row_match_height')
-    bean_types['block_row'].append(bean_block_row_fields)
+    bean_types['block_row'] = bean_block_row_fields
 
 
 
