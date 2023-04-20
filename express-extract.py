@@ -68,9 +68,22 @@ with engine.connect() as conn:
 
     # Extract url_alias table
     urlaliasmap = {}
-    urlalias_result = conn.execute(sqlalchemy.text("select source, alias from url_alias;"))
+    urlalias_result = conn.execute(sqlalchemy.text("select pid, source, alias from url_alias;"))
     for x in urlalias_result:
         urlaliasmap[x.source] = x.alias
+
+
+
+    urlaliases = []
+    urlalias_result = conn.execute(sqlalchemy.text("select pid, source, alias from url_alias;"))
+    for x in urlalias_result:
+        urlalias = {}
+        urlalias['pid'] = x.pid
+        urlalias['source'] = x.source
+        urlalias['alias'] = x.alias
+        urlaliases.append(urlalias)
+    output['urlaliases'] = urlaliases
+
 
     filemap = {}
     filemap['images'] = ['image/jpeg', 'image/png']
@@ -143,8 +156,21 @@ with engine.connect() as conn:
         roles = []
 
         roles_result = conn.execute(sqlalchemy.text(f"select r.name from users u, users_roles ur, role r WHERE u.uid = ur.uid AND ur.rid = r.rid AND u.uid = '{x[0]}';"))
+
+        rolemap = {}
+        rolemap['site_owner'] = ['site_owner', 'site_manager']
+        rolemap['site_editor'] = ['content_editor']
+        rolemap['content_editor'] = ['content_editor']
+        rolemap['edit_only'] = ['content_editor']
+        rolemap['edit_my_content'] = ['edit_own_content']
+        rolemap['form_manager'] = ['webform_editor']
+        rolemap['administrator'] = ['architect']
+        rolemap['developer'] = ['developer']
+
+
         for y in roles_result:
-            roles.append(y[0])
+
+            roles.extend(rolemap[y[0]])
 
         user['roles'] = roles
         users.append(user)
@@ -168,6 +194,8 @@ with engine.connect() as conn:
         node['comment'] = x.comment
         node['promote'] = x.promote
         node['sticky'] = x.sticky
+
+        node['path'] = '/' + urlaliasmap['node/' + str(x.nid)]
 
 
         node['fields'] = extract_fields(x.type, x.nid, x.vid)
@@ -243,6 +271,164 @@ with engine.connect() as conn:
     nodes.append(node_types)
     output['nodes'] = nodes
 
+    # Beans
+
+    bean_types = {}
+
+    bean_articles_fields = []
+    bean_articles_fields.append('field_article_byline')
+    bean_articles_fields.append('field_article_byline_person_id')
+    bean_articles_fields.append('field_article_byline_url')
+    bean_articles_fields.append('field_article_categories')
+    bean_articles_fields.append('field_article_date_display')
+    bean_articles_fields.append('field_article_display')
+    bean_articles_fields.append('field_article_exclude_category')
+    bean_articles_fields.append('field_article_exclude_tag')
+    bean_articles_fields.append('field_article_external_url')
+    bean_articles_fields.append('field_article_feature_category')
+    bean_articles_fields.append('field_article_feature_display')
+    bean_articles_fields.append('field_article_feature_filter')
+    bean_articles_fields.append('field_article_feature_image_size')
+    bean_articles_fields.append('field_article_feature_show_cat')
+    bean_articles_fields.append('field_article_grid_category')
+    bean_articles_fields.append('field_article_grid_filter')
+    bean_articles_fields.append('field_article_grid_items')
+    bean_articles_fields.append('field_article_grid_more_link')
+    bean_articles_fields.append('field_article_grid_summary')
+    bean_articles_fields.append('field_article_items_display')
+    bean_articles_fields.append('field_article_link')
+    bean_articles_fields.append('field_article_list_category')
+    bean_articles_fields.append('field_article_page_cat_expose')
+    bean_articles_fields.append('field_article_page_category')
+    bean_articles_fields.append('field_article_page_childterms')
+    bean_articles_fields.append('field_article_page_filter')
+    bean_articles_fields.append('field_article_page_tag_expose')
+    bean_articles_fields.append('field_article_pager')
+    bean_articles_fields.append('field_article_slider_category')
+    bean_articles_fields.append('field_article_slider_filter')
+    bean_articles_fields.append('field_article_term')
+    bean_articles_fields.append('field_article_thumbnail')
+    bean_articles_fields.append('field_category_display')
+    bean_articles_fields.append('field_category_term_page_link')
+    bean_articles_fields.append('field_image')
+    bean_articles_fields.append('field_tag_display')
+    bean_articles_fields.append('field_tag_term_page_link')
+    bean_articles_fields.append('field_tags')
+    bean_types['articles'] = bean_articles_fields
+
+    bean_block_fields = []
+    bean_block_fields.append('field_block_photo')
+    bean_block_fields.append('field_block_text')
+    bean_types['block'] = bean_block_fields
+
+    bean_block_wrapper_fields = []
+    bean_block_fields.append('field_block_wrapper_reference')
+    bean_types['block_wrapper'] = bean_block_wrapper_fields
+
+    bean_block_section_fields = []
+    bean_block_section_fields.append('field_block_section_bg_effect')
+    bean_block_section_fields.append('field_block_section_bg_image')
+    bean_block_section_fields.append('field_block_section_bg_image_m')
+    bean_block_section_fields.append('field_block_section_bg_image_t')
+    bean_block_section_fields.append('field_block_section_content_bg')
+    bean_block_section_fields.append('field_block_section_mobile_pad')
+    bean_block_section_fields.append('field_block_section_padding')
+    bean_block_section_fields.append('field_block_section_tablet_pad')
+    bean_block_section_fields.append('field_blocks_section_blocks')
+    bean_types['block_section'] = bean_block_section_fields
+
+    bean_feature_callout_fields = []
+    bean_feature_callout_fields.append('field_callout_columns')
+    bean_feature_callout_fields.append('field_callout_image')
+    bean_feature_callout_fields.append('field_callout_image_size')
+    bean_feature_callout_fields.append('field_callout_style')
+    bean_feature_callout_fields.append('field_callout_text')
+    bean_feature_callout_fields.append('field_callout_title')
+    bean_feature_callout_fields.append('field_callouts')
+    bean_types['feature_callout'] = bean_feature_callout_fields
+
+    bean_slider_fields = []
+    bean_slider_fields.append('field_slider_caption')
+    bean_slider_fields.append('field_slider_design_style')
+    bean_slider_fields.append('field_slider_image')
+    bean_slider_fields.append('field_slider_link')
+    bean_slider_fields.append('field_slider_size')
+    bean_slider_fields.append('field_slider_slide')
+    bean_slider_fields.append('field_slider_teaser')
+    bean_types['slider'] = bean_slider_fields
+
+    beans = []
+    bean_result = conn.execute(sqlalchemy.text("select bid, vid, delta, label, title, type, view_mode, data, uid, created, changed from bean;"))
+    for x in bean_result:
+        bean = {}
+        bean['bid'] = x.bid
+        bean['vid'] = x.vid
+        bean['delta'] = x.delta
+        bean['label'] = x.label
+        bean['title'] = x.title
+        bean['type'] = x.type
+        bean['view_mode'] = x.view_mode
+        bean['data'] = x.data
+        bean['uid'] = x.uid
+        bean['created'] = x.created
+        bean['changed'] = x.changed
+
+        bean_fields = []
+
+        #bean['fields'] = extract_fields(b.type, b.bid, b.vid)
+
+
+        beans.append(bean)
+
+
+        if x.type in bean_types:
+            field_names = bean_types[x.type]
+
+            fields = {}
+
+            for fname in field_names:
+                # print(f"{fname}: {extract_subfields(fname)}")
+
+
+                # field_result = conn.execute(sqlalchemy.text(f"select {fname}_value from field_data_{fname} WHERE entity_id = '{x.bid}';"))
+                # for r in field_result:
+                #     fields[fname] = r[0]
+
+                field = {}
+                field['field_name'] = fname
+                field['type'] = bean['type']
+
+                columns = extract_subfields(fname)
+
+                data = []
+
+                fd_result = conn.execute(sqlalchemy.text(
+                    f"select {', '.join(columns)} from field_data_{fname} where bundle = '{bean['type']}' AND entity_id = '{bean['bid']}' AND revision_id = '{bean['vid']}';"))
+
+                for fd_item in fd_result.mappings():
+                    field_item = {}
+                    for colname in columns:
+                        field_item[colname] = fd_item[colname]
+
+                    if 'entity_id' in field_item and 'delta' in field_item:
+                        field_item['id'] = f"{field_item['entity_id']}_{field_item['delta']}"
+                    data.append(field_item)
+
+                field['data'] = data
+                fields[field['field_name']] = field
+
+
+
+
+            bean['fields'] = fields
+
+
+        beans.append(bean)
+
+    output['beans'] = beans
+
+
+
     # Menus
     menumap = {}
     menumap['main-menu'] = 'main'
@@ -281,6 +467,16 @@ with engine.connect() as conn:
             menulink['mlid'] = y.mlid
             menulink['plid'] = y.plid
 
+            status = 0
+
+            if y.link_path != '<front>':
+                node_result = conn.execute(sqlalchemy.text(f"select nid, status from node where nid = '{y.link_path[5:]}';"))
+                for z in node_result:
+                    #print(f"nid:{z.nid} status:{z.status}")
+                    status = z.status
+            if status == 0:
+                continue
+
             if y.link_path in urlaliasmap:
                 menulink['link_path'] = urlaliasmap[y.link_path]
             else:
@@ -290,7 +486,10 @@ with engine.connect() as conn:
             menulink['router_path'] = y.router_path
             menulink['link_title'] = y.link_title
             menulink['options'] = y.options
-            menulink['hidden'] = y.hidden
+            if y.hidden:
+                menulink['enabled'] = 0
+            else:
+                menulink['enabled'] = 1
             menulink['external'] = y.external
             menulink['has_children'] = y.has_children
             menulink['expanded'] = y.expanded
