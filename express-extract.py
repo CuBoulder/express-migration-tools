@@ -346,6 +346,25 @@ with engine.connect() as conn:
     bean_block_fields.append('field_block_wrapper_reference')
     bean_types['block_wrapper'] = bean_block_wrapper_fields
 
+    bean_collection_grid_fields = []
+    bean_collection_grid_fields.append('field_collection_body')
+    bean_collection_grid_fields.append('field_collection_category')
+    bean_collection_grid_fields.append('field_collection_category_bg')
+    bean_collection_grid_fields.append('field_collection_display_summary')
+    bean_collection_grid_fields.append('field_collection_filter_effect')
+    bean_collection_grid_fields.append('field_collection_filter_type')
+    bean_collection_grid_fields.append('field_collection_grid_categories')
+    bean_collection_grid_fields.append('field_collection_grid_category')
+    bean_collection_grid_fields.append('field_collection_grid_label')
+    bean_collection_grid_fields.append('field_collection_grid_type')
+    bean_collection_grid_fields.append('field_collection_image')
+    bean_collection_grid_fields.append('field_collection_multiselect')
+    bean_collection_grid_fields.append('field_collection_preview')
+    bean_collection_grid_fields.append('field_collection_thumbnail')
+    bean_collection_grid_fields.append('field_collection_type')
+    bean_types['collection_grid'] = bean_collection_grid_fields
+
+
     bean_feature_callout_fields = []
     bean_feature_callout_fields.append('field_callout_columns')
     bean_feature_callout_fields.append('field_callout_image')
@@ -355,6 +374,20 @@ with engine.connect() as conn:
     bean_feature_callout_fields.append('field_callout_title')
     bean_feature_callout_fields.append('field_callouts')
     bean_types['feature_callout'] = bean_feature_callout_fields
+
+    bean_hero_unit_fields = []
+    bean_hero_unit_fields.append('field_hero_unit_bg_color')
+    bean_hero_unit_fields.append('field_hero_unit_headline')
+    bean_hero_unit_fields.append('field_hero_unit_image')
+    bean_hero_unit_fields.append('field_hero_unit_link')
+    bean_hero_unit_fields.append('field_hero_unit_link_color')
+    bean_hero_unit_fields.append('field_hero_unit_overlay')
+    bean_hero_unit_fields.append('field_hero_unit_size')
+    bean_hero_unit_fields.append('field_hero_unit_size_priority')
+    bean_hero_unit_fields.append('field_hero_unit_text')
+    bean_hero_unit_fields.append('field_hero_unit_text_align')
+    bean_hero_unit_fields.append('field_hero_unit_text_color')
+    bean_types['hero_unit'] = bean_hero_unit_fields
 
     bean_localist_events_fields = []
     bean_localist_events_fields.append('field_localist_all_instances')
@@ -381,8 +414,39 @@ with engine.connect() as conn:
     bean_localist_events_fields.append('field_localist_tags')
     bean_localist_events_fields.append('field_localist_truncate_desc')
     bean_localist_events_fields.append('field_localist_widget_type')
-
     bean_types['localist_events'] = bean_localist_events_fields
+
+    bean_people_list_block_fields = []
+    bean_people_list_block_fields.append('field_people_block_thumbnail')
+    bean_people_list_block_fields.append('field_people_childterms')
+    bean_people_list_block_fields.append('field_people_dept_filter_show')
+    bean_people_list_block_fields.append('field_people_filter1_show')
+    bean_people_list_block_fields.append('field_people_filter2_show')
+    bean_people_list_block_fields.append('field_people_filter3_show')
+    bean_people_list_block_fields.append('field_people_filter_1')
+    bean_people_list_block_fields.append('field_people_filter_2')
+    bean_people_list_block_fields.append('field_people_filter_3')
+    bean_people_list_block_fields.append('field_people_group_by')
+    bean_people_list_block_fields.append('field_people_list_department')
+    bean_people_list_block_fields.append('field_people_list_display')
+    bean_people_list_block_fields.append('field_people_list_person_type')
+    bean_people_list_block_fields.append('field_people_order_by')
+    bean_people_list_block_fields.append('field_people_pos_filter_show')
+    bean_people_list_block_fields.append('field_person_address')
+    bean_people_list_block_fields.append('field_person_department')
+    bean_people_list_block_fields.append('field_person_email')
+    bean_people_list_block_fields.append('field_person_filter_1')
+    bean_people_list_block_fields.append('field_person_filter_2')
+    bean_people_list_block_fields.append('field_person_filter_3')
+    bean_people_list_block_fields.append('field_person_first_name')
+    bean_people_list_block_fields.append('field_person_job_type')
+    bean_people_list_block_fields.append('field_person_last_name')
+    bean_people_list_block_fields.append('field_person_office_hours')
+    bean_people_list_block_fields.append('field_person_phone')
+    bean_people_list_block_fields.append('field_person_photo')
+    bean_people_list_block_fields.append('field_person_title')
+    bean_people_list_block_fields.append('field_person_website')
+    bean_types['people_list_block'] = bean_people_list_block_fields
 
 
     bean_slider_fields = []
