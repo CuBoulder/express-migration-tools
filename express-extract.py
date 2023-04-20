@@ -321,9 +321,14 @@ with engine.connect() as conn:
     bean_block_fields.append('field_block_text')
     bean_types['block'] = bean_block_fields
 
-    bean_block_wrapper_fields = []
-    bean_block_fields.append('field_block_wrapper_reference')
-    bean_types['block_wrapper'] = bean_block_wrapper_fields
+    bean_block_row_fields = []
+    bean_block_row_fields.append('field_block_row_block')
+    bean_block_row_fields.append('field_block_row_collection')
+    bean_block_row_fields.append('field_block_row_distribution')
+    bean_block_row_fields.append('field_block_row_match_height')
+    bean_types['block_row'].append(bean_block_row_fields)
+
+
 
     bean_block_section_fields = []
     bean_block_section_fields.append('field_block_section_bg_effect')
@@ -337,6 +342,10 @@ with engine.connect() as conn:
     bean_block_section_fields.append('field_blocks_section_blocks')
     bean_types['block_section'] = bean_block_section_fields
 
+    bean_block_wrapper_fields = []
+    bean_block_fields.append('field_block_wrapper_reference')
+    bean_types['block_wrapper'] = bean_block_wrapper_fields
+
     bean_feature_callout_fields = []
     bean_feature_callout_fields.append('field_callout_columns')
     bean_feature_callout_fields.append('field_callout_image')
@@ -347,6 +356,35 @@ with engine.connect() as conn:
     bean_feature_callout_fields.append('field_callouts')
     bean_types['feature_callout'] = bean_feature_callout_fields
 
+    bean_localist_events_fields = []
+    bean_localist_events_fields.append('field_localist_all_instances')
+    bean_localist_events_fields.append('field_localist_content_match')
+    bean_localist_events_fields.append('field_localist_days_ahead')
+    bean_localist_events_fields.append('field_localist_filters')
+    bean_localist_events_fields.append('field_localist_filters_excluded')
+    bean_localist_events_fields.append('field_localist_groups')
+    bean_localist_events_fields.append('field_localist_hide_descriptions')
+    bean_localist_events_fields.append('field_localist_hide_images')
+    bean_localist_events_fields.append('field_localist_hide_past_events')
+    bean_localist_events_fields.append('field_localist_hide_times')
+    bean_localist_events_fields.append('field_localist_link')
+    bean_localist_events_fields.append('field_localist_minical_layout')
+    bean_localist_events_fields.append('field_localist_new_window')
+    bean_localist_events_fields.append('field_localist_places')
+    bean_localist_events_fields.append('field_localist_render_html')
+    bean_localist_events_fields.append('field_localist_results')
+    bean_localist_events_fields.append('field_localist_show_featured')
+    bean_localist_events_fields.append('field_localist_show_sponsored')
+    bean_localist_events_fields.append('field_localist_skip_recurring')
+    bean_localist_events_fields.append('field_localist_start_date')
+    bean_localist_events_fields.append('field_localist_style')
+    bean_localist_events_fields.append('field_localist_tags')
+    bean_localist_events_fields.append('field_localist_truncate_desc')
+    bean_localist_events_fields.append('field_localist_widget_type')
+
+    bean_types['localist_events'] = bean_localist_events_fields
+
+
     bean_slider_fields = []
     bean_slider_fields.append('field_slider_caption')
     bean_slider_fields.append('field_slider_design_style')
@@ -356,6 +394,12 @@ with engine.connect() as conn:
     bean_slider_fields.append('field_slider_slide')
     bean_slider_fields.append('field_slider_teaser')
     bean_types['slider'] = bean_slider_fields
+
+    bean_video_hero_unit_fields = []
+    bean_video_hero_unit_fields.append('field_hero_video_overlay')
+    bean_video_hero_unit_fields.append('field_hero_video_size')
+    bean_video_hero_unit_fields.append('field_video_hero_url')
+    bean_types['video_hero_unit'] = bean_video_hero_unit_fields
 
     beans = []
     bean_result = conn.execute(sqlalchemy.text("select bid, vid, delta, label, title, type, view_mode, data, uid, created, changed from bean;"))
