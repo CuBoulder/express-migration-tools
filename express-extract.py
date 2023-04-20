@@ -346,6 +346,14 @@ with engine.connect() as conn:
     bean_block_fields.append('field_block_wrapper_reference')
     bean_types['block_wrapper'] = bean_block_wrapper_fields
 
+    bean_campus_news_bundle_fields = []
+    bean_campus_news_bundle_fields.append('field_campus_news_audience')
+    bean_campus_news_bundle_fields.append('field_campus_news_category')
+    bean_campus_news_bundle_fields.append('field_campus_news_display')
+    bean_campus_news_bundle_fields.append('field_campus_news_items')
+    bean_campus_news_bundle_fields.append('field_campus_news_unit')
+    bean_types['campus_news_bundle'] = bean_campus_news_bundle_fields
+
     bean_collection_grid_fields = []
     bean_collection_grid_fields.append('field_collection_body')
     bean_collection_grid_fields.append('field_collection_category')
@@ -363,6 +371,24 @@ with engine.connect() as conn:
     bean_collection_grid_fields.append('field_collection_thumbnail')
     bean_collection_grid_fields.append('field_collection_type')
     bean_types['collection_grid'] = bean_collection_grid_fields
+
+
+    bean_content_sequence_fields = []
+    bean_content_sequence_fields.append('field_cont_seq_body')
+    bean_content_sequence_fields.append('field_cont_seq_content')
+    bean_content_sequence_fields.append('field_cont_seq_date')
+    bean_content_sequence_fields.append('field_cont_seq_description')
+    bean_content_sequence_fields.append('field_cont_seq_display')
+    bean_content_sequence_fields.append('field_cont_seq_display_date')
+    bean_content_sequence_fields.append('field_cont_seq_display_end_date')
+    bean_content_sequence_fields.append('field_cont_seq_end_date')
+    bean_content_sequence_fields.append('field_cont_seq_group')
+    bean_content_sequence_fields.append('field_cont_seq_photos')
+    bean_content_sequence_fields.append('field_cont_seq_scale')
+    bean_content_sequence_fields.append('field_cont_seq_title')
+    bean_content_sequence_fields.append('field_cont_seq_video')
+    bean_content_sequence_fields.append('field_cont_sequence_title')
+    bean_types['content_sequence'] = bean_content_sequence_fields
 
 
     bean_feature_callout_fields = []
