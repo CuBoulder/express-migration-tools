@@ -255,7 +255,7 @@ with engine.connect() as conn:
 
                         beans.append(bean)
 
-                    field['beans'] = beans
+                    field['layout_beans'] = beans
                 if 'beans' in field:
                     fields.append(field)
 
@@ -376,12 +376,12 @@ with engine.connect() as conn:
 
     bean_feature_callout_fields = []
     bean_feature_callout_fields.append({'name': 'field_callout_columns', 'type': 'bean', 'bundle': 'feature_callout'})
-    bean_feature_callout_fields.append({'name': 'field_callout_image', 'type': 'field_collection_item', 'bundle': 'field_callouts'})
+    bean_feature_callout_fields.append({'name': 'field_callouts', 'type': 'bean', 'bundle': 'feature_callout'})
     bean_feature_callout_fields.append({'name': 'field_callout_image_size', 'type': 'bean', 'bundle': 'feature_callout'})
     bean_feature_callout_fields.append({'name': 'field_callout_style', 'type': 'bean', 'bundle': 'feature_callout'})
     bean_feature_callout_fields.append({'name': 'field_callout_text', 'type': 'field_collection_item', 'bundle': 'field_callouts'})
+    bean_feature_callout_fields.append({'name': 'field_callout_image', 'type': 'field_collection_item', 'bundle': 'field_callouts'})
     bean_feature_callout_fields.append({'name': 'field_callout_title', 'type': 'field_collection_item', 'bundle': 'field_callouts'})
-    bean_feature_callout_fields.append({'name': 'field_callouts', 'type': 'bean', 'bundle': 'feature_callout'})
     bean_types['feature_callout'] = bean_feature_callout_fields
 
     # bean_hero_unit_fields = []
@@ -495,7 +495,7 @@ with engine.connect() as conn:
         #bean['fields'] = extract_fields(b.type, b.bid, b.vid)
 
 
-        beans.append(bean)
+        # beans.append(bean)
 
 
         if x.type in bean_types:
@@ -504,35 +504,71 @@ with engine.connect() as conn:
             fields = {}
 
             for fname in field_names:
-                # print(f"{fname}: {extract_subfields(fname)}")
+
+                if fname['type'] == 'bean':
+
+                    field = {}
+                    field['field_name'] = fname['name']
+                    field['type'] = bean['type']
+
+                    columns = extract_subfields(fname['name'])
+
+                    data = []
+
+                    fd_result = conn.execute(sqlalchemy.text(
+                        f"select {', '.join(columns)} from field_data_{fname['name']} where bundle = '{bean['type']}' AND entity_id = '{bean['bid']}' AND revision_id = '{bean['vid']}';"))
+
+                    for fd_item in fd_result.mappings():
+                        field_item = {}
+                        field_item['collection'] = []
+                        for colname in columns:
+                            field_item[colname] = fd_item[colname]
+
+                        if 'entity_id' in field_item and 'delta' in field_item:
+                            field_item['id'] = f"{field_item['entity_id']}_{field_item['delta']}"
 
 
-                # field_result = conn.execute(sqlalchemy.text(f"select {fname}_value from field_data_{fname} WHERE entity_id = '{x.bid}';"))
-                # for r in field_result:
-                #     fields[fname] = r[0]
+                        fci_item_fields = []
 
-                field = {}
-                field['field_name'] = fname
-                field['type'] = bean['type']
+                        for fci_item in field_names:
+                            fci_data = []
+                            if fci_item['bundle'] == fname['name']:
+                                print(f"FCI ITEM: {fci_item['name']}")
 
-                columns = extract_subfields(fname)
+                                fci_columns = extract_subfields(fci_item['name'])
+                                print(fci_columns)
 
-                data = []
 
-                fd_result = conn.execute(sqlalchemy.text(
-                    f"select {', '.join(columns)} from field_data_{fname} where bundle = '{bean['type']}' AND entity_id = '{bean['bid']}' AND revision_id = '{bean['vid']}';"))
 
-                for fd_item in fd_result.mappings():
-                    field_item = {}
-                    for colname in columns:
-                        field_item[colname] = fd_item[colname]
+                                fci_id_column = fname['name'] + '_value'
+                                print(f"FCI ID COLUMN: {fci_id_column}")
+                                fci_revision_column = fname['name'] + '_revision_id'
+                                print(f"FCI REVISION COLUMN: {fci_revision_column}")
 
-                    if 'entity_id' in field_item and 'delta' in field_item:
-                        field_item['id'] = f"{field_item['entity_id']}_{field_item['delta']}"
-                    data.append(field_item)
+                                fci_query = f"select {', '.join(fci_columns)} from field_data_{fci_item['name']} where entity_type = '{fci_item['type']}' AND bundle = '{fci_item['bundle']}' AND entity_id = '{field_item[fci_id_column]}' AND revision_id = '{field_item[fci_revision_column]}';"
 
-                field['data'] = data
-                fields[field['field_name']] = field
+                                print(fci_query)
+
+                                fci_result = conn.execute(sqlalchemy.text(fci_query))
+                                for fcif in fci_result.mappings():
+                                    fcif_item = {}
+                                    for fcif_colname in fci_columns:
+                                        fcif_item[fcif_colname] = fcif[fcif_colname]
+
+                                    fci_data.append(fcif_item)
+                                    #field_item['collection'].append(fcif_item)
+
+                            if len(fci_data) != 0:
+                                field_item['collection'].append(fci_data)
+
+                        if len(field_item['collection']) == 0:
+                            del field_item['collection']
+
+
+                        data.append(field_item)
+
+                    field['data'] = data
+                    fields[field['field_name']] = field
 
             bean['fields'] = fields
 
