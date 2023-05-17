@@ -374,21 +374,12 @@ with engine.connect() as conn:
     # bean_types['content_sequence'] = bean_content_sequence_fields
 
 
-    # bean_feature_callout_fields = []
-    # bean_feature_callout_fields.append({'name': 'field_callout_columns', 'type': 'bean', 'bundle': 'feature_callout'})
-    # bean_feature_callout_fields.append({'name': 'field_callouts', 'type': 'bean', 'bundle': 'feature_callout'})
-    # bean_feature_callout_fields.append({'name': 'field_callout_image_size', 'type': 'bean', 'bundle': 'feature_callout'})
-    # bean_feature_callout_fields.append({'name': 'field_callout_style', 'type': 'bean', 'bundle': 'feature_callout'})
-    # bean_feature_callout_fields.append({'name': 'field_callout_text', 'type': 'field_collection_item', 'bundle': 'field_callouts'})
-    # bean_feature_callout_fields.append({'name': 'field_callout_image', 'type': 'field_collection_item', 'bundle': 'field_callouts'})
-    # bean_feature_callout_fields.append({'name': 'field_callout_title', 'type': 'field_collection_item', 'bundle': 'field_callouts'})
-    # bean_types['feature_callout'] = bean_feature_callout_fields
 
     bean_feature_callout_fields = []
     bean_feature_callout_fields.append({'name': 'field_callout_columns', 'type': 'bean', 'bundle': 'feature_callout'})
     bean_feature_callout_fields.append({'name': 'field_callout_image_size', 'type': 'bean', 'bundle': 'feature_callout'})
     bean_feature_callout_fields.append({'name': 'field_callout_style', 'type': 'bean', 'bundle': 'feature_callout'})
-    bean_feature_callout_fields.append({'name': 'field_callouts', 'type': 'bean', 'bundle': 'feature_callout'})
+    bean_feature_callout_fields.append({'name': 'field_callouts', 'type': 'bean', 'bundle': 'feature_callout', 'collection': 'grid_layout_content'})
     bean_feature_callout_fields.append({'name': 'field_callout_image', 'type': 'field_collection_item', 'bundle': 'field_callouts'})
     bean_feature_callout_fields.append({'name': 'field_callout_text', 'type': 'field_collection_item', 'bundle': 'field_callouts'})
     bean_feature_callout_fields.append({'name': 'field_callout_title', 'type': 'field_collection_item', 'bundle': 'field_callouts'})
@@ -488,6 +479,7 @@ with engine.connect() as conn:
 
     beans = []
     bean_result = conn.execute(sqlalchemy.text("select bid, vid, delta, label, title, type, view_mode, data, uid, created, changed from bean;"))
+    bean_types_map = {}
     for x in bean_result:
         bean = {}
         bean['bid'] = x.bid
@@ -503,6 +495,8 @@ with engine.connect() as conn:
         bean['changed'] = x.changed
 
         bean_fields = []
+
+
 
         #bean['fields'] = extract_fields(b.type, b.bid, b.vid)
 
@@ -532,7 +526,13 @@ with engine.connect() as conn:
 
                     for fd_item in fd_result.mappings():
                         field_item = {}
-                        field_item['collection'] = []
+
+                        if 'collection' in fname:
+                            collection_name = fname['collection']
+                            field_item[collection_name] = []
+
+                        #field_item['collection'] = []
+
                         for colname in columns:
                             field_item[colname] = fd_item[colname]
 
@@ -542,24 +542,30 @@ with engine.connect() as conn:
 
                         fci_item_fields = []
 
+                        fci_data = {}
+
                         for fci_item in field_names:
-                            fci_data = []
+
+                            # print(f"fci_item: {fci_item}")
+
+
+                            #fci_data = {}
                             if fci_item['bundle'] == fname['name']:
-                                print(f"FCI ITEM: {fci_item['name']}")
+                                # print(f"FCI ITEM: {fci_item['name']}")
 
                                 fci_columns = extract_subfields(fci_item['name'])
-                                print(fci_columns)
+                                # print(fci_columns)
 
 
 
                                 fci_id_column = fname['name'] + '_value'
-                                print(f"FCI ID COLUMN: {fci_id_column}")
+                                # print(f"FCI ID COLUMN: {fci_id_column}")
                                 fci_revision_column = fname['name'] + '_revision_id'
-                                print(f"FCI REVISION COLUMN: {fci_revision_column}")
+                                # print(f"FCI REVISION COLUMN: {fci_revision_column}")
 
                                 fci_query = f"select {', '.join(fci_columns)} from field_data_{fci_item['name']} where entity_type = '{fci_item['type']}' AND bundle = '{fci_item['bundle']}' AND entity_id = '{field_item[fci_id_column]}' AND revision_id = '{field_item[fci_revision_column]}';"
 
-                                print(fci_query)
+                                # print(f"fci_item: {fci_item['name']}")
 
                                 fci_result = conn.execute(sqlalchemy.text(fci_query))
                                 for fcif in fci_result.mappings():
@@ -567,14 +573,21 @@ with engine.connect() as conn:
                                     for fcif_colname in fci_columns:
                                         fcif_item[fcif_colname] = fcif[fcif_colname]
 
-                                    fci_data.append(fcif_item)
-                                    #field_item['collection'].append(fcif_item)
+                                    #fci_data.append(fcif_item)
+                                    fci_data[fci_item['name']] = fcif_item
+                                    # print(f"fci_data: {fci_data}")
+                                    # print(f"fcif_item: {fcif_item}")
 
                             if len(fci_data) != 0:
-                                field_item['collection'].append(fci_data)
+                                #field_item[collection_name].append(fci_data[0])
+                                fci_data['id'] = f"{field_item['entity_id']}_{field_item['delta']}"
+                                field_item[collection_name] = fci_data
 
-                        if len(field_item['collection']) == 0:
-                            del field_item['collection']
+                            # if len(fci_data) > 1:
+                            #     print("FCI DATA LARGER THAN ONE")
+
+                        if 'collection' in fname and len(field_item[collection_name]) == 0:
+                            del field_item[collection_name]
 
 
                         data.append(field_item)
@@ -584,9 +597,16 @@ with engine.connect() as conn:
 
             bean['fields'] = fields
 
-        beans.append(bean)
+        if bean['type'] not in bean_types_map:
+            bean_types_map[bean['type']] = []
+        bean_types_map[bean['type']].append(bean)
 
-    output['beans'] = beans
+        # print(bean_types)
+
+        #beans.append(bean)
+
+    #output['beans'] = beans
+    output['beans'] = bean_types_map
 
 
 
