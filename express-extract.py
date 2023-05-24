@@ -176,100 +176,8 @@ with engine.connect() as conn:
         users.append(user)
     output['users'] = users
 
-    nodes = []
-
-    node_types = {}
-
-    node_result = conn.execute(sqlalchemy.text("select nid, vid, type, title, uid, status, created, changed, comment, promote, sticky from node;"))
-    for x in node_result:
-        node = {}
-        node['nid'] = x.nid
-        node['vid'] = x.vid
-        node['type'] = x.type
-        node['title'] = x.title
-        node['uid'] = x.uid
-        node['status'] = x.status
-        node['created'] = x.created
-        node['changed'] = x.changed
-        node['comment'] = x.comment
-        node['promote'] = x.promote
-        node['sticky'] = x.sticky
-
-        node['path'] = '/' + urlaliasmap['node/' + str(x.nid)]
 
 
-        node['fields'] = extract_fields(x.type, x.nid, x.vid)
-
-
-        layout_result = conn.execute(sqlalchemy.text(f"select layout_id, title, node_type from express_layout WHERE layout_id = '{x.nid}';"))
-
-        for y in layout_result:
-            layout = {}
-            layout['layout_id'] = y.layout_id
-            layout['title']  = y.title
-            layout['node_type'] = y.node_type
-
-            layout_field_names = []
-
-            layout_field_names.append('field_footer')
-            layout_field_names.append('field_header')
-            layout_field_names.append('field_inner_content_left')
-            layout_field_names.append('field_inner_content_right')
-            layout_field_names.append('field_intro')
-            layout_field_names.append('field_sidebar_first')
-            layout_field_names.append('field_sidebar_second')
-            layout_field_names.append('field_slider')
-            layout_field_names.append('field_wide_2')
-            layout_field_names.append('field_content_bottom')
-            layout_field_names.append('field_post_title')
-            layout_field_names.append('field_post_title_wide')
-
-            fields = []
-
-            for lfname in layout_field_names:
-                field = {}
-                field['name'] = lfname
-                field_result = conn.execute(sqlalchemy.text(f"select {lfname}_target_id from field_data_{lfname} WHERE entity_id = '{x.nid}';"))
-                for r in field_result:
-                    field['target_id'] = r[0]
-
-                    beans = []
-
-                    bean_result = conn.execute(sqlalchemy.text(f"select bid, vid, delta, label, title, type, view_mode, data, uid from bean WHERE bid = '{r[0]}';"))
-                    for b in bean_result:
-
-                        bean = {}
-                        bean['bid'] = b.bid
-                        bean['vid'] = b.vid
-                        bean['delta'] = b.delta
-                        bean['label'] = b.label
-                        bean['title'] = b.title
-                        bean['type'] = b.type
-                        bean['view_mode'] = b.view_mode
-                        bean['data'] = b.data
-                        bean['uid'] = b.uid
-
-                        bean_fields = []
-
-                        bean['fields'] = extract_fields(b.type, b.bid, b.vid)
-
-                        beans.append(bean)
-
-                    field['layout_beans'] = beans
-                if 'beans' in field:
-                    fields.append(field)
-
-            layout['fields'] = fields
-
-            node['layout'] = layout
-
-        if node['type'] not in node_types:
-            node_types[node['type']] = []
-        node_types[node['type']].append(node)
-
-        #nodes.append(node)
-    nodes.append(node_types)
-    output['nodes'] = nodes
 
     # Beans
 
@@ -608,6 +516,128 @@ with engine.connect() as conn:
     #output['beans'] = beans
     output['beans'] = bean_types_map
 
+
+
+
+
+
+    nodes = []
+
+    node_types = {}
+
+    node_result = conn.execute(sqlalchemy.text("select nid, vid, type, title, uid, status, created, changed, comment, promote, sticky from node;"))
+    for x in node_result:
+        node = {}
+        node['nid'] = x.nid
+        node['vid'] = x.vid
+        node['type'] = x.type
+        node['title'] = x.title
+        node['uid'] = x.uid
+        node['status'] = x.status
+        node['created'] = x.created
+        node['changed'] = x.changed
+        node['comment'] = x.comment
+        node['promote'] = x.promote
+        node['sticky'] = x.sticky
+
+        node['path'] = '/' + urlaliasmap['node/' + str(x.nid)]
+
+
+        node['fields'] = extract_fields(x.type, x.nid, x.vid)
+
+
+        if node['type'] == 'section_page':
+            node['page_sections'] = []
+            # print('Section page node found')
+            for d in node['fields']['field_section_page_sections']['data']:
+                # print(d['field_section_page_sections_target_id'])
+                bs = {}
+                bs['beans'] = []
+                bs['bid'] = d['field_section_page_sections_target_id']
+                for b in output['beans']['block_section']:
+                    if b['bid'] == bs['bid']:
+                        #print(b['fields']['field_blocks_section_blocks']['data'])
+
+                        for c in b['fields']['field_blocks_section_blocks']['data']:
+                            #print(c)
+                            bs['beans'].append(c['field_blocks_section_blocks_target_id'])
+                node['page_sections'].append(bs)
+
+
+                # print(d)
+            # for b in output['beans']:
+
+
+
+        layout_result = conn.execute(sqlalchemy.text(f"select layout_id, title, node_type from express_layout WHERE layout_id = '{x.nid}';"))
+
+        for y in layout_result:
+            layout = {}
+            layout['layout_id'] = y.layout_id
+            layout['title']  = y.title
+            layout['node_type'] = y.node_type
+
+            layout_field_names = []
+
+            layout_field_names.append('field_footer')
+            layout_field_names.append('field_header')
+            layout_field_names.append('field_inner_content_left')
+            layout_field_names.append('field_inner_content_right')
+            layout_field_names.append('field_intro')
+            layout_field_names.append('field_sidebar_first')
+            layout_field_names.append('field_sidebar_second')
+            layout_field_names.append('field_slider')
+            layout_field_names.append('field_wide_2')
+            layout_field_names.append('field_content_bottom')
+            layout_field_names.append('field_post_title')
+            layout_field_names.append('field_post_title_wide')
+
+            fields = []
+
+            for lfname in layout_field_names:
+                field = {}
+                field['name'] = lfname
+                field_result = conn.execute(sqlalchemy.text(f"select {lfname}_target_id from field_data_{lfname} WHERE entity_id = '{x.nid}';"))
+                for r in field_result:
+                    field['target_id'] = r[0]
+
+                    beans = []
+
+                    bean_result = conn.execute(sqlalchemy.text(f"select bid, vid, delta, label, title, type, view_mode, data, uid from bean WHERE bid = '{r[0]}';"))
+                    for b in bean_result:
+
+                        bean = {}
+                        bean['bid'] = b.bid
+                        bean['vid'] = b.vid
+                        bean['delta'] = b.delta
+                        bean['label'] = b.label
+                        bean['title'] = b.title
+                        bean['type'] = b.type
+                        bean['view_mode'] = b.view_mode
+                        bean['data'] = b.data
+                        bean['uid'] = b.uid
+
+                        bean_fields = []
+
+                        bean['fields'] = extract_fields(b.type, b.bid, b.vid)
+
+                        beans.append(bean)
+
+                    field['layout_beans'] = beans
+                if 'beans' in field:
+                    fields.append(field)
+
+            layout['fields'] = fields
+
+            node['layout'] = layout
+
+        if node['type'] not in node_types:
+            node_types[node['type']] = []
+        node_types[node['type']].append(node)
+
+        #nodes.append(node)
+    nodes.append(node_types)
+    output['nodes'] = nodes
 
 
     # Menus
