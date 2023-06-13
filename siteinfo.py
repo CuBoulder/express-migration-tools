@@ -22,6 +22,23 @@ def getbean(bid):
         if b.text == bid:
             return(parent_map[b])
 
+def printbeaninfo(bid, depth):
+    bean = getbean(bid)
+    type = bean.find('type').text
+    print("  " * depth + f"Bean {bean.find('bid').text} - {type}")
+
+    if type == 'block_section':
+        section_blocks = bean.findall('./fields/field_blocks_section_blocks/data/item/field_blocks_section_blocks_target_id')
+        for secblocks in section_blocks:
+            printbeaninfo(secblocks.text, depth+1)
+
+    if type == 'feature_callout':
+        pass
+        # etree.dump(bean)
+
+
+
+
 
 with open(args.input, "rb") as input:
     root = etree.parse(input).getroot()
@@ -38,16 +55,13 @@ with open(args.input, "rb") as input:
         sections = n.findall(".//field_section_page_sections/data/item/field_section_page_sections_target_id")
         for s in sections:
             bid = s.text
-            bean = getbean(bid)
+            # bean = getbean(bid)
             # etree.dump(bean)
 
+            printbeaninfo(bid, 0)
 
-            print(f"Bean {bean.find('bid').text} - {bean.find('type').text}")
 
-            section_blocks = bean.findall('./fields/field_blocks_section_blocks/data/item/field_blocks_section_blocks_target_id')
-            for secblocks in section_blocks:
-                secbean = getbean(secblocks.text)
-                print(f"  Bean {secbean.find('bid').text} - {secbean.find('type').text}")
+
 
 
 
