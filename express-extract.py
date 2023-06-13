@@ -263,25 +263,25 @@ with engine.connect() as conn:
     # bean_collection_grid_fields.append('field_collection_type')
     # bean_types['collection_grid'] = bean_collection_grid_fields
     #
-    #
-    # bean_content_sequence_fields = []
-    # bean_content_sequence_fields.append('field_cont_seq_body')
-    # bean_content_sequence_fields.append('field_cont_seq_content')
-    # bean_content_sequence_fields.append('field_cont_seq_date')
-    # bean_content_sequence_fields.append('field_cont_seq_description')
-    # bean_content_sequence_fields.append('field_cont_seq_display')
-    # bean_content_sequence_fields.append('field_cont_seq_display_date')
-    # bean_content_sequence_fields.append('field_cont_seq_display_end_date')
-    # bean_content_sequence_fields.append('field_cont_seq_end_date')
-    # bean_content_sequence_fields.append('field_cont_seq_group')
-    # bean_content_sequence_fields.append('field_cont_seq_photos')
-    # bean_content_sequence_fields.append('field_cont_seq_scale')
-    # bean_content_sequence_fields.append('field_cont_seq_title')
-    # bean_content_sequence_fields.append('field_cont_seq_video')
-    # bean_content_sequence_fields.append('field_cont_sequence_title')
-    # bean_types['content_sequence'] = bean_content_sequence_fields
 
 
+    bean_content_sequence_fields = []
+    bean_content_sequence_fields.append({'name': 'field_cont_seq_body', 'type': 'field_collection_item', 'bundle': 'field_cont_seq_content'})
+    bean_content_sequence_fields.append({'name': 'field_cont_seq_date', 'type': 'field_collection_item', 'bundle': 'field_cont_seq_content'})
+    bean_content_sequence_fields.append({'name': 'field_cont_seq_display_date', 'type': 'field_collection_item', 'bundle': 'field_cont_seq_content'})
+    bean_content_sequence_fields.append({'name': 'field_cont_seq_display_end_date', 'type': 'field_collection_item', 'bundle': 'field_cont_seq_content'})
+    bean_content_sequence_fields.append({'name': 'field_cont_seq_end_date', 'type': 'field_collection_item', 'bundle': 'field_cont_seq_content'})
+    bean_content_sequence_fields.append({'name': 'field_cont_seq_group', 'type': 'field_collection_item', 'bundle': 'field_cont_seq_content'})
+    bean_content_sequence_fields.append({'name': 'field_cont_seq_photos', 'type': 'field_collection_item', 'bundle': 'field_cont_seq_content'})
+    bean_content_sequence_fields.append({'name': 'field_cont_seq_title', 'type': 'field_collection_item', 'bundle': 'field_cont_seq_content'})
+    bean_content_sequence_fields.append({'name': 'field_cont_seq_video', 'type': 'field_collection_item', 'bundle': 'field_cont_seq_content'})
+    bean_content_sequence_fields.append({'name': 'field_cont_seq_content', 'type': 'bean', 'bundle': 'content_sequence'})
+    bean_content_sequence_fields.append({'name': 'field_cont_seq_description', 'type': 'bean', 'bundle': 'content_sequence'})
+    bean_content_sequence_fields.append({'name': 'field_cont_seq_display', 'type': 'bean', 'bundle': 'content_sequence'})
+    bean_content_sequence_fields.append({'name': 'field_cont_seq_photos', 'type': 'bean', 'bundle': 'content_sequence'})
+    bean_content_sequence_fields.append({'name': 'field_cont_seq_scale', 'type': 'bean', 'bundle': 'content_sequence'})
+    bean_content_sequence_fields.append({'name': 'field_cont_sequence_title', 'type': 'bean', 'bundle': 'content_sequence'})
+    bean_types['content_sequence'] = bean_content_sequence_fields
 
     bean_feature_callout_fields = []
     bean_feature_callout_fields.append({'name': 'field_callout_columns', 'type': 'bean', 'bundle': 'feature_callout'})

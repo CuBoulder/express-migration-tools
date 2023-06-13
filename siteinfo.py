@@ -36,6 +36,9 @@ def printbeaninfo(bid, depth):
         pass
         # etree.dump(bean)
 
+    if type == 'content_sequence':
+        etree.dump(bean)
+
 
 
 
