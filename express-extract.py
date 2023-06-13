@@ -473,13 +473,22 @@ with engine.connect() as conn:
 
                                 fci_query = f"select {', '.join(fci_columns)} from field_data_{fci_item['name']} where entity_type = '{fci_item['type']}' AND bundle = '{fci_item['bundle']}' AND entity_id = '{field_item[fci_id_column]}' AND revision_id = '{field_item[fci_revision_column]}';"
 
-                                # print(f"fci_item: {fci_item['name']}")
+
+
 
                                 fci_result = conn.execute(sqlalchemy.text(fci_query))
                                 for fcif in fci_result.mappings():
                                     fcif_item = {}
                                     for fcif_colname in fci_columns:
                                         fcif_item[fcif_colname] = fcif[fcif_colname]
+
+                                        if fci_item['name'] == 'field_callout_title' and fcif_colname == 'field_callout_title_url':
+                                            if fcif_item[fcif_colname] in urlaliasmap:
+                                                #print(f"url data: {fcif_item[fcif_colname]}, internal:/{urlaliasmap[fcif_item[fcif_colname]]}")
+                                                fcif_item[fcif_colname] = f"internal:/{urlaliasmap[fcif_item[fcif_colname]]}"
+                                            #else:
+                                                #print(f"url data: {fcif_item[fcif_colname]}")
+
 
                                     #fci_data.append(fcif_item)
                                     fci_data[fci_item['name']] = fcif_item
