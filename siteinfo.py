@@ -24,6 +24,9 @@ def getbean(bid):
 
 def printbeaninfo(bid, depth):
     bean = getbean(bid)
+    if bean is None:
+        print(f"BEAN NOT FOUND - {bid}")
+        return
     type = bean.find('type').text
     print("  " * depth + f"Bean {bean.find('bid').text} - {type}")
 
@@ -38,9 +41,15 @@ def printbeaninfo(bid, depth):
 
     if type == 'content_sequence':
         etree.dump(bean)
+        pass
 
     if type == 'block':
-        etree.dump(bean)
+        #etree.dump(bean)
+        pass
+
+    if type == 'block_wrapper':
+        #etree.dump(bean)
+        pass
 
 
 
@@ -50,6 +59,30 @@ with open(args.input, "rb") as input:
     root = etree.parse(input).getroot()
     parent_map = {c: p for p in root.iter() for c in p}
 
+    pages = root.findall('./nodes/item/page/item')
+
+    for n in pages:
+        # etree.dump(n)
+
+        # if n.find('nid').text != 2:
+        #     continue
+
+        print(f"---")
+        print(f"Node {n.find('nid').text} - {n.find('type').text} - {n.find('title').text} - {n.find('path').text}")
+        print(f"Layout beans:")
+        layouts = n.findall("./layout/fields/item")
+        for l in layouts:
+            #etree.dump(l)
+            print(f"{l.find('name').text}")
+            for b in l.findall('./beans/item'):
+                #etree.dump(b)
+                #print(b.text)
+                printbeaninfo(b.text, 0)
+            #bid = s.text
+            # bean = getbean(bid)
+            # etree.dump(bean)
+
+            #printbeaninfo(bid, 0)
 
     sectionpages = root.findall('./nodes/item/section_page/item')
 

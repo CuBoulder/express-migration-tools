@@ -110,6 +110,10 @@ $module_list = array();
 
 $module_list[] = array('subpath' => 'features', 'name' => 'cu_block');
 
+$module_list[] = array('subpath' => 'custom', 'name' => 'cu_block_to_bean');
+
+$module_list[] = array('subpath' => 'custom', 'name' => 'cu_block_row');
+
 $module_list[] = array('subpath' => 'features', 'name' => 'cu_feature_callout');
 $module_list[] = array('subpath' => 'custom/cu_content_sequence_bundle', 'name' => 'cu_content_sequence');
 $module_list[] = array('subpath' => 'features', 'name' => 'cu_article');

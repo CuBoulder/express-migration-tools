@@ -240,6 +240,23 @@ with engine.connect() as conn:
     bean_block_fields.append({'name': 'field_block_text', 'type': 'bean', 'bundle': 'block'})
     bean_types['block'] = bean_block_fields
 
+    #  Bean: block_row
+
+    # bean_block_row_fields = []
+    # bean_block_row_fields.append({'name': 'field_block_row_block', 'type': 'field_collection_item', 'bundle': 'field_block_row_collection'})
+    # bean_block_row_fields.append({'name': 'field_block_row_collection', 'type': 'bean', 'bundle': 'block_row'})
+    # bean_block_row_fields.append({'name': 'field_block_row_distribution', 'type': 'bean', 'bundle': 'block_row'})
+    # bean_block_row_fields.append({'name': 'field_block_row_match_height', 'type': 'bean', 'bundle': 'block_row'})
+    # bean_types['block_row'] = bean_block_row_fields
+
+    # Module: cu_block_to_bean
+
+    #  Bean: block_wrapper
+
+    bean_block_wrapper_fields = []
+    bean_block_wrapper_fields.append({'name': 'field_block_wrapper_reference', 'type': 'bean', 'bundle': 'block_wrapper'})
+    bean_types['block_wrapper'] = bean_block_wrapper_fields
+
     # bean_campus_news_bundle_fields = []
     # bean_campus_news_bundle_fields.append('field_campus_news_audience')
     # bean_campus_news_bundle_fields.append('field_campus_news_category')
@@ -610,33 +627,11 @@ with engine.connect() as conn:
                 field = {}
                 field['name'] = lfname
                 field_result = conn.execute(sqlalchemy.text(f"select {lfname}_target_id from field_data_{lfname} WHERE entity_id = '{x.nid}';"))
+                bean_list = []
                 for r in field_result:
-                    field['target_id'] = r[0]
-
-                    beans = []
-
-                    bean_result = conn.execute(sqlalchemy.text(f"select bid, vid, delta, label, title, type, view_mode, data, uid from bean WHERE bid = '{r[0]}';"))
-                    for b in bean_result:
-
-                        bean = {}
-                        bean['bid'] = b.bid
-                        bean['vid'] = b.vid
-                        bean['delta'] = b.delta
-                        bean['label'] = b.label
-                        bean['title'] = b.title
-                        bean['type'] = b.type
-                        bean['view_mode'] = b.view_mode
-                        bean['data'] = b.data
-                        bean['uid'] = b.uid
-
-                        bean_fields = []
-
-                        bean['fields'] = extract_fields(b.type, b.bid, b.vid)
-
-                        beans.append(bean)
-
-                    field['layout_beans'] = beans
-                if 'beans' in field:
+                    bean_list.append(r[0])
+                if len(bean_list) > 0:
+                    field['beans'] = bean_list
                     fields.append(field)
 
             layout['fields'] = fields
