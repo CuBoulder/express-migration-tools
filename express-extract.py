@@ -233,10 +233,13 @@ with engine.connect() as conn:
     #field_hero_unit_text_color?
     bean_types['block_section'] = bean_block_section_fields
 
-    # bean_block_wrapper_fields = []
-    # bean_block_fields.append('field_block_wrapper_reference')
-    # bean_types['block_wrapper'] = bean_block_wrapper_fields
-    #
+    #  Bean: block
+
+    bean_block_fields = []
+    bean_block_fields.append({'name': 'field_block_photo', 'type': 'bean', 'bundle': 'block'})
+    bean_block_fields.append({'name': 'field_block_text', 'type': 'bean', 'bundle': 'block'})
+    bean_types['block'] = bean_block_fields
+
     # bean_campus_news_bundle_fields = []
     # bean_campus_news_bundle_fields.append('field_campus_news_audience')
     # bean_campus_news_bundle_fields.append('field_campus_news_category')

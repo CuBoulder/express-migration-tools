@@ -98,7 +98,7 @@ function emit_python_bean_schema($beanlist)
         {
             print("bean_" . $bean['name'] . "_fields" . ".append({'name': '" . $fields[$j]['name'] . "', 'type': '" .  $fields[$j]['type'] . "', 'bundle': '" . $fields[$j]['bundle'] . "'})" . "\n");
         }
-        print("bean_types['" . $bean['name'] . "'] = bean_feature_callout_fields" . "\n\n");
+        print("bean_types['" . $bean['name'] . "'] = bean_" . $bean['name'] . "_fields" . "\n\n");
     }
 
     print("\n");
@@ -107,6 +107,9 @@ function emit_python_bean_schema($beanlist)
 
 
 $module_list = array();
+
+$module_list[] = array('subpath' => 'features', 'name' => 'cu_block');
+
 $module_list[] = array('subpath' => 'features', 'name' => 'cu_feature_callout');
 $module_list[] = array('subpath' => 'custom/cu_content_sequence_bundle', 'name' => 'cu_content_sequence');
 $module_list[] = array('subpath' => 'features', 'name' => 'cu_article');

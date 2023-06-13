@@ -39,6 +39,9 @@ def printbeaninfo(bid, depth):
     if type == 'content_sequence':
         etree.dump(bean)
 
+    if type == 'block':
+        etree.dump(bean)
+
 
 
 
