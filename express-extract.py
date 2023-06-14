@@ -228,9 +228,6 @@ with engine.connect() as conn:
     bean_block_section_fields.append({'name': 'field_block_section_padding', 'type': 'bean', 'bundle': 'block_section'})
     bean_block_section_fields.append({'name': 'field_block_section_tablet_pad', 'type': 'bean', 'bundle': 'block_section'})
     bean_block_section_fields.append({'name': 'field_blocks_section_blocks', 'type': 'bean', 'bundle': 'block_section'})
-    #field_hero_unit_bg_color?
-    #field_hero_unit_overlay?
-    #field_hero_unit_text_color?
     bean_types['block_section'] = bean_block_section_fields
 
     #  Bean: block
@@ -533,6 +530,14 @@ with engine.connect() as conn:
                     fields[field['field_name']] = field
 
             bean['fields'] = fields
+
+        if bean['type'] == 'feature_callout':
+            #print(bean['fields']['field_callout_style']['data'][0]['field_callout_style_value'])
+            if bean['fields']['field_callout_style']['data'][0]['field_callout_style_value'] in ['large_teaser', 'large_teaser_alt', 'teaser', 'tiles', 'tiles_alt', 'feature', 'tiles_large']:
+                bean['type'] = 'content_row'
+            # for f in bean['fields']['field_callout_columns']:
+            #     if f['field_name']
+            #     print(bean['fields']['field_callout_columns'])
 
         if bean['type'] not in bean_types_map:
             bean_types_map[bean['type']] = []

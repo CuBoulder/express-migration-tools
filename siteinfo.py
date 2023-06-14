@@ -25,7 +25,7 @@ def getbean(bid):
 def printbeaninfo(bid, depth):
     bean = getbean(bid)
     if bean is None:
-        print(f"BEAN NOT FOUND - {bid}")
+        print(f"  BEAN NOT FOUND - {bid}")
         return
     type = bean.find('type').text
     print("  " * depth + f"Bean {bean.find('bid').text} - {type}")
@@ -40,7 +40,7 @@ def printbeaninfo(bid, depth):
         # etree.dump(bean)
 
     if type == 'content_sequence':
-        etree.dump(bean)
+        # etree.dump(bean)
         pass
 
     if type == 'block':
@@ -62,22 +62,17 @@ with open(args.input, "rb") as input:
     pages = root.findall('./nodes/item/page/item')
 
     for n in pages:
-        # etree.dump(n)
-
-        # if n.find('nid').text != 2:
-        #     continue
-
         print(f"---")
         print(f"Node {n.find('nid').text} - {n.find('type').text} - {n.find('title').text} - {n.find('path').text}")
-        print(f"Layout beans:")
+        #print(f"Layout beans:")
         layouts = n.findall("./layout/fields/item")
         for l in layouts:
             #etree.dump(l)
-            print(f"{l.find('name').text}")
+            print(f"Layout: {l.find('name').text}")
             for b in l.findall('./beans/item'):
                 #etree.dump(b)
                 #print(b.text)
-                printbeaninfo(b.text, 0)
+                printbeaninfo(b.text, 1)
             #bid = s.text
             # bean = getbean(bid)
             # etree.dump(bean)
@@ -97,7 +92,7 @@ with open(args.input, "rb") as input:
             # bean = getbean(bid)
             # etree.dump(bean)
 
-            printbeaninfo(bid, 0)
+            printbeaninfo(bid, 1)
 
 
 
