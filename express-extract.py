@@ -281,6 +281,9 @@ with engine.connect() as conn:
     # bean_types['collection_grid'] = bean_collection_grid_fields
     #
 
+    # Module: cu_content_sequence
+
+    #  Bean: content_sequence
 
     bean_content_sequence_fields = []
     bean_content_sequence_fields.append({'name': 'field_cont_seq_body', 'type': 'field_collection_item', 'bundle': 'field_cont_seq_content'})
@@ -310,7 +313,36 @@ with engine.connect() as conn:
     bean_feature_callout_fields.append({'name': 'field_callout_title', 'type': 'field_collection_item', 'bundle': 'field_callouts'})
     bean_types['feature_callout'] = bean_feature_callout_fields
 
+    # Module: express_localist_bundle
 
+    #  Bean: localist_events
+
+    bean_localist_events_fields = []
+    bean_localist_events_fields.append({'name': 'field_localist_all_instances', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_content_match', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_days_ahead', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_filters', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_filters_excluded', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_groups', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_hide_descriptions', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_hide_images', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_hide_past_events', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_hide_times', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_link', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_minical_layout', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_new_window', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_places', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_render_html', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_results', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_show_featured', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_show_sponsored', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_skip_recurring', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_start_date', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_style', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_tags', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_truncate_desc', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_localist_events_fields.append({'name': 'field_localist_widget_type', 'type': 'bean', 'bundle': 'localist_events'})
+    bean_types['localist_events'] = bean_localist_events_fields
 
     # bean_hero_unit_fields = []
     # bean_hero_unit_fields.append('field_hero_unit_bg_color')
@@ -535,9 +567,7 @@ with engine.connect() as conn:
             #print(bean['fields']['field_callout_style']['data'][0]['field_callout_style_value'])
             if bean['fields']['field_callout_style']['data'][0]['field_callout_style_value'] in ['large_teaser', 'large_teaser_alt', 'teaser', 'tiles', 'tiles_alt', 'feature', 'tiles_large']:
                 bean['type'] = 'content_row'
-            # for f in bean['fields']['field_callout_columns']:
-            #     if f['field_name']
-            #     print(bean['fields']['field_callout_columns'])
+
 
         if bean['type'] not in bean_types_map:
             bean_types_map[bean['type']] = []
