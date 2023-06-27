@@ -434,6 +434,23 @@ with engine.connect() as conn:
     # bean_video_hero_unit_fields.append('field_video_hero_url')
     # bean_types['video_hero_unit'] = bean_video_hero_unit_fields
 
+    # Module: cu_video_hero_unit
+
+    #  Bean: video_hero_unit
+
+    bean_video_hero_unit_fields = []
+    bean_video_hero_unit_fields.append({'name': 'field_hero_unit_headline', 'type': 'bean', 'bundle': 'video_hero_unit'})
+    bean_video_hero_unit_fields.append({'name': 'field_hero_unit_image', 'type': 'bean', 'bundle': 'video_hero_unit'})
+    bean_video_hero_unit_fields.append({'name': 'field_hero_unit_link', 'type': 'bean', 'bundle': 'video_hero_unit'})
+    bean_video_hero_unit_fields.append({'name': 'field_hero_unit_link_color', 'type': 'bean', 'bundle': 'video_hero_unit'})
+    bean_video_hero_unit_fields.append({'name': 'field_hero_unit_text', 'type': 'bean', 'bundle': 'video_hero_unit'})
+    bean_video_hero_unit_fields.append({'name': 'field_hero_unit_text_align', 'type': 'bean', 'bundle': 'video_hero_unit'})
+    bean_video_hero_unit_fields.append({'name': 'field_hero_unit_text_color', 'type': 'bean', 'bundle': 'video_hero_unit'})
+    bean_video_hero_unit_fields.append({'name': 'field_hero_video_overlay', 'type': 'bean', 'bundle': 'video_hero_unit'})
+    bean_video_hero_unit_fields.append({'name': 'field_hero_video_size', 'type': 'bean', 'bundle': 'video_hero_unit'})
+    bean_video_hero_unit_fields.append({'name': 'field_video_hero_url', 'type': 'bean', 'bundle': 'video_hero_unit'})
+    bean_types['video_hero_unit'] = bean_video_hero_unit_fields
+
     beans = []
     bean_result = conn.execute(sqlalchemy.text("select bid, vid, delta, label, title, type, view_mode, data, uid, created, changed from bean;"))
     bean_types_map = {}
@@ -670,6 +687,56 @@ with engine.connect() as conn:
                     fields.append(field)
 
             layout['fields'] = fields
+
+
+            # for d in node['fields']['field_section_page_sections']['data']:
+            #     # print(d['field_section_page_sections_target_id'])
+            #     bs = {}
+            #     bs['beans'] = []
+            #     bs['bid'] = d['field_section_page_sections_target_id']
+            #     for b in output['beans']['block_section']:
+            #         if b['bid'] == bs['bid']:
+            #             #print(b['fields']['field_blocks_section_blocks']['data'])
+            #
+            #             for c in b['fields']['field_blocks_section_blocks']['data']:
+            #                 #print(c)
+            #                 bs['beans'].append(c['field_blocks_section_blocks_target_id'])
+            #     node['page_sections'].append(bs)
+
+            page_sections = {}
+            sectionlist = []
+            for f in fields:
+                field_name = f["name"]
+                page_sections[field_name] = []
+                for s in f['beans']:
+                    section = {}
+
+                    section['bid'] = s
+                    section['beans'] = []
+
+                    block_section = False
+
+                    for b in output['beans']['block_section']:
+                        if b['bid'] == section['bid']:
+                            # print(b['fields']['field_blocks_section_blocks']['data'])
+                            block_section = True
+
+                            for c in b['fields']['field_blocks_section_blocks']['data']:
+                                # print(node['nid'])
+                                # print(c)
+                                section['beans'].append(c['field_blocks_section_blocks_target_id'])
+
+                    if block_section == False:
+                        section['beans'].append(section['bid'])
+
+
+
+                    page_sections[field_name].append(section)
+
+
+            layout['page_sections'] = page_sections
+
+
 
             node['layout'] = layout
 

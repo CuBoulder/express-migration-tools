@@ -12,9 +12,20 @@ function extract_bean_info(string $subpath, string $module_name)
 {
     global $basepath;
 
-    require $basepath . $subpath . '/' . $module_name . '/' . $module_name . '.bean.inc';
-    require $basepath . $subpath . '/' . $module_name . '/' . $module_name . '.features.field_base.inc';
-    require $basepath . $subpath . '/' . $module_name . '/' . $module_name . '.features.field_instance.inc';
+    if($module_name == 'cu_video_hero_unit')
+    {
+        require $basepath . $subpath . '/' . $module_name . '_bundle/' . $module_name . '.bean.inc';
+        require $basepath . $subpath . '/' . $module_name . '_bundle/' . $module_name . '.features.field_base.inc';
+        require $basepath . $subpath . '/' . $module_name . '_bundle/' . $module_name . '.features.field_instance.inc';
+
+    }
+    else
+    {
+        require $basepath . $subpath . '/' . $module_name . '/' . $module_name . '.bean.inc';
+        require $basepath . $subpath . '/' . $module_name . '/' . $module_name . '.features.field_base.inc';
+        require $basepath . $subpath . '/' . $module_name . '/' . $module_name . '.features.field_instance.inc';
+    }
+
 
 
     $beans = ($module_name . "_bean_admin_ui_types")();
@@ -118,6 +129,8 @@ $module_list[] = array('subpath' => 'features', 'name' => 'cu_feature_callout');
 $module_list[] = array('subpath' => 'custom/cu_content_sequence_bundle', 'name' => 'cu_content_sequence');
 $module_list[] = array('subpath' => 'features', 'name' => 'cu_article');
 $module_list[] = array('subpath' => 'custom', 'name' => 'express_localist_bundle');
+
+$module_list[] = array('subpath' => 'custom', 'name' => 'cu_video_hero_unit');
 
 
 ////$subpath = 'features';
