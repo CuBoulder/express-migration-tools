@@ -638,6 +638,19 @@ with engine.connect() as conn:
                 for b in output['beans']['block_section']:
                     if b['bid'] == bs['bid']:
                         #print(b['fields']['field_blocks_section_blocks']['data'])
+                        # field_block_section_bg_effect
+                        # field_block_section_bg_image
+                        if len(b['fields']['field_block_section_bg_effect']['data']) > 0:
+                            bs['bg_effect'] = b['fields']['field_block_section_bg_effect']['data'][0]['field_block_section_bg_effect_value']
+                        if len(b['fields']['field_block_section_bg_image']['data']) > 0:
+                            bs['bg_image'] = b['fields']['field_block_section_bg_image']['data'][0]['field_block_section_bg_image_fid']
+                        if len(b['fields']['field_block_section_padding']['data']) > 0:
+                            padding = b['fields']['field_block_section_padding']['data'][0]['field_block_section_padding_value'].split()
+                            bs['padding_top'] = padding[0]
+                            bs['padding_right'] = padding[1]
+                            bs['padding_bottom'] = padding[2]
+                            bs['padding_left'] = padding[3]
+
 
                         for c in b['fields']['field_blocks_section_blocks']['data']:
                             #print(c)

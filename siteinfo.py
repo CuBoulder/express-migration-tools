@@ -52,7 +52,24 @@ def printbeaninfo(bid, depth):
         pass
 
 
+def printnodesinfo(nodes):
+    for n in nodes:
+        print(f"---")
+        print(f"Node {n.find('nid').text} - {n.find('type').text} - {n.find('title').text} - {n.find('path').text}")
+        # print(f"Layout beans:")
+        layouts = n.findall("./layout/fields/item")
+        for l in layouts:
+            # etree.dump(l)
+            print(f"Layout: {l.find('name').text}")
+            for b in l.findall('./beans/item'):
+                # etree.dump(b)
+                # print(b.text)
+                printbeaninfo(b.text, 1)
+            # bid = s.text
+            # bean = getbean(bid)
+            # etree.dump(bean)
 
+            # printbeaninfo(bid, 0)
 
 
 with open(args.input, "rb") as input:
@@ -60,24 +77,41 @@ with open(args.input, "rb") as input:
     parent_map = {c: p for p in root.iter() for c in p}
 
     pages = root.findall('./nodes/item/page/item')
+    articles = root.findall('./nodes/item/article/item')
+    article_list_pages = root.findall('./nodes/item/article_list_page/item')
+    people_list_pages = root.findall('./nodes/item/people_list_page/item')
+    persons = root.findall('./nodes/item/person/item')
+    webforms = root.findall('./nodes/item/webform/item')
+    section_pages = root.findall('./nodes/item/section_page/item')
+    newsletters = root.findall('./nodes/item/newsletter/item')
+    photo_galleries = root.findall('./nodes/item/photo_gallery/item')
 
-    for n in pages:
-        print(f"---")
-        print(f"Node {n.find('nid').text} - {n.find('type').text} - {n.find('title').text} - {n.find('path').text}")
-        #print(f"Layout beans:")
-        layouts = n.findall("./layout/fields/item")
-        for l in layouts:
-            #etree.dump(l)
-            print(f"Layout: {l.find('name').text}")
-            for b in l.findall('./beans/item'):
-                #etree.dump(b)
-                #print(b.text)
-                printbeaninfo(b.text, 1)
-            #bid = s.text
-            # bean = getbean(bid)
-            # etree.dump(bean)
+    printnodesinfo(pages)
+    printnodesinfo(articles)
+    printnodesinfo(article_list_pages)
+    printnodesinfo(people_list_pages)
+    printnodesinfo(persons)
+    printnodesinfo(webforms)
+    printnodesinfo(newsletters)
+    printnodesinfo(photo_galleries)
 
-            #printbeaninfo(bid, 0)
+    # for n in pages:
+    #     print(f"---")
+    #     print(f"Node {n.find('nid').text} - {n.find('type').text} - {n.find('title').text} - {n.find('path').text}")
+    #     #print(f"Layout beans:")
+    #     layouts = n.findall("./layout/fields/item")
+    #     for l in layouts:
+    #         #etree.dump(l)
+    #         print(f"Layout: {l.find('name').text}")
+    #         for b in l.findall('./beans/item'):
+    #             #etree.dump(b)
+    #             #print(b.text)
+    #             printbeaninfo(b.text, 1)
+    #         #bid = s.text
+    #         # bean = getbean(bid)
+    #         # etree.dump(bean)
+    #
+    #         #printbeaninfo(bid, 0)
 
     sectionpages = root.findall('./nodes/item/section_page/item')
 
