@@ -130,15 +130,15 @@ with engine.connect() as conn:
     for x in users_result:
 
         skiplist = []
-        skiplist.append('alco6164')
-        skiplist.append('mibo7729')
-        skiplist.append('jesp3304')
-        skiplist.append('fraziere')
-        skiplist.append('jesp3304')
-        skiplist.append('wetu1300')
-        skiplist.append('linebarg')
-        skiplist.append('brokaw')
-        skiplist.append('crafts')
+        # skiplist.append('alco6164')
+        # skiplist.append('mibo7729')
+        # skiplist.append('jesp3304')
+        # skiplist.append('fraziere')
+        # skiplist.append('jesp3304')
+        # skiplist.append('wetu1300')
+        # skiplist.append('linebarg')
+        # skiplist.append('brokaw')
+        # skiplist.append('crafts')
         skiplist.append('')
 
         if x[1] in skiplist or x[0] == 1:
@@ -166,6 +166,7 @@ with engine.connect() as conn:
         rolemap['form_manager'] = ['webform_editor']
         rolemap['administrator'] = ['architect']
         rolemap['developer'] = ['developer']
+        rolemap['access_manager'] = []
 
 
         for y in roles_result:
