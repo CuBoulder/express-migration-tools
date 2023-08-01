@@ -114,6 +114,9 @@ with engine.connect() as conn:
         file['filepath'] = '/home/tirazel/Projects/migration-tools/ucb-strategicrelations/files/' + x.uri[9:]
 
         if x.filemime in filemap['images']:
+            fp_result = conn.execute(sqlalchemy.text(f"select focal_point from focal_point where fid = '{file['fid']}';"))
+            for fp in fp_result:
+                file['focal_point'] = f"{file['fid']},{fp.focal_point}"
             files['images'].append(file)
         if x.filemime in filemap['video']:
             files['video'].append(file)
