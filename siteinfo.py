@@ -5,6 +5,7 @@ import argparse
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--input", help="Input XML file")
+parser.add_argument("--beans", help="Only show nodes with beans")
 
 args = parser.parse_args()
 
@@ -55,7 +56,10 @@ def printbeaninfo(bid, depth):
 def printnodesinfo(nodes):
     for n in nodes:
         print(f"---")
-        print(f"Node {n.find('nid').text} - {n.find('type').text} - {n.find('title').text} - {n.find('path').text}")
+        if n.find('path') is not None:
+            print(f"Node {n.find('nid').text} - {n.find('type').text} - {n.find('title').text} - {n.find('path').text}")
+        else:
+            print(f"Node {n.find('nid').text} - {n.find('type').text} - {n.find('title').text} - NOPATH")
         # print(f"Layout beans:")
         layouts = n.findall("./layout/fields/item")
         for l in layouts:

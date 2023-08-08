@@ -7,6 +7,7 @@ import dotenv
 import dicttoxml
 import time
 import re
+import sys
 
 from lxml import etree
 from io import StringIO, BytesIO
@@ -54,8 +55,16 @@ def extract_fields(type, id, revision_id):
 
     return fields
 
+parser = argparse.ArgumentParser(description='Express Migration Tool')
 
-engine = sqlalchemy.create_engine("mariadb+pymysql://root:pass@localhost/strategicrelations?charset=utf8mb4", echo=False)
+parser.add_argument('-s', '--site', help='Sitename')
+
+args = parser.parse_args()
+
+sitename_clean = args.site.replace('-', '')
+
+
+engine = sqlalchemy.create_engine(f"mariadb+pymysql://root:pass@localhost/{sitename_clean}?charset=utf8mb4", echo=False)
 
 with engine.connect() as conn:
 
@@ -111,7 +120,7 @@ with engine.connect() as conn:
         file['timestamp'] = x.timestamp
         file['type'] = x.type
 
-        file['filepath'] = '/home/tirazel/Projects/migration-tools/ucb-strategicrelations/files/' + x.uri[9:]
+        file['filepath'] = '../../files/' + x.uri[9:]
 
         if x.filemime in filemap['images']:
             fp_result = conn.execute(sqlalchemy.text(f"select focal_point from focal_point where fid = '{file['fid']}';"))
@@ -170,6 +179,9 @@ with engine.connect() as conn:
         rolemap['administrator'] = ['architect']
         rolemap['developer'] = ['developer']
         rolemap['access_manager'] = []
+        rolemap['configuration_manager'] = ['site_manager']
+        rolemap['campaign_manager'] = []
+        rolemap['form_submitter'] = []
 
 
         for y in roles_result:
@@ -625,7 +637,8 @@ with engine.connect() as conn:
         node['promote'] = x.promote
         node['sticky'] = x.sticky
 
-        node['path'] = '/' + urlaliasmap['node/' + str(x.nid)]
+        if 'node/' + str(x.nid) in urlaliasmap:
+            node['path'] = '/' + urlaliasmap['node/' + str(x.nid)]
 
 
         node['fields'] = extract_fields(x.type, x.nid, x.vid)
@@ -650,10 +663,26 @@ with engine.connect() as conn:
                             bs['bg_image'] = b['fields']['field_block_section_bg_image']['data'][0]['field_block_section_bg_image_fid']
                         if len(b['fields']['field_block_section_padding']['data']) > 0:
                             padding = b['fields']['field_block_section_padding']['data'][0]['field_block_section_padding_value'].split()
-                            bs['padding_top'] = padding[0]
-                            bs['padding_right'] = padding[1]
-                            bs['padding_bottom'] = padding[2]
-                            bs['padding_left'] = padding[3]
+                            if len(padding) == 1:
+                                bs['padding_top'] = padding[0]
+                                bs['padding_right'] = padding[0]
+                                bs['padding_bottom'] = padding[0]
+                                bs['padding_left'] = padding[0]
+                            elif len(padding) == 2:
+                                bs['padding_top'] = padding[0]
+                                bs['padding_right'] = padding[1]
+                                bs['padding_bottom'] = padding[0]
+                                bs['padding_left'] = padding[1]
+                            elif len(padding) == 3:
+                                bs['padding_top'] = padding[0]
+                                bs['padding_right'] = padding[1]
+                                bs['padding_bottom'] = padding[2]
+                                bs['padding_left'] = padding[1]
+                            elif len(padding) == 4:
+                                bs['padding_top'] = padding[0]
+                                bs['padding_right'] = padding[1]
+                                bs['padding_bottom'] = padding[2]
+                                bs['padding_left'] = padding[3]
 
 
                         for c in b['fields']['field_blocks_section_blocks']['data']:
@@ -733,15 +762,16 @@ with engine.connect() as conn:
 
                     block_section = False
 
-                    for b in output['beans']['block_section']:
-                        if b['bid'] == section['bid']:
-                            # print(b['fields']['field_blocks_section_blocks']['data'])
-                            block_section = True
+                    if 'block_section' in output['beans']:
+                        for b in output['beans']['block_section']:
+                            if b['bid'] == section['bid']:
+                                # print(b['fields']['field_blocks_section_blocks']['data'])
+                                block_section = True
 
-                            for c in b['fields']['field_blocks_section_blocks']['data']:
-                                # print(node['nid'])
-                                # print(c)
-                                section['beans'].append(c['field_blocks_section_blocks_target_id'])
+                                for c in b['fields']['field_blocks_section_blocks']['data']:
+                                    # print(node['nid'])
+                                    # print(c)
+                                    section['beans'].append(c['field_blocks_section_blocks_target_id'])
 
                     if block_section == False:
                         section['beans'].append(section['bid'])
@@ -867,10 +897,12 @@ with engine.connect() as conn:
         redirect['redirect'] = x.redirect
 
         if redirect['source'][0:5] == 'node/':
-            redirect['source'] = urlaliasmap[redirect['source']]
+            if redirect['source'] in urlaliasmap:
+                redirect['source'] = urlaliasmap[redirect['source']]
 
         if redirect['redirect'][0:5] == 'node/':
-            redirect['redirect'] = urlaliasmap[redirect['redirect']]
+            if redirect['redirect'] in urlaliasmap:
+                redirect['redirect'] = urlaliasmap[redirect['redirect']]
 
 
         if x.redirect[0:4] != 'http':
