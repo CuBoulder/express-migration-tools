@@ -132,6 +132,10 @@ $module_list[] = array('subpath' => 'custom', 'name' => 'express_localist_bundle
 
 $module_list[] = array('subpath' => 'custom', 'name' => 'cu_video_hero_unit');
 
+$module_list[] = array('subpath' => 'features', 'name' => 'people_content_type');
+
+$module_list[] = array('subpath' => 'custom', 'name' => 'cu_expandable');
+
 
 ////$subpath = 'features';
 ////$module_name = 'cu_feature_callout';

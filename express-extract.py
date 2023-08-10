@@ -467,6 +467,34 @@ with engine.connect() as conn:
     bean_video_hero_unit_fields.append({'name': 'field_video_hero_url', 'type': 'bean', 'bundle': 'video_hero_unit'})
     bean_types['video_hero_unit'] = bean_video_hero_unit_fields
 
+    # Module: people_content_type
+
+    #  Bean: people_list_block
+
+    bean_people_list_block_fields = []
+    bean_people_list_block_fields.append({'name': 'field_people_block_thumbnail', 'type': 'bean', 'bundle': 'people_list_block'})
+    bean_people_list_block_fields.append({'name': 'field_people_filter_1', 'type': 'bean', 'bundle': 'people_list_block'})
+    bean_people_list_block_fields.append({'name': 'field_people_filter_2', 'type': 'bean', 'bundle': 'people_list_block'})
+    bean_people_list_block_fields.append({'name': 'field_people_filter_3', 'type': 'bean', 'bundle': 'people_list_block'})
+    bean_people_list_block_fields.append({'name': 'field_people_list_department', 'type': 'bean', 'bundle': 'people_list_block'})
+    bean_people_list_block_fields.append({'name': 'field_people_list_person_type', 'type': 'bean', 'bundle': 'people_list_block'})
+    bean_types['people_list_block'] = bean_people_list_block_fields
+
+    # Module: cu_expandable
+
+    #  Bean: expandable
+
+    bean_expandable_fields = []
+    bean_expandable_fields.append({'name': 'field_expandable_display', 'type': 'bean', 'bundle': 'expandable'})
+    bean_expandable_fields.append({'name': 'field_expandable_block', 'type': 'field_collection_item', 'bundle': 'field_expandable_section'})
+    bean_expandable_fields.append({'name': 'field_expandable_block_titles', 'type': 'field_collection_item', 'bundle': 'field_expandable_section'})
+    bean_expandable_fields.append({'name': 'field_expandable_text', 'type': 'field_collection_item', 'bundle': 'field_expandable_section'})
+    bean_expandable_fields.append({'name': 'field_expandable_title', 'type': 'field_collection_item', 'bundle': 'field_expandable_section'})
+    bean_expandable_fields.append({'name': 'field_expandable_section', 'type': 'bean', 'bundle': 'expandable'})
+    bean_expandable_fields.append({'name': 'field_expandable_section_open', 'type': 'bean', 'bundle': 'expandable'})
+    bean_expandable_fields.append({'name': 'field_expandable_select_prompt', 'type': 'bean', 'bundle': 'expandable'})
+    bean_types['expandable'] = bean_expandable_fields
+
     beans = []
     bean_result = conn.execute(sqlalchemy.text("select bid, vid, delta, label, title, type, view_mode, data, uid, created, changed from bean;"))
     bean_types_map = {}
@@ -614,6 +642,11 @@ with engine.connect() as conn:
     output['beans'] = bean_types_map
 
 
+    def get_bean_type(bid):
+        for type in bean_types_map:
+            for bean in bean_types_map[type]:
+                if bean['bid'] == bid:
+                    return type
 
 
 
@@ -687,7 +720,7 @@ with engine.connect() as conn:
 
                         for c in b['fields']['field_blocks_section_blocks']['data']:
                             #print(c)
-                            bs['beans'].append(c['field_blocks_section_blocks_target_id'])
+                            bs['beans'].append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])}")
                 node['page_sections'].append(bs)
 
 
@@ -706,18 +739,29 @@ with engine.connect() as conn:
 
             layout_field_names = []
 
-            layout_field_names.append('field_footer')
+            layout_field_names.append('field_intro')
+            layout_field_names.append('field_slider')
+            layout_field_names.append('field_post_title_wide')
+            layout_field_names.append('field_post_title')
             layout_field_names.append('field_header')
             layout_field_names.append('field_inner_content_left')
             layout_field_names.append('field_inner_content_right')
-            layout_field_names.append('field_intro')
+            'BODY CONTENT'
+            layout_field_names.append('field_footer')
+            layout_field_names.append('field_content_bottom')
+            layout_field_names.append('field_wide_2')
+
+
+
             layout_field_names.append('field_sidebar_first')
             layout_field_names.append('field_sidebar_second')
-            layout_field_names.append('field_slider')
-            layout_field_names.append('field_wide_2')
-            layout_field_names.append('field_content_bottom')
-            layout_field_names.append('field_post_title')
-            layout_field_names.append('field_post_title_wide')
+
+
+
+
+
+
+
 
             fields = []
 
@@ -733,6 +777,22 @@ with engine.connect() as conn:
                     fields.append(field)
 
             layout['fields'] = fields
+
+
+            # fields = {}
+            #
+            # for lfname in layout_field_names:
+            #     field = {}
+            #     field['name'] = lfname
+            #     field_result = conn.execute(sqlalchemy.text(f"select {lfname}_target_id from field_data_{lfname} WHERE entity_id = '{x.nid}';"))
+            #     bean_list = []
+            #     for r in field_result:
+            #         bean_list.append(r[0])
+            #     if len(bean_list) > 0:
+            #         field['beans'] = bean_list
+            #         fields[lfname] = field
+            #
+            # layout['fields'] = fields
 
 
             # for d in node['fields']['field_section_page_sections']['data']:
@@ -771,10 +831,10 @@ with engine.connect() as conn:
                                 for c in b['fields']['field_blocks_section_blocks']['data']:
                                     # print(node['nid'])
                                     # print(c)
-                                    section['beans'].append(c['field_blocks_section_blocks_target_id'])
+                                    section['beans'].append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])}")
 
                     if block_section == False:
-                        section['beans'].append(section['bid'])
+                        section['beans'].append(f"{section['bid']} {get_bean_type(section['bid'])}")
 
 
 

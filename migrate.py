@@ -71,7 +71,7 @@ def create_dataxml_symlink(sitename):
     # print(output.stdout)
     # print(output.stderr)
 
-def create_set_homepage(sitename):
+def set_homepage(sitename):
     print(f'Set homepage to /home...')
     run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set system.site page.front /home --yes')
     # output = subprocess.run([cmd], shell=True, capture_output=True)
@@ -82,7 +82,7 @@ def create_set_homepage(sitename):
 def load_sql_to_local_db(sitename):
     print(f'Loading SQL to local source DB...')
     sitename_clean = sitename.replace('-', '')
-    run_command(f'mariadb -u root -ppass {sitename_clean} < sites/ucb-biden/database.sql')
+    run_command(f'mariadb -u root -ppass {sitename_clean}src < sites/{sitename}/database.sql')
     # output = subprocess.run([cmd], shell=True, capture_output=True)
     # print(output.stdout)
     # print(output.stderr)
@@ -103,7 +103,7 @@ def composer_update(sitename):
 
 def set_files_permissions(sitename):
     print(f'Setting files directory permissions...')
-    run_command(f'chmod -R 777 sites/{sitename}/code/web/sites/default/files')
+    run_command(f'sudo chmod -R 777 sites/{sitename}/code/web/sites/default/files')
     # output = subprocess.run([cmd], shell=True, capture_output=True)
     # print(output.stdout)
     # print(output.stderr)
@@ -180,6 +180,8 @@ if args.extract_psa_from_remote:
     generate_dataxml(args.site)
     delete_users(args.site)
     enable_migrate_express(args.site)
+    set_homepage(args.site)
+    set_files_permissions(args.site)
 
 
 'ln -s ../../data.xml data.xml'
