@@ -746,7 +746,7 @@ with engine.connect() as conn:
             layout_field_names.append('field_header')
             layout_field_names.append('field_inner_content_left')
             layout_field_names.append('field_inner_content_right')
-            'BODY CONTENT'
+            layout_field_names.append('BODY')
             layout_field_names.append('field_footer')
             layout_field_names.append('field_content_bottom')
             layout_field_names.append('field_wide_2')
@@ -766,6 +766,10 @@ with engine.connect() as conn:
             fields = []
 
             for lfname in layout_field_names:
+
+                if lfname == 'BODY':
+                    continue
+
                 field = {}
                 field['name'] = lfname
                 field_result = conn.execute(sqlalchemy.text(f"select {lfname}_target_id from field_data_{lfname} WHERE entity_id = '{x.nid}';"))
@@ -841,7 +845,21 @@ with engine.connect() as conn:
                     page_sections[field_name].append(section)
 
 
-            layout['page_sections'] = page_sections
+            combined_page_sections = []
+            for ordered_name in layout_field_names:
+                if ordered_name in page_sections:
+                    combined_page_sections.extend(page_sections[ordered_name])
+                if ordered_name == 'BODY':
+                    body_element = {}
+                    body_element['bid'] = 0;
+                    body_element['beans'] = []
+                    body_element['beans'].append('0 body')
+                    combined_page_sections.append(body_element)
+
+
+
+            #layout['page_sections'] = page_sections
+            layout['page_sections'] = combined_page_sections
 
 
 
