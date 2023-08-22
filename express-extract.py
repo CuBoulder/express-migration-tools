@@ -669,9 +669,15 @@ with engine.connect() as conn:
 
             layout_field_names = []
 
-            layout_field_names.append('field_intro')
-            layout_field_names.append('field_slider')
-            layout_field_names.append('field_post_title_wide')
+
+
+
+            layout_field_names.append('field_intro') # WIDE
+            layout_field_names.append('field_slider') # WIDE
+
+            #layout_field_names.append('TITLE')
+
+            layout_field_names.append('field_post_title_wide') # WIDE
             layout_field_names.append('field_post_title')
             layout_field_names.append('field_header')
             layout_field_names.append('field_inner_content_left')
@@ -679,7 +685,7 @@ with engine.connect() as conn:
             layout_field_names.append('BODY')
             layout_field_names.append('field_footer')
             layout_field_names.append('field_content_bottom')
-            layout_field_names.append('field_wide_2')
+            layout_field_names.append('field_wide_2') # WIDE
 
 
 

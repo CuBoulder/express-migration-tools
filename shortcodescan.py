@@ -39,7 +39,13 @@ with open(args.input, "rb") as input:
 
     icon_result = re.findall(icon_pattern, s)
     for icon in icon_result:
-        icon_type = icon.split()[1][9:]
+        #icon_type = icon.split()[1][9:]
+        icon_type = icon.split()
+        if len(icon_type) < 2:
+            print(icon_type)
+            continue
+        else:
+            icon_type = icon_type[1][9:]
         #print(icon_type)
 
         icon_type = icon_type.split('\\')[0]
