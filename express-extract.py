@@ -198,39 +198,7 @@ with engine.connect() as conn:
     # Beans
 
     bean_types = {}
-    #
-    # bean_articles_fields = []
-    # bean_articles_fields.append('field_article_display')
-    # bean_articles_fields.append('field_article_exclude_category')
-    # bean_articles_fields.append('field_article_exclude_tag')
-    # bean_articles_fields.append('field_article_items_display')
-    # bean_articles_fields.append('field_article_link')
-    # bean_articles_fields.append('field_article_list_category')
-    # bean_articles_fields.append('field_article_pager')
-    # bean_articles_fields.append('field_article_term')
-    # bean_types['articles'] = bean_articles_fields
-    #
-    # bean_article_grid_fields = []
-    # bean_article_grid_fields.append('field_article_exclude_category')
-    # bean_article_grid_fields.append('field_article_exclude_tag')
-    # bean_article_grid_fields.append('field_article_grid_category')
-    # bean_article_grid_fields.append('field_article_grid_filter')
-    # bean_article_grid_fields.append('field_article_grid_items')
-    # bean_article_grid_fields.append('field_article_grid_more_link')
-    # bean_article_grid_fields.append('field_article_grid_summary')
-    # bean_types['article_grid'] = bean_article_grid_fields
-    #
-    # bean_block_fields = []
-    # bean_block_fields.append('field_block_photo')
-    # bean_block_fields.append('field_block_text')
-    # bean_types['block'] = bean_block_fields
-    #
-    # bean_block_row_fields = []
-    # bean_block_row_fields.append('field_block_row_block')
-    # bean_block_row_fields.append('field_block_row_collection')
-    # bean_block_row_fields.append('field_block_row_distribution')
-    # bean_block_row_fields.append('field_block_row_match_height')
-    # bean_types['block_row'] = bean_block_row_fields
+
 
 
 
@@ -245,6 +213,41 @@ with engine.connect() as conn:
     bean_block_section_fields.append({'name': 'field_block_section_tablet_pad', 'type': 'bean', 'bundle': 'block_section'})
     bean_block_section_fields.append({'name': 'field_blocks_section_blocks', 'type': 'bean', 'bundle': 'block_section'})
     bean_types['block_section'] = bean_block_section_fields
+
+    # Module: cu_slider
+
+    #  Bean: slider
+
+    bean_slider_fields = []
+    bean_slider_fields.append({'name': 'field_slider_design_style', 'type': 'bean', 'bundle': 'slider'})
+    bean_slider_fields.append({'name': 'field_slider_size', 'type': 'bean', 'bundle': 'slider'})
+    bean_slider_fields.append({'name': 'field_slider_caption', 'type': 'field_collection_item', 'bundle': 'field_slider_slide'})
+    bean_slider_fields.append({'name': 'field_slider_image', 'type': 'field_collection_item', 'bundle': 'field_slider_slide'})
+    bean_slider_fields.append({'name': 'field_slider_link', 'type': 'field_collection_item', 'bundle': 'field_slider_slide'})
+    bean_slider_fields.append({'name': 'field_slider_teaser', 'type': 'field_collection_item', 'bundle': 'field_slider_slide'})
+    bean_slider_fields.append({'name': 'field_slider_slide', 'type': 'bean', 'bundle': 'slider'})
+    bean_types['slider'] = bean_slider_fields
+
+    # Module: cu_video_reveal
+
+    #  Bean: video_reveal
+
+    bean_video_reveal_fields = []
+    bean_video_reveal_fields.append({'name': 'field_video_reveal_image', 'type': 'bean', 'bundle': 'video_reveal'})
+    bean_video_reveal_fields.append({'name': 'field_video_reveal_text', 'type': 'bean', 'bundle': 'video_reveal'})
+    bean_video_reveal_fields.append({'name': 'field_video_reveal_url', 'type': 'bean', 'bundle': 'video_reveal'})
+    bean_types['video_reveal'] = bean_video_reveal_fields
+
+    # Module: cu_block_row
+
+    #  Bean: block_row
+
+    bean_block_row_fields = []
+    bean_block_row_fields.append({'name': 'field_block_row_block', 'type': 'field_collection_item', 'bundle': 'field_block_row_collection'})
+    bean_block_row_fields.append({'name': 'field_block_row_collection', 'type': 'bean', 'bundle': 'block_row'})
+    bean_block_row_fields.append({'name': 'field_block_row_distribution', 'type': 'bean', 'bundle': 'block_row'})
+    bean_block_row_fields.append({'name': 'field_block_row_match_height', 'type': 'bean', 'bundle': 'block_row'})
+    bean_types['block_row'] = bean_block_row_fields
 
     #  Bean: block
 
@@ -360,95 +363,19 @@ with engine.connect() as conn:
     bean_localist_events_fields.append({'name': 'field_localist_widget_type', 'type': 'bean', 'bundle': 'localist_events'})
     bean_types['localist_events'] = bean_localist_events_fields
 
-    # bean_hero_unit_fields = []
-    # bean_hero_unit_fields.append('field_hero_unit_bg_color')
-    # bean_hero_unit_fields.append('field_hero_unit_headline')
-    # bean_hero_unit_fields.append('field_hero_unit_image')
-    # bean_hero_unit_fields.append('field_hero_unit_link')
-    # bean_hero_unit_fields.append('field_hero_unit_link_color')
-    # bean_hero_unit_fields.append('field_hero_unit_overlay')
-    # bean_hero_unit_fields.append('field_hero_unit_size')
-    # bean_hero_unit_fields.append('field_hero_unit_size_priority')
-    # bean_hero_unit_fields.append('field_hero_unit_text')
-    # bean_hero_unit_fields.append('field_hero_unit_text_align')
-    # bean_hero_unit_fields.append('field_hero_unit_text_color')
-    # bean_types['hero_unit'] = bean_hero_unit_fields
-    #
-    # bean_localist_events_fields = []
-    # bean_localist_events_fields.append('field_localist_all_instances')
-    # bean_localist_events_fields.append('field_localist_content_match')
-    # bean_localist_events_fields.append('field_localist_days_ahead')
-    # bean_localist_events_fields.append('field_localist_filters')
-    # bean_localist_events_fields.append('field_localist_filters_excluded')
-    # bean_localist_events_fields.append('field_localist_groups')
-    # bean_localist_events_fields.append('field_localist_hide_descriptions')
-    # bean_localist_events_fields.append('field_localist_hide_images')
-    # bean_localist_events_fields.append('field_localist_hide_past_events')
-    # bean_localist_events_fields.append('field_localist_hide_times')
-    # bean_localist_events_fields.append('field_localist_link')
-    # bean_localist_events_fields.append('field_localist_minical_layout')
-    # bean_localist_events_fields.append('field_localist_new_window')
-    # bean_localist_events_fields.append('field_localist_places')
-    # bean_localist_events_fields.append('field_localist_render_html')
-    # bean_localist_events_fields.append('field_localist_results')
-    # bean_localist_events_fields.append('field_localist_show_featured')
-    # bean_localist_events_fields.append('field_localist_show_sponsored')
-    # bean_localist_events_fields.append('field_localist_skip_recurring')
-    # bean_localist_events_fields.append('field_localist_start_date')
-    # bean_localist_events_fields.append('field_localist_style')
-    # bean_localist_events_fields.append('field_localist_tags')
-    # bean_localist_events_fields.append('field_localist_truncate_desc')
-    # bean_localist_events_fields.append('field_localist_widget_type')
-    # bean_types['localist_events'] = bean_localist_events_fields
-    #
-    # bean_people_list_block_fields = []
-    # bean_people_list_block_fields.append('field_people_block_thumbnail')
-    # bean_people_list_block_fields.append('field_people_childterms')
-    # bean_people_list_block_fields.append('field_people_dept_filter_show')
-    # bean_people_list_block_fields.append('field_people_filter1_show')
-    # bean_people_list_block_fields.append('field_people_filter2_show')
-    # bean_people_list_block_fields.append('field_people_filter3_show')
-    # bean_people_list_block_fields.append('field_people_filter_1')
-    # bean_people_list_block_fields.append('field_people_filter_2')
-    # bean_people_list_block_fields.append('field_people_filter_3')
-    # bean_people_list_block_fields.append('field_people_group_by')
-    # bean_people_list_block_fields.append('field_people_list_department')
-    # bean_people_list_block_fields.append('field_people_list_display')
-    # bean_people_list_block_fields.append('field_people_list_person_type')
-    # bean_people_list_block_fields.append('field_people_order_by')
-    # bean_people_list_block_fields.append('field_people_pos_filter_show')
-    # bean_people_list_block_fields.append('field_person_address')
-    # bean_people_list_block_fields.append('field_person_department')
-    # bean_people_list_block_fields.append('field_person_email')
-    # bean_people_list_block_fields.append('field_person_filter_1')
-    # bean_people_list_block_fields.append('field_person_filter_2')
-    # bean_people_list_block_fields.append('field_person_filter_3')
-    # bean_people_list_block_fields.append('field_person_first_name')
-    # bean_people_list_block_fields.append('field_person_job_type')
-    # bean_people_list_block_fields.append('field_person_last_name')
-    # bean_people_list_block_fields.append('field_person_office_hours')
-    # bean_people_list_block_fields.append('field_person_phone')
-    # bean_people_list_block_fields.append('field_person_photo')
-    # bean_people_list_block_fields.append('field_person_title')
-    # bean_people_list_block_fields.append('field_person_website')
-    # bean_types['people_list_block'] = bean_people_list_block_fields
-    #
-    #
-    # bean_slider_fields = []
-    # bean_slider_fields.append('field_slider_caption')
-    # bean_slider_fields.append('field_slider_design_style')
-    # bean_slider_fields.append('field_slider_image')
-    # bean_slider_fields.append('field_slider_link')
-    # bean_slider_fields.append('field_slider_size')
-    # bean_slider_fields.append('field_slider_slide')
-    # bean_slider_fields.append('field_slider_teaser')
-    # bean_types['slider'] = bean_slider_fields
-    #
-    # bean_video_hero_unit_fields = []
-    # bean_video_hero_unit_fields.append('field_hero_video_overlay')
-    # bean_video_hero_unit_fields.append('field_hero_video_size')
-    # bean_video_hero_unit_fields.append('field_video_hero_url')
-    # bean_types['video_hero_unit'] = bean_video_hero_unit_fields
+
+    # Module: people_content_type
+
+    #  Bean: people_list_block
+
+    bean_people_list_block_fields = []
+    bean_people_list_block_fields.append({'name': 'field_people_block_thumbnail', 'type': 'bean', 'bundle': 'people_list_block'})
+    bean_people_list_block_fields.append({'name': 'field_people_filter_1', 'type': 'bean', 'bundle': 'people_list_block'})
+    bean_people_list_block_fields.append({'name': 'field_people_filter_2', 'type': 'bean', 'bundle': 'people_list_block'})
+    bean_people_list_block_fields.append({'name': 'field_people_filter_3', 'type': 'bean', 'bundle': 'people_list_block'})
+    bean_people_list_block_fields.append({'name': 'field_people_list_department', 'type': 'bean', 'bundle': 'people_list_block'})
+    bean_people_list_block_fields.append({'name': 'field_people_list_person_type', 'type': 'bean', 'bundle': 'people_list_block'})
+    bean_types['people_list_block'] = bean_people_list_block_fields
 
     # Module: cu_video_hero_unit
 
@@ -523,6 +450,7 @@ with engine.connect() as conn:
 
 
         if x.type in bean_types:
+
             field_names = bean_types[x.type]
 
             fields = {}
@@ -608,7 +536,9 @@ with engine.connect() as conn:
                             if len(fci_data) != 0:
                                 #field_item[collection_name].append(fci_data[0])
                                 fci_data['id'] = f"{field_item['entity_id']}_{field_item['delta']}"
-                                field_item[collection_name] = fci_data
+                                #CHECK LATER
+                                if 'collection_name' in locals():
+                                    field_item[collection_name] = fci_data
 
                             # if len(fci_data) > 1:
                             #     print("FCI DATA LARGER THAN ONE")
@@ -1000,7 +930,7 @@ with engine.connect() as conn:
         {'src': 'byline', 'dst': 'byline'},
         {'src': 'department', 'dst': 'department'},
         {'src': 'newsletter', 'dst': 'newsletter'},
-        {'src': 'job_type', 'dst': 'ucb_person_job_type'},
+        {'src': 'person_type', 'dst': 'ucb_person_job_type'},
         {'src': 'tags', 'dst': 'tags'},
         {'src': 'people_filter_1', 'dst': 'filter_1'},
         {'src': 'people_filter_2', 'dst': 'filter_2'},

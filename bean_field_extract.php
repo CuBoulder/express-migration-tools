@@ -136,6 +136,10 @@ $module_list[] = array('subpath' => 'features', 'name' => 'people_content_type')
 
 $module_list[] = array('subpath' => 'custom', 'name' => 'cu_expandable');
 
+$module_list[] = array('subpath' => 'features', 'name' => 'cu_slider');
+
+$module_list[] = array('subpath' => 'custom', 'name' => 'cu_video_reveal');
+
 
 ////$subpath = 'features';
 ////$module_name = 'cu_feature_callout';
