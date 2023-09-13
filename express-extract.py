@@ -675,7 +675,7 @@ with engine.connect() as conn:
             layout_field_names.append('field_intro') # WIDE
             layout_field_names.append('field_slider') # WIDE
 
-            #layout_field_names.append('TITLE')
+            layout_field_names.append('TITLE')
 
             layout_field_names.append('field_post_title_wide') # WIDE
             layout_field_names.append('field_post_title')
@@ -703,7 +703,7 @@ with engine.connect() as conn:
 
             for lfname in layout_field_names:
 
-                if lfname == 'BODY':
+                if lfname == 'BODY' or lfname == 'TITLE':
                     continue
 
                 field = {}
@@ -784,6 +784,10 @@ with engine.connect() as conn:
             combined_page_sections = []
             for ordered_name in layout_field_names:
                 if ordered_name in page_sections:
+                    if ordered_name == 'field_intro' or ordered_name == 'field_slider' or ordered_name == 'field_post_title_wide' or ordered_name == 'field_wide_2':
+                        page_sections[ordered_name][0]['container_width'] = 'edge-to-edge'
+                        #print(page_sections[ordered_name])
+
                     combined_page_sections.extend(page_sections[ordered_name])
                 if ordered_name == 'BODY':
                     body_element = {}
@@ -791,6 +795,12 @@ with engine.connect() as conn:
                     body_element['beans'] = []
                     body_element['beans'].append('0 body')
                     combined_page_sections.append(body_element)
+                if ordered_name == 'TITLE':
+                    title_element = {}
+                    title_element['bid'] = 0;
+                    title_element['beans'] = []
+                    title_element['beans'].append('0 title')
+                    combined_page_sections.append(title_element)
 
 
 
