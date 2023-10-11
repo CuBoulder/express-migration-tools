@@ -4,6 +4,11 @@ import argparse
 import subprocess
 import os
 import shutil
+import sqlalchemy
+import phpserialize
+
+
+
 
 parser = argparse.ArgumentParser(description='Express Migration Tool')
 
@@ -32,6 +37,7 @@ def create_local_db(sitename):
     # output = subprocess.run([cmd], shell=True, capture_output=True)
     # print(output.stdout)
     # print(output.stderr)
+
 
 def extract_sql_from_remote(sitename):
     print(f'Extract remote SQL...')
@@ -71,12 +77,100 @@ def create_dataxml_symlink(sitename):
     # print(output.stdout)
     # print(output.stderr)
 
-def set_homepage(sitename):
-    print(f'Set homepage to /home...')
-    run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set system.site page.front /home --yes')
-    # output = subprocess.run([cmd], shell=True, capture_output=True)
-    # print(output.stdout)
-    # print(output.stderr)
+
+def set_configuration(sitename):
+    print(f'Set configuration variables...')
+
+    with engine.connect() as conn:
+
+        site_frontpage = ''
+        frontpage_result = conn.execute(sqlalchemy.text("select value from variable where name = 'site_frontpage';"));
+        for result in frontpage_result:
+            site_frontpage = str(phpserialize.loads(result.value, decode_strings=True)).strip()
+
+        print(f"{site_frontpage}")
+
+        frontpagealias_result = conn.execute(sqlalchemy.text(f"select alias from url_alias where source = '{site_frontpage}';"));
+        for result in frontpagealias_result:
+            frontpagealias = "/" + str(result.alias).strip()
+            break
+
+
+
+        print(f'Source homepage is {site_frontpage}, mapped to {frontpagealias}.')
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set system.site page.front "{frontpagealias}" --yes')
+
+
+
+        site_info_body = ''
+        site_info_body_result = conn.execute(sqlalchemy.text("select value from variable where name = 'site_info_body';"));
+        for result in site_info_body_result:
+            site_info_body = str(phpserialize.loads(result.value, decode_strings=True)['value']).strip()
+
+        print(f"{site_info_body}")
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set ucb_site_configuration.contact_info general.0.value.value "{site_info_body}" --yes')
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set ucb_site_configuration.contact_info general.0.value.format "wysiwyg" --yes')
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set ucb_site_configuration.contact_info general.0.visible 1 --yes --input-format=yaml')
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set ucb_site_configuration.contact_info general_visible 1 --yes --input-format=yaml')
+
+
+
+
+        sitename_result = conn.execute(sqlalchemy.text("select value from variable where name = 'site_name';"));
+
+
+        cfg_sitename = ''
+        for result in sitename_result:
+            cfg_sitename = str(phpserialize.loads(result.value, decode_strings=True)).strip()
+
+
+        print(f"Setting sitename to {cfg_sitename}")
+
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set system.site name "{cfg_sitename}" --yes')
+        # output = subprocess.run([cmd], shell=True, capture_output=True)
+        # print(output.stdout)
+        # print(output.stderr)
+
+        thememap = {}
+        thememap['cuclassic'] = 'default'
+        thememap['cuduo'] = 'default'
+        thememap['cuflat'] = 'default'
+        thememap['cuhighlight'] = 'highlight'
+        thememap['cuivory'] = 'ivory'
+        thememap['culayers'] = 'layers'
+        thememap['cuminimal'] = 'minimal'
+        thememap['cumodern'] = 'modern'
+        thememap['curise'] = 'rise'
+        thememap['cuseven'] = 'default'
+        thememap['cushadow'] = 'shadow'
+        thememap['cusimple'] = 'simple'
+        thememap['cuspirit2018'] = 'default'
+        thememap['cuspirit'] = 'spirit'
+        thememap['cuswatch'] = 'swatch'
+        thememap['cutradition'] = 'tradition'
+
+        print(f"Getting theme settings...")
+        themename_result = conn.execute(sqlalchemy.text("select value from variable where name = 'theme_default';"));
+        for result in themename_result:
+            themename = str(phpserialize.loads(result.value, decode_strings=True)).strip()
+        print(f'  {themename} found. Setting ucb_menu_style to "{thememap[themename]}".')
+
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set boulder_base.settings ucb_menu_style "{thememap[themename]}" --yes')
+
+        themesettings_result = conn.execute(sqlalchemy.text(f"select value from variable where name = 'theme_{themename}_settings';"));
+
+        for result in themesettings_result:
+            themesettings = str(phpserialize.loads(result.value, decode_strings=True)).strip()
+
+        brand_bar_color = '1'
+
+        if 'brand_bar_color' in themesettings:
+            if themesettings['brand_bar_color'] == 'white':
+                brand_bar_color = '0'
+            if themesettings['brand_bar_color'] == 'black':
+                brand_bar_color = '1'
+
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set boulder_base.settings ucb_campus_header_color "{brand_bar_color}" --yes')
 
 
 def load_sql_to_local_db(sitename):
@@ -148,6 +242,43 @@ def delete_users(sitename):
         # print(output.stderr)
     # print(output.stderr)
 
+
+
+def create_users(sitename):
+    print('Creating users...')
+
+    web_users = []
+    web_users.append('jesp3304')
+    web_users.append('mibo7729')
+    web_users.append('alco6164')
+    web_users.append('joni1621')
+    web_users.append('jako6198')
+    web_users.append('crafts')
+    web_users.append('titr7839')
+    web_users.append('pabr5825')
+
+    ux_users = []
+    ux_users.append('linebarg')
+    ux_users.append('niwa4700')
+    ux_users.append('brokaw')
+    ux_users.append('wetu1300')
+
+    for user in web_users:
+        print(f"  Creating web user {user}...")
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code user:create {user}  --mail="{user}@colorado.edu" --password="nextest" --yes')
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code user:role:add developer  {user} --yes')
+
+    for user in ux_users:
+        print(f"  Creating UX user {user}...")
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code user:create {user} --mail="{user}@colorado.edu" --password="nextest" --yes')
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code user:role:add architect  {user} --yes')
+
+
+
+
+
+
+
 def enable_migrate_express(sitename):
     print("Enable Migrate Express...")
 
@@ -166,22 +297,27 @@ if args.extract_files_from_remote:
     extract_files_from_remote(args.site)
 
 if args.extract_psa_from_remote:
-    extract_sql_from_remote(args.site)
-    extract_files_from_remote(args.site)
-    create_local_db(args.site)
-    create_local_db(args.site + '-src')
-    load_sql_to_local_db(args.site)
-    clone_template(args.site)
-    composer_update(args.site)
-    create_drush_symlink(args.site)
-    create_migrate_express_symlink(args.site)
-    create_dataxml_symlink(args.site)
-    install_drupal(args.site)
-    generate_dataxml(args.site)
-    delete_users(args.site)
-    enable_migrate_express(args.site)
-    set_homepage(args.site)
-    set_files_permissions(args.site)
+    # extract_sql_from_remote(args.site)
+    # extract_files_from_remote(args.site)
+    # create_local_db(args.site)
+    # create_local_db(args.site + '-src')
+    # load_sql_to_local_db(args.site)
+
+    sitename_clean = (args.site+'-src').replace('-', '')
+    engine = sqlalchemy.create_engine(f"mariadb+pymysql://root:pass@localhost/{sitename_clean}?charset=utf8mb4", echo=False)
+
+    # clone_template(args.site)
+    # composer_update(args.site)
+    # create_drush_symlink(args.site)
+    # create_migrate_express_symlink(args.site)
+    # create_dataxml_symlink(args.site)
+    # install_drupal(args.site)
+    # generate_dataxml(args.site)
+    # delete_users(args.site)
+    # create_users(args.site)
+    # enable_migrate_express(args.site)
+    set_configuration(args.site)
+    # set_files_permissions(args.site)
 
 
 'ln -s ../../data.xml data.xml'

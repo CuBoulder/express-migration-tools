@@ -559,6 +559,12 @@ with engine.connect() as conn:
             if bean['fields']['field_callout_style']['data'][0]['field_callout_style_value'] in ['large_teaser', 'large_teaser_alt', 'teaser', 'tiles', 'tiles_alt', 'feature', 'tiles_large']:
                 bean['type'] = 'content_row'
 
+        if bean['type'] == 'block_wrapper':
+            webform_nid = bean['fields']['field_block_wrapper_reference']['data'][0]['field_block_wrapper_reference_value'][13:]
+            bean['fields']['field_block_wrapper_reference']['data'][0]['field_block_wrapper_reference_value'] = webform_nid
+
+
+
 
         if bean['type'] not in bean_types_map:
             bean_types_map[bean['type']] = []
