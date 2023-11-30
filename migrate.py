@@ -84,18 +84,15 @@ def set_configuration(sitename):
     with engine.connect() as conn:
 
         site_frontpage = ''
-        frontpage_result = conn.execute(sqlalchemy.text("select value from variable where name = 'site_frontpage';"));
+        frontpage_result = conn.execute(sqlalchemy.text("select value from variable where name = 'site_frontpage';"))
         for result in frontpage_result:
             site_frontpage = str(phpserialize.loads(result.value, decode_strings=True)).strip()
 
         print(f"{site_frontpage}")
 
-        frontpagealias_result = conn.execute(sqlalchemy.text(f"select alias from url_alias where source = '{site_frontpage}';"));
+        frontpagealias_result = conn.execute(sqlalchemy.text(f"select alias from url_alias where source = '{site_frontpage}';"))
         for result in frontpagealias_result:
             frontpagealias = "/" + str(result.alias).strip()
-            break
-
-
 
         print(f'Source homepage is {site_frontpage}, mapped to {frontpagealias}.')
         run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set system.site page.front "{frontpagealias}" --yes')
@@ -103,7 +100,7 @@ def set_configuration(sitename):
 
 
         site_info_body = ''
-        site_info_body_result = conn.execute(sqlalchemy.text("select value from variable where name = 'site_info_body';"));
+        site_info_body_result = conn.execute(sqlalchemy.text("select value from variable where name = 'site_info_body';"))
         for result in site_info_body_result:
             site_info_body = str(phpserialize.loads(result.value, decode_strings=True)['value']).strip()
 
@@ -116,7 +113,7 @@ def set_configuration(sitename):
 
 
 
-        sitename_result = conn.execute(sqlalchemy.text("select value from variable where name = 'site_name';"));
+        sitename_result = conn.execute(sqlalchemy.text("select value from variable where name = 'site_name';"))
 
 
         cfg_sitename = ''
@@ -132,22 +129,50 @@ def set_configuration(sitename):
         # print(output.stderr)
 
         thememap = {}
-        thememap['cuclassic'] = 'default'
-        thememap['cuduo'] = 'default'
-        thememap['cuflat'] = 'default'
+        thememap['cuclassic'] = 'default'  # Should not exist
+        thememap['cuduo'] = 'default'  # Should not exist
+        thememap['cuflat'] = 'default'  # Should not exist
         thememap['cuhighlight'] = 'highlight'
         thememap['cuivory'] = 'ivory'
         thememap['culayers'] = 'layers'
         thememap['cuminimal'] = 'minimal'
         thememap['cumodern'] = 'modern'
         thememap['curise'] = 'rise'
-        thememap['cuseven'] = 'default'
+        thememap['cuseven'] = 'default'  # Should not exist
         thememap['cushadow'] = 'shadow'
         thememap['cusimple'] = 'simple'
-        thememap['cuspirit2018'] = 'default'
+        thememap['cuspirit2018'] = 'default'  # Should not exist
         thememap['cuspirit'] = 'spirit'
         thememap['cuswatch'] = 'swatch'
         thememap['cutradition'] = 'tradition'
+
+        # 0 = black
+        # 1 = white
+        # 2 = light gray
+        # 3 = dark gray
+
+
+
+
+        themeheadercolormap = {}
+        themeheadercolormap['highlight'] = 1
+        themeheadercolormap['ivory'] = 0  # has an option
+        themeheadercolormap['layers'] = 3
+        themeheadercolormap['minimal'] = 1  # white logo?
+        themeheadercolormap['modern'] = 0  # has an option
+        themeheadercolormap['rise'] = 3  # has an option
+        themeheadercolormap['shadow'] = 0
+        themeheadercolormap['simple'] = 1  # has an option, white logo
+        themeheadercolormap['spirit'] = 0  # has an option
+        themeheadercolormap['swatch'] = 0
+        themeheadercolormap['tradition'] = 0  # has an option
+
+        'banner_color: white, black, light, dark'
+
+        # use_breadcrumbs -> ucb_breadcrumb_nav
+        # use_action_menu -> ucb_secondary_menu_position
+        # headings -> todo
+
 
         print(f"Getting theme settings...")
         themename_result = conn.execute(sqlalchemy.text("select value from variable where name = 'theme_default';"));
@@ -157,13 +182,15 @@ def set_configuration(sitename):
 
         run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set boulder_base.settings ucb_menu_style "{thememap[themename]}" --yes')
 
+        ucb_header_color = themeheadercolormap[thememap[themename]]
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set boulder_base.settings ucb_header_color "{ucb_header_color}" --yes')
+
         themesettings_result = conn.execute(sqlalchemy.text(f"select value from variable where name = 'theme_{themename}_settings';"));
 
         for result in themesettings_result:
-            themesettings = str(phpserialize.loads(result.value, decode_strings=True)).strip()
+            themesettings = phpserialize.loads(result.value, decode_strings=True)
 
         brand_bar_color = '1'
-
         if 'brand_bar_color' in themesettings:
             if themesettings['brand_bar_color'] == 'white':
                 brand_bar_color = '0'
@@ -171,6 +198,24 @@ def set_configuration(sitename):
                 brand_bar_color = '1'
 
         run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set boulder_base.settings ucb_campus_header_color "{brand_bar_color}" --yes')
+
+        ucb_breadcrumb_nav = '0'
+        if 'use_breadcrumbs' in themesettings:
+            if themesettings['use_breadcrumbs'] == '0':
+                ucb_breadcrumb_nav = 0
+            if themesettings['use_breadcrumbs'] == '1':
+                ucb_breadcrumb_nav = 1
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set boulder_base.settings ucb_breadcrumb_nav "{ucb_breadcrumb_nav}" --yes')
+
+        ucb_secondary_menu_position = 'above'
+        if 'use_action_menu' in themesettings:
+            if themesettings['use_action_menu'] == 'above':
+                ucb_secondary_menu_position = 0
+            if themesettings['use_action_menu'] == 'inline':
+                ucb_secondary_menu_position = 1
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set boulder_base.settings ucb_secondary_menu_position "{ucb_secondary_menu_position}" --yes')
+
+
 
 
 def load_sql_to_local_db(sitename):
@@ -194,6 +239,10 @@ def composer_update(sitename):
     # output = subprocess.run([cmd], shell=True, capture_output=True)
     # print(output.stdout)
     # print(output.stderr)
+    run_command(f'composer require simplehtmldom/simplehtmldom --working-dir=sites/{sitename}/code')
+    # output = subprocess.run([cmd], shell=True, capture_output=True)
+    # print(output.stdout)
+    # print(output.stderr)
 
 def set_files_permissions(sitename):
     print(f'Setting files directory permissions...')
@@ -201,6 +250,34 @@ def set_files_permissions(sitename):
     # output = subprocess.run([cmd], shell=True, capture_output=True)
     # print(output.stdout)
     # print(output.stderr)
+
+def update_settings_file(sitename):
+    print(f'Updating settings file...')
+
+    sitename_clean = sitename.replace('-', '')
+
+    os.chmod(f'sites/{sitename}/code/web/sites/default/settings.php', 0o644)
+
+    migrate_db_config = f"""
+
+    $databases['migrate']['default'] = array (
+      'database' => '{sitename_clean}src',
+      'username' => 'root',
+      'password' => 'pass',
+      'prefix' => '',
+      'host' => 'localhost',
+      'port' => '3306',
+      'isolation_level' => 'READ COMMITTED',
+      'namespace' => 'Drupal\\mysql\\Driver\\Database\\mysql',
+      'driver' => 'mysql',
+      'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',
+    );
+    """
+
+    with open(f'sites/{sitename}/code/web/sites/default/settings.php', 'a') as settings:
+        settings.write(migrate_db_config)
+
+
 
 def extract_files_from_remote(sitename):
     print('Extracting files...')
@@ -241,6 +318,10 @@ def delete_users(sitename):
         # print(output.stdout)
         # print(output.stderr)
     # print(output.stderr)
+
+def delete_homepage(sitename):
+    print('Deleting default homepage')
+    run_command(f'./sites/{sitename}/code/d entity:delete node 1 --root=sites/{sitename}/code --yes')
 
 
 
@@ -297,27 +378,29 @@ if args.extract_files_from_remote:
     extract_files_from_remote(args.site)
 
 if args.extract_psa_from_remote:
-    # extract_sql_from_remote(args.site)
-    # extract_files_from_remote(args.site)
-    # create_local_db(args.site)
-    # create_local_db(args.site + '-src')
-    # load_sql_to_local_db(args.site)
+    extract_sql_from_remote(args.site)
+    extract_files_from_remote(args.site)
+    create_local_db(args.site)
+    create_local_db(args.site + '-src')
+    load_sql_to_local_db(args.site)
 
     sitename_clean = (args.site+'-src').replace('-', '')
     engine = sqlalchemy.create_engine(f"mariadb+pymysql://root:pass@localhost/{sitename_clean}?charset=utf8mb4", echo=False)
 
-    # clone_template(args.site)
-    # composer_update(args.site)
-    # create_drush_symlink(args.site)
-    # create_migrate_express_symlink(args.site)
-    # create_dataxml_symlink(args.site)
-    # install_drupal(args.site)
-    # generate_dataxml(args.site)
-    # delete_users(args.site)
-    # create_users(args.site)
-    # enable_migrate_express(args.site)
+    clone_template(args.site)
+    composer_update(args.site)
+    create_drush_symlink(args.site)
+    create_migrate_express_symlink(args.site)
+    create_dataxml_symlink(args.site)
+    install_drupal(args.site)
+    update_settings_file(args.site)
+    generate_dataxml(args.site)
+    delete_users(args.site)
+    #create_users(args.site)
+    delete_homepage(args.site)
+    enable_migrate_express(args.site)
     set_configuration(args.site)
-    # set_files_permissions(args.site)
+    set_files_permissions(args.site)
 
 
 'ln -s ../../data.xml data.xml'

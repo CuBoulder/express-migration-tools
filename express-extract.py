@@ -8,9 +8,27 @@ import dicttoxml
 import time
 import re
 import sys
+import tinycss2
+from bs4 import BeautifulSoup
+
+
 
 from lxml import etree
 from io import StringIO, BytesIO
+
+
+def translate_inline_styles(value):
+    cssmap = {}
+    cssmap['text-align: center'] = 'text-align-center'
+    cssmap['float: left'] = 'align-left'  # Wrap in div
+    cssmap['float: right'] = 'align-right'  # Wrap div
+
+    'font-size'
+
+    'beautifulsoup'
+    'tinycss2'
+    'soup.find_all(style=True)'
+
 
 def extract_subfields(field):
     fd_columninfo_result = conn.execute(sqlalchemy.text(f"select column_name as 'subfield' from information_schema.COLUMNS where table_schema = DATABASE() AND table_name = 'field_data_{field}' limit 100 offset 7;"))
@@ -560,8 +578,13 @@ with engine.connect() as conn:
                 bean['type'] = 'content_row'
 
         if bean['type'] == 'block_wrapper':
-            webform_nid = bean['fields']['field_block_wrapper_reference']['data'][0]['field_block_wrapper_reference_value'][13:]
-            bean['fields']['field_block_wrapper_reference']['data'][0]['field_block_wrapper_reference_value'] = webform_nid
+            if len(bean['fields']['field_block_wrapper_reference']['data']) > 0:
+                webform_nid = bean['fields']['field_block_wrapper_reference']['data'][0]['field_block_wrapper_reference_value'][13:]
+                bean['fields']['field_block_wrapper_reference']['data'][0]['field_block_wrapper_reference_value'] = webform_nid
+            else:
+                print("Block wrapper data empty", file=sys.stderr)
+
+
 
 
 
