@@ -457,6 +457,13 @@ with engine.connect() as conn:
         bean['created'] = x.created
         bean['changed'] = x.changed
 
+        bean['display_title'] = 'true'
+
+        if len(bean['title'].strip()) == 0:
+            bean['title'] = bean['label']
+            bean['display_title'] = 'false'
+
+
         bean_fields = []
 
 
@@ -688,12 +695,13 @@ with engine.connect() as conn:
 
 
 
+
         layout_result = conn.execute(sqlalchemy.text(f"select layout_id, title, node_type from express_layout WHERE layout_id = '{x.nid}';"))
 
         for y in layout_result:
             layout = {}
             layout['layout_id'] = y.layout_id
-            layout['title']  = y.title
+            layout['title'] = y.title
             layout['node_type'] = y.node_type
 
             layout_field_names = []
@@ -748,38 +756,7 @@ with engine.connect() as conn:
             layout['fields'] = fields
 
 
-            # fields = {}
-            #
-            # for lfname in layout_field_names:
-            #     field = {}
-            #     field['name'] = lfname
-            #     field_result = conn.execute(sqlalchemy.text(f"select {lfname}_target_id from field_data_{lfname} WHERE entity_id = '{x.nid}';"))
-            #     bean_list = []
-            #     for r in field_result:
-            #         bean_list.append(r[0])
-            #     if len(bean_list) > 0:
-            #         field['beans'] = bean_list
-            #         fields[lfname] = field
-            #
-            # layout['fields'] = fields
-
-
-            # for d in node['fields']['field_section_page_sections']['data']:
-            #     # print(d['field_section_page_sections_target_id'])
-            #     bs = {}
-            #     bs['beans'] = []
-            #     bs['bid'] = d['field_section_page_sections_target_id']
-            #     for b in output['beans']['block_section']:
-            #         if b['bid'] == bs['bid']:
-            #             #print(b['fields']['field_blocks_section_blocks']['data'])
-            #
-            #             for c in b['fields']['field_blocks_section_blocks']['data']:
-            #                 #print(c)
-            #                 bs['beans'].append(c['field_blocks_section_blocks_target_id'])
-            #     node['page_sections'].append(bs)
-
             page_sections = {}
-            sectionlist = []
             for f in fields:
                 field_name = f["name"]
                 page_sections[field_name] = []
@@ -796,6 +773,33 @@ with engine.connect() as conn:
                             if b['bid'] == section['bid']:
                                 # print(b['fields']['field_blocks_section_blocks']['data'])
                                 block_section = True
+
+                                if len(b['fields']['field_block_section_bg_effect']['data']) > 0:
+                                    section['bg_effect'] = b['fields']['field_block_section_bg_effect']['data'][0]['field_block_section_bg_effect_value']
+                                if len(b['fields']['field_block_section_bg_image']['data']) > 0:
+                                    section['bg_image'] = b['fields']['field_block_section_bg_image']['data'][0]['field_block_section_bg_image_fid']
+                                if len(b['fields']['field_block_section_padding']['data']) > 0:
+                                    padding = b['fields']['field_block_section_padding']['data'][0]['field_block_section_padding_value'].split()
+                                    if len(padding) == 1:
+                                        section['padding_top'] = padding[0]
+                                        section['padding_right'] = padding[0]
+                                        section['padding_bottom'] = padding[0]
+                                        section['padding_left'] = padding[0]
+                                    elif len(padding) == 2:
+                                        section['padding_top'] = padding[0]
+                                        section['padding_right'] = padding[1]
+                                        section['padding_bottom'] = padding[0]
+                                        section['padding_left'] = padding[1]
+                                    elif len(padding) == 3:
+                                        section['padding_top'] = padding[0]
+                                        section['padding_right'] = padding[1]
+                                        section['padding_bottom'] = padding[2]
+                                        section['padding_left'] = padding[1]
+                                    elif len(padding) == 4:
+                                        section['padding_top'] = padding[0]
+                                        section['padding_right'] = padding[1]
+                                        section['padding_bottom'] = padding[2]
+                                        section['padding_left'] = padding[3]
 
                                 for c in b['fields']['field_blocks_section_blocks']['data']:
                                     # print(node['nid'])
@@ -814,19 +818,19 @@ with engine.connect() as conn:
             for ordered_name in layout_field_names:
                 if ordered_name in page_sections:
                     if ordered_name == 'field_intro' or ordered_name == 'field_slider' or ordered_name == 'field_post_title_wide' or ordered_name == 'field_wide_2':
-                        page_sections[ordered_name][0]['container_width'] = 'edge-to-edge'
-                        #print(page_sections[ordered_name])
+                        for section in page_sections[ordered_name]:
+                            section['container_width'] = 'edge-to-edge'
 
                     combined_page_sections.extend(page_sections[ordered_name])
                 if ordered_name == 'BODY':
                     body_element = {}
-                    body_element['bid'] = 0;
+                    body_element['bid'] = 0
                     body_element['beans'] = []
                     body_element['beans'].append('0 body')
                     combined_page_sections.append(body_element)
                 if ordered_name == 'TITLE':
                     title_element = {}
-                    title_element['bid'] = 0;
+                    title_element['bid'] = 0
                     title_element['beans'] = []
                     title_element['beans'].append('0 title')
                     combined_page_sections.append(title_element)
