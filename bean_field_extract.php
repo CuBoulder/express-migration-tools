@@ -140,6 +140,8 @@ $module_list[] = array('subpath' => 'features', 'name' => 'cu_slider');
 
 $module_list[] = array('subpath' => 'custom', 'name' => 'cu_video_reveal');
 
+$module_list[] = array('subpath' => 'features', 'name' => 'cu_block_section');
+
 
 ////$subpath = 'features';
 ////$module_name = 'cu_feature_callout';

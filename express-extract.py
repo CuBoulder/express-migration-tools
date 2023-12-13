@@ -217,8 +217,9 @@ with engine.connect() as conn:
 
     bean_types = {}
 
+    # Module: cu_block_section
 
-
+    #  Bean: block_section
 
     bean_block_section_fields = []
     bean_block_section_fields.append({'name': 'field_block_section_bg_effect', 'type': 'bean', 'bundle': 'block_section'})
@@ -230,6 +231,9 @@ with engine.connect() as conn:
     bean_block_section_fields.append({'name': 'field_block_section_padding', 'type': 'bean', 'bundle': 'block_section'})
     bean_block_section_fields.append({'name': 'field_block_section_tablet_pad', 'type': 'bean', 'bundle': 'block_section'})
     bean_block_section_fields.append({'name': 'field_blocks_section_blocks', 'type': 'bean', 'bundle': 'block_section'})
+    bean_block_section_fields.append({'name': 'field_hero_unit_bg_color', 'type': 'bean', 'bundle': 'block_section'})
+    bean_block_section_fields.append({'name': 'field_hero_unit_overlay', 'type': 'bean', 'bundle': 'block_section'})
+    bean_block_section_fields.append({'name': 'field_hero_unit_text_color', 'type': 'bean', 'bundle': 'block_section'})
     bean_types['block_section'] = bean_block_section_fields
 
     # Module: cu_slider
@@ -440,6 +444,17 @@ with engine.connect() as conn:
     bean_expandable_fields.append({'name': 'field_expandable_select_prompt', 'type': 'bean', 'bundle': 'expandable'})
     bean_types['expandable'] = bean_expandable_fields
 
+    #  Bean: article_slider
+
+    bean_article_slider_fields = []
+    bean_article_slider_fields.append({'name': 'field_article_exclude_category', 'type': 'bean', 'bundle': 'article_slider'})
+    bean_article_slider_fields.append({'name': 'field_article_exclude_tag', 'type': 'bean', 'bundle': 'article_slider'})
+    bean_article_slider_fields.append({'name': 'field_article_slider_category', 'type': 'bean', 'bundle': 'article_slider'})
+    bean_article_slider_fields.append({'name': 'field_article_slider_filter', 'type': 'bean', 'bundle': 'article_slider'})
+    bean_types['article_slider'] = bean_article_slider_fields
+
+
+
     beans = []
     bean_result = conn.execute(sqlalchemy.text("select bid, vid, delta, label, title, type, view_mode, data, uid, created, changed from bean;"))
     bean_types_map = {}
@@ -614,6 +629,14 @@ with engine.connect() as conn:
                 if bean['bid'] == bid:
                     return type
 
+    def get_bean(bid):
+        for type in bean_types_map:
+            for bean in bean_types_map[type]:
+                if bean['bid'] == bid:
+                    return bean
+
+
+
 
 
 
@@ -683,10 +706,19 @@ with engine.connect() as conn:
                                 bs['padding_bottom'] = padding[2]
                                 bs['padding_left'] = padding[3]
 
+                        if len(b['fields']['field_hero_unit_bg_color']['data']) > 0:
+                            section['bg_color'] = b['fields']['field_hero_unit_bg_color']['data'][0]['field_hero_unit_bg_color_value']
+
+                        if len(b['fields']['field_hero_unit_overlay']['data']) > 0:
+                            section['overlay'] = b['fields']['field_hero_unit_overlay']['data'][0]['field_hero_unit_overlay_value']
+
+                        if len(b['fields']['field_hero_unit_text_color']['data']) > 0:
+                            section['text_color'] = b['fields']['field_hero_unit_text_color']['data'][0]['field_hero_unit_text_color_value']
+
 
                         for c in b['fields']['field_blocks_section_blocks']['data']:
                             #print(c)
-                            bs['beans'].append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])}")
+                            bs['beans'].append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {b['display_title']}")
                 node['page_sections'].append(bs)
 
 
@@ -801,13 +833,22 @@ with engine.connect() as conn:
                                         section['padding_bottom'] = padding[2]
                                         section['padding_left'] = padding[3]
 
+                                if len(b['fields']['field_hero_unit_bg_color']['data']) > 0:
+                                    section['bg_color'] = b['fields']['field_hero_unit_bg_color']['data'][0]['field_hero_unit_bg_color_value']
+
+                                if len(b['fields']['field_hero_unit_overlay']['data']) > 0:
+                                    section['overlay'] = b['fields']['field_hero_unit_overlay']['data'][0]['field_hero_unit_overlay_value']
+
+                                if len(b['fields']['field_hero_unit_text_color']['data']) > 0:
+                                    section['text_color'] = b['fields']['field_hero_unit_text_color']['data'][0]['field_hero_unit_text_color_value']
+
                                 for c in b['fields']['field_blocks_section_blocks']['data']:
                                     # print(node['nid'])
                                     # print(c)
-                                    section['beans'].append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])}")
+                                    section['beans'].append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {get_bean(c['field_blocks_section_blocks_target_id'])['display_title']}")
 
                     if block_section == False:
-                        section['beans'].append(f"{section['bid']} {get_bean_type(section['bid'])}")
+                        section['beans'].append(f"{section['bid']} {get_bean_type(section['bid'])} {b['display_title']}")
 
 
 
@@ -995,7 +1036,14 @@ with engine.connect() as conn:
         for vid in vocabulary_result:
             term_result = conn.execute(sqlalchemy.text(f"select tid, name, description, format, weight from taxonomy_term_data WHERE vid = '{vid.vid}';"))
             for t in term_result:
-                terms.append({'tid': t.tid, 'name': t.name, 'description': t.description, 'format': t.format, 'weight': t.weight})
+                parent = 0
+                parent_result = conn.execute(sqlalchemy.text(f"select parent from taxonomy_term_hierarchy WHERE tid = '{t.tid}';"));
+                for p in parent_result:
+                    parent = p.parent
+
+
+
+                terms.append({'tid': t.tid, 'parent': parent, 'name': t.name, 'description': t.description, 'format': t.format, 'weight': t.weight})
         vocabularies[vocab['src']] = terms
 
     #
