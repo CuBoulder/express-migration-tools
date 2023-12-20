@@ -235,11 +235,11 @@ def clone_template(sitename):
 
 def composer_update(sitename):
     print(f'Running composer update...')
-    run_command(f'composer update --working-dir=sites/{sitename}/code')
+    run_command(f'composer update --working-dir=sites/{sitename}/code --no-interaction')
     # output = subprocess.run([cmd], shell=True, capture_output=True)
     # print(output.stdout)
     # print(output.stderr)
-    run_command(f'composer require simplehtmldom/simplehtmldom --working-dir=sites/{sitename}/code')
+    run_command(f'composer require simplehtmldom/simplehtmldom --working-dir=sites/{sitename}/code --no-interaction')
     # output = subprocess.run([cmd], shell=True, capture_output=True)
     # print(output.stdout)
     # print(output.stderr)
