@@ -6,7 +6,7 @@ import os
 import shutil
 import sqlalchemy
 import phpserialize
-
+import shlex
 
 
 
@@ -105,7 +105,7 @@ def set_configuration(sitename):
             site_info_body = str(phpserialize.loads(result.value, decode_strings=True)['value']).strip()
 
         print(f"{site_info_body}")
-        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set ucb_site_configuration.contact_info general.0.value.value "{site_info_body}" --yes')
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set ucb_site_configuration.contact_info general.0.value.value {shlex.quote(site_info_body)} --yes')
         run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set ucb_site_configuration.contact_info general.0.value.format "wysiwyg" --yes')
         run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set ucb_site_configuration.contact_info general.0.visible 1 --yes --input-format=yaml')
         run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set ucb_site_configuration.contact_info general_visible 1 --yes --input-format=yaml')

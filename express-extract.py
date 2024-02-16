@@ -561,11 +561,19 @@ with engine.connect() as conn:
                                         fcif_item[fcif_colname] = fcif[fcif_colname]
 
                                         if fci_item['name'] == 'field_callout_title' and fcif_colname == 'field_callout_title_url':
+
+                                            if fcif_item[fcif_colname].find('#') != -1:
+                                                fcif_item[fcif_colname] = fcif_item[fcif_colname].split('#')[0]
+                                            #    print("Removing anchor: " + fcif_item[fcif_colname])
+
                                             if fcif_item[fcif_colname] in urlaliasmap:
+#                                                print(fcif_item[fcif_colname])
+
                                                 #print(f"url data: {fcif_item[fcif_colname]}, internal:/{urlaliasmap[fcif_item[fcif_colname]]}")
                                                 fcif_item[fcif_colname] = f"internal:/{urlaliasmap[fcif_item[fcif_colname]]}"
-                                            #else:
-                                                #print(f"url data: {fcif_item[fcif_colname]}")
+                                            # else:
+                                            #     print(f"url data: {fcif_item[fcif_colname]}")
+
 
 
                                     #fci_data.append(fcif_item)
@@ -833,6 +841,9 @@ with engine.connect() as conn:
                                         section['padding_bottom'] = padding[2]
                                         section['padding_left'] = padding[3]
 
+                                if len(b['fields']['field_block_section_content_bg']['data']) > 0:
+                                    section['frame_bg'] = b['fields']['field_block_section_content_bg']['data'][0]['field_block_section_content_bg_value']
+
                                 if len(b['fields']['field_hero_unit_bg_color']['data']) > 0:
                                     section['bg_color'] = b['fields']['field_hero_unit_bg_color']['data'][0]['field_hero_unit_bg_color_value']
 
@@ -934,15 +945,30 @@ with engine.connect() as conn:
 
             status = 0
 
-            if y.link_path != '<front>':
+            # if y.link_path != '<front>':
+            #     node_result = conn.execute(sqlalchemy.text(f"select nid, status from node where nid = '{y.link_path[5:]}';"))
+            #     for z in node_result:
+            #         #print(f"nid:{z.nid} status:{z.status}")
+            #         status = z.status
+            # if status == 0:
+            #     continue
+
+            if y.link_path[0:4] == 'node/':
                 node_result = conn.execute(sqlalchemy.text(f"select nid, status from node where nid = '{y.link_path[5:]}';"))
                 for z in node_result:
                     #print(f"nid:{z.nid} status:{z.status}")
                     status = z.status
-            if status == 0:
+            elif y.link_path == '<firstchild>':
+                status = 1
+            elif y.link_path == '<front>':
                 continue
+            else:
+                status = 1
 
-            if y.link_path in urlaliasmap:
+
+            if y.link_path == '<firstchild>':
+                menulink['link_path'] = '<firstchild>'
+            elif y.link_path in urlaliasmap:
                 menulink['link_path'] = urlaliasmap[y.link_path]
             else:
                 menulink['link_path'] = y.link_path
