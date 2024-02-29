@@ -444,6 +444,33 @@ with engine.connect() as conn:
     bean_expandable_fields.append({'name': 'field_expandable_select_prompt', 'type': 'bean', 'bundle': 'expandable'})
     bean_types['expandable'] = bean_expandable_fields
 
+    # Module: cu_article
+
+    #  Bean: article_feature
+
+    bean_article_feature_fields = []
+    bean_article_feature_fields.append({'name': 'field_article_exclude_category', 'type': 'bean', 'bundle': 'article_feature'})
+    bean_article_feature_fields.append({'name': 'field_article_exclude_tag', 'type': 'bean', 'bundle': 'article_feature'})
+    bean_article_feature_fields.append({'name': 'field_article_feature_category', 'type': 'bean', 'bundle': 'article_feature'})
+    bean_article_feature_fields.append({'name': 'field_article_feature_display', 'type': 'bean', 'bundle': 'article_feature'})
+    bean_article_feature_fields.append({'name': 'field_article_feature_filter', 'type': 'bean', 'bundle': 'article_feature'})
+    bean_article_feature_fields.append({'name': 'field_article_feature_image_size', 'type': 'bean', 'bundle': 'article_feature'})
+    bean_article_feature_fields.append({'name': 'field_article_feature_show_cat', 'type': 'bean', 'bundle': 'article_feature'})
+    bean_article_feature_fields.append({'name': 'field_article_link', 'type': 'bean', 'bundle': 'article_feature'})
+    bean_types['article_feature'] = bean_article_feature_fields
+
+    #  Bean: article_grid
+
+    bean_article_grid_fields = []
+    bean_article_grid_fields.append({'name': 'field_article_exclude_category', 'type': 'bean', 'bundle': 'article_grid'})
+    bean_article_grid_fields.append({'name': 'field_article_exclude_tag', 'type': 'bean', 'bundle': 'article_grid'})
+    bean_article_grid_fields.append({'name': 'field_article_grid_category', 'type': 'bean', 'bundle': 'article_grid'})
+    bean_article_grid_fields.append({'name': 'field_article_grid_filter', 'type': 'bean', 'bundle': 'article_grid'})
+    bean_article_grid_fields.append({'name': 'field_article_grid_items', 'type': 'bean', 'bundle': 'article_grid'})
+    bean_article_grid_fields.append({'name': 'field_article_grid_more_link', 'type': 'bean', 'bundle': 'article_grid'})
+    bean_article_grid_fields.append({'name': 'field_article_grid_summary', 'type': 'bean', 'bundle': 'article_grid'})
+    bean_types['article_grid'] = bean_article_grid_fields
+
     #  Bean: article_slider
 
     bean_article_slider_fields = []
@@ -453,7 +480,18 @@ with engine.connect() as conn:
     bean_article_slider_fields.append({'name': 'field_article_slider_filter', 'type': 'bean', 'bundle': 'article_slider'})
     bean_types['article_slider'] = bean_article_slider_fields
 
+    #  Bean: articles
 
+    bean_articles_fields = []
+    bean_articles_fields.append({'name': 'field_article_display', 'type': 'bean', 'bundle': 'articles'})
+    bean_articles_fields.append({'name': 'field_article_exclude_category', 'type': 'bean', 'bundle': 'articles'})
+    bean_articles_fields.append({'name': 'field_article_exclude_tag', 'type': 'bean', 'bundle': 'articles'})
+    bean_articles_fields.append({'name': 'field_article_items_display', 'type': 'bean', 'bundle': 'articles'})
+    bean_articles_fields.append({'name': 'field_article_link', 'type': 'bean', 'bundle': 'articles'})
+    bean_articles_fields.append({'name': 'field_article_list_category', 'type': 'bean', 'bundle': 'articles'})
+    bean_articles_fields.append({'name': 'field_article_pager', 'type': 'bean', 'bundle': 'articles'})
+    bean_articles_fields.append({'name': 'field_article_term', 'type': 'bean', 'bundle': 'articles'})
+    bean_types['articles'] = bean_articles_fields
 
     beans = []
     bean_result = conn.execute(sqlalchemy.text("select bid, vid, delta, label, title, type, view_mode, data, uid, created, changed from bean;"))
@@ -749,8 +787,8 @@ with engine.connect() as conn:
 
 
 
-            layout_field_names.append('field_intro') # WIDE
-            layout_field_names.append('field_slider') # WIDE
+            layout_field_names.append('field_intro')  # WIDE
+            layout_field_names.append('field_slider')  # WIDE
 
             layout_field_names.append('TITLE')
 
