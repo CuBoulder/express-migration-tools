@@ -36,6 +36,11 @@ def printbeaninfo(bid, depth):
         for secblocks in section_blocks:
             printbeaninfo(secblocks.text, depth+1)
 
+    if type == 'block_row':
+        row_blocks = bean.findall('./fields/field_block_row_collection/data/item/collection/field_block_row_block/field_block_row_block_target_id')
+        for rowblocks in row_blocks:
+            printbeaninfo(rowblocks.text, depth+1)
+
     if type == 'feature_callout':
         pass
         # etree.dump(bean)
