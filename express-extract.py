@@ -590,7 +590,7 @@ with engine.connect() as conn:
 
 
 
-                        #field_item['collection'] = []
+                        field_item['collection'] = []
 
                         for colname in columns:
                             field_item[colname] = fd_item[colname]
@@ -601,10 +601,14 @@ with engine.connect() as conn:
 
                         fci_item_fields = []
 
-                        fci_data = {}
+
 
 
                         for fci_item in collection_fields:
+
+
+                            
+                            
                             fci_columns = extract_subfields(fci_item['name'])
 
                             fci_id_column = fname['name'] + '_value'
@@ -613,6 +617,7 @@ with engine.connect() as conn:
                             fci_query = f"select {', '.join(fci_columns)} from field_data_{fci_item['name']} where entity_type = '{fci_item['type']}' AND bundle = '{fci_item['bundle']}' AND entity_id = '{field_item[fci_id_column]}' AND revision_id = '{field_item[fci_revision_column]}';"
                             fci_result = conn.execute(sqlalchemy.text(fci_query))
                             for fcif in fci_result.mappings():
+                                fci_data = {}
                                 fcif_item = {}
                                 for fcif_colname in fci_columns:
                                     fcif_item[fcif_colname] = fcif[fcif_colname]
@@ -625,12 +630,17 @@ with engine.connect() as conn:
                                         if fcif_item[fcif_colname] in urlaliasmap:
                                             fcif_item[fcif_colname] = f"internal:/{urlaliasmap[fcif_item[fcif_colname]]}"
                                 fci_data[fci_item['name']] = fcif_item
-                            if len(fci_data) != 0:
-                                fci_data['id'] = f"{field_item['entity_id']}_{field_item['delta']}"
+                                
 
-                                # if 'collection_name' in locals():
-                                #     field_item[collection_name] = fci_data
-                                field_item['collection'] = fci_data
+                                #if len(fci_data) != 0:
+                                fci_data['id'] = f"{field_item['entity_id']}_{field_item['delta']}"
+                                #print("2: " + str(fci_data))
+                                field_item['collection'].append(fci_data)
+
+                        if len(field_item['collection']) == 0:
+                            del field_item['collection']
+
+                        #print(field_item)
                         data.append(field_item)
                     field['data'] = data
                     fields[field['field_name']] = field
@@ -705,6 +715,73 @@ with engine.connect() as conn:
         # [exbd_font_scale_content] => field_bs_content_font_scale
         # [exbd_menu_style] =>
 
+        style_value_map = {}
+
+        style_value_map['icon_position'] = {}
+        style_value_map['icon_position']['default'] = 'bs_icon_position_default'
+        style_value_map['icon_position']['offset'] = 'bs_icon_position_offset'
+        style_value_map['icon_position']['top'] = 'bs_icon_position_top'
+
+        style_value_map['icon_color'] = {}
+        style_value_map['icon_color']['default'] = 'bs_icon_color_default'
+        style_value_map['icon_color']['gray'] = 'bs_icon_color_gray'
+        style_value_map['icon_color']['gold'] = 'bs_icon_color_gold'
+        style_value_map['icon_color']['blue'] = 'bs_icon_color_blue'
+        style_value_map['icon_color']['green'] = 'bs_icon_color_green'
+        style_value_map['icon_color']['orange'] = 'bs_icon_color_orange'
+        style_value_map['icon_color']['purple'] = 'bs_icon_color_purple'
+        style_value_map['icon_color']['red'] = 'bs_icon_color_red'
+        style_value_map['icon_color']['yellow'] = 'bs_icon_color_yellow'
+
+        style_value_map['icon_size'] = {}
+        style_value_map['icon_size']['default'] = 'bs_icon_size_default'
+        style_value_map['icon_size']['increase'] = 'bs_icon_size_increase'
+
+        style_value_map['heading'] = {}
+        style_value_map['heading']['default'] = 'bs_heading_default'
+        style_value_map['heading']['h2'] = 'bs_heading_default'
+        style_value_map['heading']['h3'] = 'bs_heading_h3'
+        style_value_map['heading']['h4'] = 'bs_heading_h4'
+        style_value_map['heading']['h5'] = 'bs_heading_h5'
+        style_value_map['heading']['h6'] = 'bs_heading_h6'
+        style_value_map['heading']['strong'] = 'bs_heading_strong'
+
+        style_value_map['heading_alignment'] = {}
+        style_value_map['heading_alignment']['default'] = 'bs_heading_align_default'
+        style_value_map['heading_alignment']['centered'] = 'bs_heading_align_centered'
+
+        style_value_map['heading_style'] = {}
+        style_value_map['heading_style']['default'] = 'bs_heading_style_default'
+        style_value_map['heading_style']['hero'] = 'bs_heading_style_default_hero'
+        style_value_map['heading_style']['hero-bold'] = 'bs_heading_style_default_hero_bold'
+        style_value_map['heading_style']['supersize'] = 'bs_heading_style_default_supersize'
+        style_value_map['heading_style']['supersize-bold'] = 'bs_heading_style_default_supersize_bold'
+
+        style_value_map['background_style'] = {}
+        style_value_map['background_style']['none'] = 'bs_background_style_white'
+        style_value_map['background_style']['default'] = 'bs_background_style_white'
+        style_value_map['background_style']['white'] = 'bs_background_style_white'
+        style_value_map['background_style']['light_gray'] = 'bs_background_style_gray'
+        style_value_map['background_style']['dark_gray'] = 'bs_background_style_dark_gray'
+        style_value_map['background_style']['tan'] = 'bs_background_style_tan'
+        style_value_map['background_style']['lightblue'] = 'bs_background_style_light_blue'
+        style_value_map['background_style']['blue-medium'] = 'bs_background_style_medium_blue'
+        style_value_map['background_style']['blue-dark'] = 'bs_background_style_dark_blue'
+        style_value_map['background_style']['green-light'] = 'bs_background_style_light_green'
+        style_value_map['background_style']['brick'] = 'bs_background_style_brick'
+        style_value_map['background_style']['outline'] = 'bs_background_style_outline'
+        style_value_map['background_style']['underline'] = 'bs_background_style_underline'
+
+        style_value_map['title_font_scale'] = {}
+        style_value_map['title_font_scale']['default'] = 'bs_title_font_scale_default'
+        style_value_map['title_font_scale']['increase'] = 'bs_title_font_scale_increase'
+        style_value_map['title_font_scale']['decrease'] = 'bs_title_font_scale_decrease'
+
+        style_value_map['content_font_scale'] = {}
+        style_value_map['content_font_scale']['default'] = 'bs_content_font_scale_default'
+        style_value_map['content_font_scale']['increase'] = 'bs_content_font_scale_increase'
+        style_value_map['content_font_scale']['decrease'] = 'bs_content_font_scale_decrease'
+
 
         bean['style'] = {}
         bean['style']['icon'] = ''
@@ -714,7 +791,7 @@ with engine.connect() as conn:
         bean['style']['heading'] = 'default'
         bean['style']['heading_alignment'] = 'default'
         bean['style']['heading_style'] = 'default'
-        bean['style']['background_style'] = 'default'
+        bean['style']['background_style'] = 'none'
         bean['style']['title_font_scale'] = 'default'
         bean['style']['content_font_scale'] = 'default'
 
@@ -751,6 +828,17 @@ with engine.connect() as conn:
                     bean['style']['background_style'] = theme_styles['exbd_style']
                     bean['style']['title_font_scale'] = theme_styles['exbd_font_scale_title']
                     bean['style']['content_font_scale'] = theme_styles['exbd_font_scale_content']
+
+        bean['style']['icon_position'] = style_value_map['icon_position'][bean['style']['icon_position']]
+        bean['style']['icon_color'] = style_value_map['icon_color'][bean['style']['icon_color']]
+        bean['style']['icon_size'] = style_value_map['icon_size'][bean['style']['icon_size']]
+        bean['style']['heading'] = style_value_map['heading'][bean['style']['heading']]
+        bean['style']['heading_alignment'] = style_value_map['heading_alignment'][bean['style']['heading_alignment']]
+        bean['style']['heading_style'] = style_value_map['heading_style'][bean['style']['heading_style']]
+        bean['style']['background_style'] = style_value_map['background_style'][bean['style']['background_style']]
+        bean['style']['title_font_scale'] = style_value_map['title_font_scale'][bean['style']['title_font_scale']]
+        bean['style']['content_font_scale'] = style_value_map['content_font_scale'][bean['style']['content_font_scale']]
+
 
         if bean['style']['icon'] == 'none' or bean['style']['icon'] == '':
             bean['style']['icon'] = ''
@@ -877,7 +965,11 @@ with engine.connect() as conn:
 
                         for c in b['fields']['field_blocks_section_blocks']['data']:
                             #print(c)
-                            bs['beans'].append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {bean['display_title']}")
+                            column = []
+                            column.append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {bean['display_title']} 1")
+                            bs['beans'].append(column)
+
+                            #bs['beans'].append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {bean['display_title']} 1")
                 node['page_sections'].append(bs)
 
 
@@ -1007,7 +1099,10 @@ with engine.connect() as conn:
                                 for c in b['fields']['field_blocks_section_blocks']['data']:
                                     # print(node['nid'])
                                     # print(c)
-                                    section['beans'].append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {get_bean(c['field_blocks_section_blocks_target_id'])['display_title']}")
+                                    column = []
+                                    columns.append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {get_bean(c['field_blocks_section_blocks_target_id'])['display_title']} 2")
+                                    section['beans'].append(column)
+                                    #section['beans'].append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {get_bean(c['field_blocks_section_blocks_target_id'])['display_title']} 2")
 
                     if block_section == False:
                         
@@ -1016,15 +1111,27 @@ with engine.connect() as conn:
                             #pprint.pprint(b)
                             if 'field_block_row_collection' in b['fields']:
                                 for d in b['fields']['field_block_row_collection']['data']:
+                                    column = []
                                     if 'collection' in d:
 
-                                        inner_bean = d['collection']['field_block_row_block']['field_block_row_block_target_id']
+                                        for ib in d['collection']:
+                                            #inner_bean = d['collection']['field_block_row_block']['field_block_row_block_target_id']
+                                            #section['beans'].append(f"{inner_bean} {get_bean_type(inner_bean)} {bean['display_title']}")
 
-                                        section['beans'].append(f"{inner_bean} {get_bean_type(inner_bean)} {bean['display_title']}")
+                                            inner_bean = ib['field_block_row_block']['field_block_row_block_target_id']
+                                            #section['beans'].append(f"{inner_bean} {get_bean_type(inner_bean)} {bean['display_title']} 3")
+
+                                            column.append(f"{inner_bean} {get_bean_type(inner_bean)} {get_bean(inner_bean)['display_title']} 3")
+                                    section['beans'].append(column)
 
                                         #print(d['collection']['field_block_row_block']['field_block_row_block_target_id'])
                         else:
-                            section['beans'].append(f"{section['bid']} {get_bean_type(section['bid'])} {bean['display_title']}")
+                            #section['beans']['columns'] = []
+                            column = []
+                            column.append(f"{section['bid']} {get_bean_type(section['bid'])} {bean['display_title']} 4")
+                            section['beans'].append(column)
+
+                            #section['beans'].append(f"{section['bid']} {get_bean_type(section['bid'])} {bean['display_title']}")
 
 
 
@@ -1043,13 +1150,20 @@ with engine.connect() as conn:
                     body_element = {}
                     body_element['bid'] = 0
                     body_element['beans'] = []
-                    body_element['beans'].append('0 body')
+                    column = []
+                    column.append('0 body false')
+                    body_element['beans'].append(column)
+                    #body_element['beans'].append('0 body false')
                     combined_page_sections.append(body_element)
                 if ordered_name == 'TITLE':
                     title_element = {}
                     title_element['bid'] = 0
                     title_element['beans'] = []
-                    title_element['beans'].append('0 title')
+                    column = []
+                    column.append('0 title false')
+                    title_element['beans'].append(column)
+
+                    #title_element['beans'].append('0 title false')
                     combined_page_sections.append(title_element)
 
 
