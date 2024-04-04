@@ -91,7 +91,7 @@ function extract_bean_info(string $subpath, string $module_name, bool $is_bean =
 }
 
 
-function extract_module_info(string $subpath, string $module_name, bool $is_bean = True)
+function extract_node_info(string $subpath, string $module_name, bool $is_bean = True)
 {
     global $basepath;
 
@@ -220,7 +220,11 @@ $module_list[] = array('subpath' => 'custom', 'name' => 'cu_video_reveal', 'is_b
 
 $module_list[] = array('subpath' => 'features', 'name' => 'cu_block_section', 'is_bean' =>  True);
 
+$module_list[] = array('subpath' => 'features', 'name' => 'cu_hero_unit', 'is_bean' =>  True);
+
 //$module_list[] = array('subpath' => 'features', 'name' => 'cu_faq', 'is_bean' => False);
+
+$module_list[] = array('subpath' => 'custom/cu_publications_bundle', 'name' => 'cu_publication', 'is_bean' => False);
 
 
 ////$subpath = 'features';
@@ -231,8 +235,18 @@ $module_list[] = array('subpath' => 'features', 'name' => 'cu_block_section', 'i
 
 for($i = 0; $i != count($module_list); $i++)
 {
-    $beanlist = extract_bean_info($module_list[$i]['subpath'], $module_list[$i]['name'], $module_list[$i]['is_bean']);
-    emit_python_bean_schema($beanlist);
+    if($module_list[$i]['is_bean'])
+    {
+        $beanlist = extract_bean_info($module_list[$i]['subpath'], $module_list[$i]['name'], $module_list[$i]['is_bean']);
+        emit_python_bean_schema($beanlist);
+    }
+    else
+    {
+        $beanlist = extract_node_info($module_list[$i]['subpath'], $module_list[$i]['name'], $module_list[$i]['is_bean']);
+        emit_python_bean_schema($beanlist);
+    }
+
+
 
 }
 

@@ -187,6 +187,8 @@ def set_configuration(sitename):
 
         themesettings_result = conn.execute(sqlalchemy.text(f"select value from variable where name = 'theme_{themename}_settings';"));
 
+        themesettings = {}
+
         for result in themesettings_result:
             themesettings = phpserialize.loads(result.value, decode_strings=True)
 

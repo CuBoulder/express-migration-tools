@@ -370,6 +370,24 @@ with engine.connect() as conn:
     bean_feature_callout_fields.append({'name': 'field_callouts', 'type': 'bean', 'bundle': 'feature_callout'})
     bean_types['feature_callout'] = bean_feature_callout_fields
 
+    # Module: cu_hero_unit
+
+    #  Bean: hero_unit
+
+    bean_hero_unit_fields = []
+    bean_hero_unit_fields.append({'name': 'field_hero_unit_bg_color', 'type': 'bean', 'bundle': 'hero_unit'})
+    bean_hero_unit_fields.append({'name': 'field_hero_unit_headline', 'type': 'bean', 'bundle': 'hero_unit'})
+    bean_hero_unit_fields.append({'name': 'field_hero_unit_image', 'type': 'bean', 'bundle': 'hero_unit'})
+    bean_hero_unit_fields.append({'name': 'field_hero_unit_link', 'type': 'bean', 'bundle': 'hero_unit'})
+    bean_hero_unit_fields.append({'name': 'field_hero_unit_link_color', 'type': 'bean', 'bundle': 'hero_unit'})
+    bean_hero_unit_fields.append({'name': 'field_hero_unit_overlay', 'type': 'bean', 'bundle': 'hero_unit'})
+    bean_hero_unit_fields.append({'name': 'field_hero_unit_size', 'type': 'bean', 'bundle': 'hero_unit'})
+    bean_hero_unit_fields.append({'name': 'field_hero_unit_size_priority', 'type': 'bean', 'bundle': 'hero_unit'})
+    bean_hero_unit_fields.append({'name': 'field_hero_unit_text', 'type': 'bean', 'bundle': 'hero_unit'})
+    bean_hero_unit_fields.append({'name': 'field_hero_unit_text_align', 'type': 'bean', 'bundle': 'hero_unit'})
+    bean_hero_unit_fields.append({'name': 'field_hero_unit_text_color', 'type': 'bean', 'bundle': 'hero_unit'})
+    bean_types['hero_unit'] = bean_hero_unit_fields
+
     # Module: express_localist_bundle
 
     #  Bean: localist_events
@@ -645,45 +663,6 @@ with engine.connect() as conn:
                     field['data'] = data
                     fields[field['field_name']] = field
 
-                        #
-                        # for fci_item in field_names:
-                        #     if fci_item['bundle'] == fname['name']:
-                        #         fci_columns = extract_subfields(fci_item['name'])
-                        #         fci_id_column = fname['name'] + '_value'
-                        #         fci_revision_column = fname['name'] + '_revision_id'
-                        #         fci_query = f"select {', '.join(fci_columns)} from field_data_{fci_item['name']} where entity_type = '{fci_item['type']}' AND bundle = '{fci_item['bundle']}' AND entity_id = '{field_item[fci_id_column]}' AND revision_id = '{field_item[fci_revision_column]}';"
-                        #
-                        #         fci_result = conn.execute(sqlalchemy.text(fci_query))
-                        #         for fcif in fci_result.mappings():
-                        #             fcif_item = {}
-                        #             for fcif_colname in fci_columns:
-                        #                 fcif_item[fcif_colname] = fcif[fcif_colname]
-                        #
-                        #                 if fci_item['name'] == 'field_callout_title' and fcif_colname == 'field_callout_title_url':
-                        #
-                        #                     if fcif_item[fcif_colname].find('#') != -1:
-                        #                         fcif_item[fcif_colname] = fcif_item[fcif_colname].split('#')[0]
-                        #
-                        #                     if fcif_item[fcif_colname] in urlaliasmap:
-                        #                         fcif_item[fcif_colname] = f"internal:/{urlaliasmap[fcif_item[fcif_colname]]}"
-                        #
-                        #             fci_data[fci_item['name']] = fcif_item
-                        #
-                        #
-                        #     if len(fci_data) != 0:
-                        #         fci_data['id'] = f"{field_item['entity_id']}_{field_item['delta']}"
-                        #         #CHECK LATER
-                        #         if 'collection_name' in locals():
-                        #             field_item[collection_name] = fci_data
-                        #
-                        # if 'collection' in fname and len(field_item[collection_name]) == 0:
-                        #     del field_item[collection_name]
-                        #
-                        #
-                        # data.append(field_item)
-
-                    # field['data'] = data
-                    # fields[field['field_name']] = field
 
 
             bean['fields'] = fields
@@ -719,6 +698,7 @@ with engine.connect() as conn:
 
         style_value_map['icon_position'] = {}
         style_value_map['icon_position']['default'] = 'bs_icon_position_default'
+        style_value_map['icon_position']['inline'] = 'bs_icon_position_default'
         style_value_map['icon_position']['offset'] = 'bs_icon_position_offset'
         style_value_map['icon_position']['top'] = 'bs_icon_position_top'
 
@@ -748,6 +728,7 @@ with engine.connect() as conn:
 
         style_value_map['heading_alignment'] = {}
         style_value_map['heading_alignment']['default'] = 'bs_heading_align_default'
+        style_value_map['heading_alignment']['left'] = 'bs_heading_align_default'
         style_value_map['heading_alignment']['centered'] = 'bs_heading_align_centered'
 
         style_value_map['heading_style'] = {}
@@ -758,8 +739,9 @@ with engine.connect() as conn:
         style_value_map['heading_style']['supersize-bold'] = 'bs_heading_style_default_supersize_bold'
 
         style_value_map['background_style'] = {}
-        style_value_map['background_style']['none'] = 'bs_background_style_white'
-        style_value_map['background_style']['default'] = 'bs_background_style_white'
+        style_value_map['background_style']['none'] = 'bs_background_style_none'
+        style_value_map['background_style'][None] = 'bs_background_style_none'
+        style_value_map['background_style']['default'] = 'bs_background_style_none'
         style_value_map['background_style']['white'] = 'bs_background_style_white'
         style_value_map['background_style']['light_gray'] = 'bs_background_style_gray'
         style_value_map['background_style']['dark_gray'] = 'bs_background_style_dark_gray'
@@ -802,12 +784,15 @@ with engine.connect() as conn:
             styles = phpserialize.loads(style.block_settings, decode_strings=True)
 
             bean['style']['icon'] = styles['exbd_icon']
-            bean['style']['icon_position'] = styles['exbd_icon_position']
+
+            if 'exbd_icon_position' in styles:
+                bean['style']['icon_position'] = styles['exbd_icon_position']
             bean['style']['icon_color'] = styles['exbd_icon_color']
             bean['style']['icon_size'] = styles['exbd_icon_size']
             bean['style']['heading'] = styles['exbd_heading']
             bean['style']['heading_alignment'] = styles['exbd_heading_align']
-            bean['style']['heading_style'] = styles['exbd_heading_style']
+            if 'exbd_heading_style' in styles:
+                bean['style']['heading_style'] = styles['exbd_heading_style']
             bean['style']['background_style'] = styles['exbd_style']
             bean['style']['title_font_scale'] = styles['exbd_font_scale_title']
             bean['style']['content_font_scale'] = styles['exbd_font_scale_content']
@@ -824,7 +809,8 @@ with engine.connect() as conn:
                     bean['style']['icon_size'] = theme_styles['exbd_icon_size']
                     bean['style']['heading'] = theme_styles['exbd_heading']
                     bean['style']['heading_alignment'] = theme_styles['exbd_heading_align']
-                    bean['style']['heading_style'] = theme_styles['exbd_heading_style']
+                    if 'exbd_heading_style' in theme_styles:
+                        bean['style']['heading_style'] = theme_styles['exbd_heading_style']
                     bean['style']['background_style'] = theme_styles['exbd_style']
                     bean['style']['title_font_scale'] = theme_styles['exbd_font_scale_title']
                     bean['style']['content_font_scale'] = theme_styles['exbd_font_scale_content']
@@ -835,6 +821,8 @@ with engine.connect() as conn:
         bean['style']['heading'] = style_value_map['heading'][bean['style']['heading']]
         bean['style']['heading_alignment'] = style_value_map['heading_alignment'][bean['style']['heading_alignment']]
         bean['style']['heading_style'] = style_value_map['heading_style'][bean['style']['heading_style']]
+
+
         bean['style']['background_style'] = style_value_map['background_style'][bean['style']['background_style']]
         bean['style']['title_font_scale'] = style_value_map['title_font_scale'][bean['style']['title_font_scale']]
         bean['style']['content_font_scale'] = style_value_map['content_font_scale'][bean['style']['content_font_scale']]
@@ -1096,13 +1084,33 @@ with engine.connect() as conn:
                                 if len(b['fields']['field_hero_unit_text_color']['data']) > 0:
                                     section['text_color'] = b['fields']['field_hero_unit_text_color']['data'][0]['field_hero_unit_text_color_value']
 
+                                columns = []
+
+                                block_row = False
+
                                 for c in b['fields']['field_blocks_section_blocks']['data']:
-                                    # print(node['nid'])
-                                    # print(c)
-                                    column = []
-                                    columns.append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {get_bean(c['field_blocks_section_blocks_target_id'])['display_title']} 2")
-                                    section['beans'].append(column)
-                                    #section['beans'].append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {get_bean(c['field_blocks_section_blocks_target_id'])['display_title']} 2")
+                                    bid = c['field_blocks_section_blocks_target_id']
+                                    if get_bean_type(bid) == 'block_row':
+                                        block_row = True
+                                        b = get_bean(bid)
+
+                                        if 'field_block_row_collection' in b['fields']:
+                                            for d in b['fields']['field_block_row_collection']['data']:
+                                                column = []
+                                                if 'collection' in d:
+
+                                                    for ib in d['collection']:
+                                                        inner_bean = ib['field_block_row_block']['field_block_row_block_target_id']
+                                                        column.append(f"{inner_bean} {get_bean_type(inner_bean)} {get_bean(inner_bean)['display_title']} 3")
+
+                                                section['beans'].append(column)
+                                        section['distribution'] = b['fields']['field_block_row_distribution']['data'][0]['field_block_row_distribution_value']
+
+                                    else:
+                                        columns.append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {get_bean(c['field_blocks_section_blocks_target_id'])['display_title']} 2")
+
+                                if block_row == False:
+                                    section['beans'].append(columns)
 
                     if block_section == False:
                         
@@ -1123,8 +1131,9 @@ with engine.connect() as conn:
 
                                             column.append(f"{inner_bean} {get_bean_type(inner_bean)} {get_bean(inner_bean)['display_title']} 3")
                                     section['beans'].append(column)
+                            section['distribution'] = b['fields']['field_block_row_distribution']['data'][0]['field_block_row_distribution_value']
 
-                                        #print(d['collection']['field_block_row_block']['field_block_row_block_target_id'])
+                                    #print(d['collection']['field_block_row_block']['field_block_row_block_target_id'])
                         else:
                             #section['beans']['columns'] = []
                             column = []
