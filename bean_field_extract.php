@@ -120,7 +120,7 @@ function extract_node_info(string $subpath, string $module_name, bool $is_bean =
 //    $beans = ($module_name . "_bean_admin_ui_types")();
 
     $instances = ($module_name . "_field_default_field_instances")();
-    $bases = ($module_name . "_field_default_field_bases")();
+//    $bases = ($module_name . "_field_default_field_bases")();
 
 
     $beanlist = array();
@@ -210,6 +210,32 @@ function emit_python_bean_schema($beanlist)
 
 }
 
+function emit_python_node_schema($nodelist)
+{
+
+    print("# Module: " . $nodelist['name'] . "\n\n");
+
+
+    for($i = 0; $i != count($nodelist['beans']); $i++)
+    {
+
+        $node = $nodelist['beans'][$i];
+        $fields = $node['fields'];
+
+        print("#  Node: " . $node['name'] . "\n\n");
+
+        print("node_" . $node['name'] . "_fields = []" . "\n");
+        for($j = 0; $j != count($fields); $j++)
+        {
+            print("node_" . $node['name'] . "_fields" . ".append({'name': '" . $fields[$j]['name'] . "', 'type': '" .  $fields[$j]['type'] . "', 'bundle': '" . $fields[$j]['bundle'] . "'})" . "\n");
+        }
+        print("node_typemap['" . $node['name'] . "'] = node_" . $node['name'] . "_fields" . "\n\n");
+    }
+
+    print("\n");
+
+}
+
 
 $module_list = array();
 
@@ -263,7 +289,7 @@ for($i = 0; $i != count($module_list); $i++)
     else
     {
         $beanlist = extract_node_info($module_list[$i]['subpath'], $module_list[$i]['name'], $module_list[$i]['is_bean']);
-        emit_python_bean_schema($beanlist);
+        emit_python_node_schema($beanlist);
     }
 
 

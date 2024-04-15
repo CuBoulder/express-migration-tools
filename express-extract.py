@@ -75,6 +75,95 @@ def extract_fields(type, id, revision_id):
 
     return fields
 
+def extract_fields2(type, id, revision_id):
+
+    node_typemap = {}
+
+    # Module: cu_faq
+
+    #  Node: faqs
+
+    node_faqs_fields = []
+    node_faqs_fields.append({'name': 'body', 'type': 'node', 'bundle': 'faqs'})
+    node_faqs_fields.append({'name': 'field_qa', 'type': 'field_collection_item', 'bundle': 'field_qa_collection'})
+    node_faqs_fields.append(
+        {'name': 'field_qa_collection_title', 'type': 'field_collection_item', 'bundle': 'field_qa_collection'})
+    node_faqs_fields.append({'name': 'field_qa_collection', 'type': 'node', 'bundle': 'faqs'})
+    node_typemap['faqs'] = node_faqs_fields
+
+    if type in node_typemap:
+
+        field_names = node_typemap[type]
+
+        fields = {}
+
+        for fname in field_names:
+
+            if fname['type'] == 'node':
+
+                field = {}
+                field['field_name'] = fname['name']
+                field['type'] = type
+
+                columns = extract_subfields(fname['name'])
+
+                collection_fields = []
+                for f2 in field_names:
+                    if f2['type'] == 'field_collection_item' and f2['bundle'] == fname['name']:
+                        collection_fields.append(f2)
+                data = []
+
+                fd_result = conn.execute(sqlalchemy.text(
+                    f"select {', '.join(columns)} from field_data_{fname['name']} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';"))
+
+                for fd_item in fd_result.mappings():
+                    field_item = {}
+
+                    field_item['collection'] = []
+
+                    for colname in columns:
+                        field_item[colname] = fd_item[colname]
+
+                    if 'entity_id' in field_item and 'delta' in field_item:
+                        field_item['id'] = f"{field_item['entity_id']}_{field_item['delta']}"
+
+                    fci_item_fields = []
+
+                    for fci_item in collection_fields:
+                        fci_columns = extract_subfields(fci_item['name'])
+
+                        fci_id_column = fname['name'] + '_value'
+                        fci_revision_column = fname['name'] + '_revision_id'
+
+                        fci_query = f"select {', '.join(fci_columns)} from field_data_{fci_item['name']} where entity_type = '{fci_item['type']}' AND bundle = '{fci_item['bundle']}' AND entity_id = '{field_item[fci_id_column]}' AND revision_id = '{field_item[fci_revision_column]}';"
+                        fci_result = conn.execute(sqlalchemy.text(fci_query))
+                        for fcif in fci_result.mappings():
+                            fci_data = {}
+                            fcif_item = {}
+                            for fcif_colname in fci_columns:
+                                fcif_item[fcif_colname] = fcif[fcif_colname]
+
+                                if fci_item[
+                                    'name'] == 'field_callout_title' and fcif_colname == 'field_callout_title_url':
+
+                                    if fcif_item[fcif_colname].find('#') != -1:
+                                        fcif_item[fcif_colname] = fcif_item[fcif_colname].split('#')[0]
+
+                                    if fcif_item[fcif_colname] in urlaliasmap:
+                                        fcif_item[fcif_colname] = f"internal:/{urlaliasmap[fcif_item[fcif_colname]]}"
+                            fci_data[fci_item['name']] = fcif_item
+
+                            fci_data['id'] = f"{field_item['entity_id']}_{field_item['delta']}"
+                            field_item['collection'].append(fci_data)
+
+                    if len(field_item['collection']) == 0:
+                        del field_item['collection']
+
+                    data.append(field_item)
+                field['data'] = data
+                fields[field['field_name']] = field
+        return fields
+
 
 # Load fontawesome map
 
@@ -584,15 +673,10 @@ with engine.connect() as conn:
 
                     columns = extract_subfields(fname['name'])
 
-                    # print(columns)
-
                     collection_fields = []
                     for f2 in field_names:
                         if f2['type'] == 'field_collection_item' and f2['bundle'] == fname['name']:
                             collection_fields.append(f2)
-                    # print("Collection fields:")
-                    # print(collection_fields)
-
                     data = []
 
                     fd_result = conn.execute(sqlalchemy.text(
@@ -600,13 +684,6 @@ with engine.connect() as conn:
 
                     for fd_item in fd_result.mappings():
                         field_item = {}
-
-                        # if 'collection' in fname:
-                        #     collection_name = fname['collection']
-                        #     field_item[collection_name] = []
-
-
-
 
                         field_item['collection'] = []
 
@@ -616,17 +693,9 @@ with engine.connect() as conn:
                         if 'entity_id' in field_item and 'delta' in field_item:
                             field_item['id'] = f"{field_item['entity_id']}_{field_item['delta']}"
 
-
                         fci_item_fields = []
 
-
-
-
                         for fci_item in collection_fields:
-
-
-                            
-                            
                             fci_columns = extract_subfields(fci_item['name'])
 
                             fci_id_column = fname['name'] + '_value'
@@ -648,22 +717,16 @@ with engine.connect() as conn:
                                         if fcif_item[fcif_colname] in urlaliasmap:
                                             fcif_item[fcif_colname] = f"internal:/{urlaliasmap[fcif_item[fcif_colname]]}"
                                 fci_data[fci_item['name']] = fcif_item
-                                
 
-                                #if len(fci_data) != 0:
                                 fci_data['id'] = f"{field_item['entity_id']}_{field_item['delta']}"
-                                #print("2: " + str(fci_data))
                                 field_item['collection'].append(fci_data)
 
                         if len(field_item['collection']) == 0:
                             del field_item['collection']
 
-                        #print(field_item)
                         data.append(field_item)
                     field['data'] = data
                     fields[field['field_name']] = field
-
-
 
             bean['fields'] = fields
 
@@ -873,8 +936,6 @@ with engine.connect() as conn:
 
 
 
-
-
     nodes = []
 
     node_types = {}
@@ -899,6 +960,7 @@ with engine.connect() as conn:
 
 
         node['fields'] = extract_fields(x.type, x.nid, x.vid)
+        node['fields2'] = extract_fields2(x.type, x.nid, x.vid)
 
 
         if node['type'] == 'section_page':
