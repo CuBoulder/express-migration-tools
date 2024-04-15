@@ -1,6 +1,5 @@
 <?php
 
-
 function t()
 {
 
@@ -35,6 +34,7 @@ function extract_bean_info(string $subpath, string $module_name, bool $is_bean =
 
     $beanlist = array();
     $beanlist['name'] = $module_name;
+    $beaninfo['type'] = 'bean';
     $beanlist['beans'] = array();
 
 
@@ -95,6 +95,21 @@ function extract_node_info(string $subpath, string $module_name, bool $is_bean =
 {
     global $basepath;
 
+    $beans = [];
+
+    $handle = fopen($basepath . $subpath . '/' . $module_name . '/' . $module_name . '.info', "r");
+    if ($handle) {
+        while (($line = fgets($handle)) !== false) {
+            if(str_starts_with($line, 'features[node][] = '))
+            {
+                $beans[trim(explode('=', $line)[1])] = trim(explode('=', $line)[1]);
+            }
+
+        }
+
+        fclose($handle);
+    }
+
 
     require $basepath . $subpath . '/' . $module_name . '/' . $module_name . '.features.inc';
     require $basepath . $subpath . '/' . $module_name . '/' . $module_name . '.features.field_base.inc';
@@ -102,7 +117,7 @@ function extract_node_info(string $subpath, string $module_name, bool $is_bean =
 
 
 
-    $beans = ($module_name . "_bean_admin_ui_types")();
+//    $beans = ($module_name . "_bean_admin_ui_types")();
 
     $instances = ($module_name . "_field_default_field_instances")();
     $bases = ($module_name . "_field_default_field_bases")();
@@ -121,6 +136,7 @@ function extract_node_info(string $subpath, string $module_name, bool $is_bean =
 
         $beaninfo = array();
         $beaninfo['name'] = $beans_key;
+        $beaninfo['type'] = 'node';
         $beaninfo['fields'] = array();
 
 
@@ -225,6 +241,10 @@ $module_list[] = array('subpath' => 'features', 'name' => 'cu_hero_unit', 'is_be
 //$module_list[] = array('subpath' => 'features', 'name' => 'cu_faq', 'is_bean' => False);
 
 $module_list[] = array('subpath' => 'custom/cu_publications_bundle', 'name' => 'cu_publication', 'is_bean' => False);
+
+$module_list[] = array('subpath' => 'custom/cu_newsletter_bundle', 'name' => 'cu_newsletter', 'is_bean' => False);
+
+$module_list[] = array('subpath' => 'features', 'name' => 'cu_faq', 'is_bean' => False);
 
 
 ////$subpath = 'features';
