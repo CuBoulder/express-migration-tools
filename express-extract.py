@@ -86,6 +86,8 @@ def extract_fields2(type, id, revision_id):
     node_faqs_fields = []
     node_faqs_fields.append({'name': 'body', 'type': 'node', 'bundle': 'faqs'})
     node_faqs_fields.append({'name': 'field_qa', 'type': 'field_collection_item', 'bundle': 'field_qa_collection'})
+    node_faqs_fields.append({'name': 'field_qa_answer', 'type': 'field_collection_item', 'bundle': 'field_qa'})
+    node_faqs_fields.append({'name': 'field_qa_question', 'type': 'field_collection_item', 'bundle': 'field_qa'})
     node_faqs_fields.append(
         {'name': 'field_qa_collection_title', 'type': 'field_collection_item', 'bundle': 'field_qa_collection'})
     node_faqs_fields.append({'name': 'field_qa_collection', 'type': 'node', 'bundle': 'faqs'})
@@ -152,6 +154,19 @@ def extract_fields2(type, id, revision_id):
                                     if fcif_item[fcif_colname] in urlaliasmap:
                                         fcif_item[fcif_colname] = f"internal:/{urlaliasmap[fcif_item[fcif_colname]]}"
                             fci_data[fci_item['name']] = fcif_item
+
+                            #Is this a collection item?
+                            inner_collection_items = []
+                            for field3 in field_names:
+                                if field3['bundle'] == fci_item['name'] and field3['type'] == 'field_collection_item':
+                                    inner_collection_items.append(field3['name'])
+                            if len(inner_collection_items) > 0:
+                                print(inner_collection_items)
+                                fci_data[fci_item['name']]['collection'] = inner_collection_items
+                                
+                            print(fci_item)
+
+
 
                             fci_data['id'] = f"{field_item['entity_id']}_{field_item['delta']}"
                             field_item['collection'].append(fci_data)

@@ -7,6 +7,26 @@ function t()
 
 $basepath = '/home/tirazel/Projects/pantheon-upstream-express-production/web/profiles/express/modules/';
 
+
+function extract_inner_fields(&$instances, &$info, $name)
+{
+    foreach ($instances as $key => $value)
+    {
+        if($name == $value['bundle'])
+        {
+            $field = array();
+
+            $field['name'] = $value['field_name'];
+            $field['type'] = $value['entity_type'];
+            $field['bundle'] = $value['bundle'];
+
+            $info['fields'][] = $field;
+
+            extract_inner_fields($instances, $info, $field['name']);
+        }
+    }
+}
+
 function extract_bean_info(string $subpath, string $module_name, bool $is_bean = True)
 {
     global $basepath;
@@ -34,18 +54,16 @@ function extract_bean_info(string $subpath, string $module_name, bool $is_bean =
 
     $beanlist = array();
     $beanlist['name'] = $module_name;
-    $beaninfo['type'] = 'bean';
+
     $beanlist['beans'] = array();
 
 
     foreach ($beans as $beans_key => $beans_value)
     {
 
-//        print("#Module: " . $beans_key . "\n\n");
-        $beanname = $beans_key;
-
         $beaninfo = array();
         $beaninfo['name'] = $beans_key;
+        $beaninfo['type'] = 'bean';
         $beaninfo['fields'] = array();
 
 
@@ -63,21 +81,7 @@ function extract_bean_info(string $subpath, string $module_name, bool $is_bean =
             $field['type'] = $i_value['entity_type'];
             $field['bundle'] = $i_value['bundle'];
 
-            foreach ($instances as $f_key => $f_value)
-            {
-                if($field['name'] == $f_value['bundle'])
-                {
-                    $afield = array();
-
-                    $afield['name'] = $f_value['field_name'];
-                    $afield['type'] = $f_value['entity_type'];
-                    $afield['bundle'] = $f_value['bundle'];
-
-                    $beaninfo['fields'][] = $afield;
-
-                }
-            }
-
+            extract_inner_fields($instances, $beaninfo, $field['name']);
 
             $beaninfo['fields'][] = $field;
 
@@ -89,6 +93,7 @@ function extract_bean_info(string $subpath, string $module_name, bool $is_bean =
 
     return $beanlist;
 }
+
 
 
 function extract_node_info(string $subpath, string $module_name, bool $is_bean = True)
@@ -110,34 +115,24 @@ function extract_node_info(string $subpath, string $module_name, bool $is_bean =
         fclose($handle);
     }
 
-
     require $basepath . $subpath . '/' . $module_name . '/' . $module_name . '.features.inc';
     require $basepath . $subpath . '/' . $module_name . '/' . $module_name . '.features.field_base.inc';
     require $basepath . $subpath . '/' . $module_name . '/' . $module_name . '.features.field_instance.inc';
 
 
-
-//    $beans = ($module_name . "_bean_admin_ui_types")();
-
     $instances = ($module_name . "_field_default_field_instances")();
-//    $bases = ($module_name . "_field_default_field_bases")();
 
-
-    $beanlist = array();
-    $beanlist['name'] = $module_name;
-    $beanlist['beans'] = array();
-
+    $nodelist = array();
+    $nodelist['name'] = $module_name;
+    $nodelist['nodes'] = array();
 
     foreach ($beans as $beans_key => $beans_value)
     {
 
-//        print("#Module: " . $beans_key . "\n\n");
-        $beanname = $beans_key;
-
-        $beaninfo = array();
-        $beaninfo['name'] = $beans_key;
-        $beaninfo['type'] = 'node';
-        $beaninfo['fields'] = array();
+        $info = array();
+        $info['name'] = $beans_key;
+        $info['type'] = 'node';
+        $info['fields'] = array();
 
 
         foreach ($instances as $i_key => $i_value)
@@ -145,7 +140,7 @@ function extract_node_info(string $subpath, string $module_name, bool $is_bean =
             $field = array();
 
 
-            if($beaninfo['name'] != $i_value['bundle'])
+            if($info['name'] != $i_value['bundle'])
             {
                 continue;
             }
@@ -154,31 +149,17 @@ function extract_node_info(string $subpath, string $module_name, bool $is_bean =
             $field['type'] = $i_value['entity_type'];
             $field['bundle'] = $i_value['bundle'];
 
-            foreach ($instances as $f_key => $f_value)
-            {
-                if($field['name'] == $f_value['bundle'])
-                {
-                    $afield = array();
+            extract_inner_fields($instances, $info, $field['name']);
 
-                    $afield['name'] = $f_value['field_name'];
-                    $afield['type'] = $f_value['entity_type'];
-                    $afield['bundle'] = $f_value['bundle'];
-
-                    $beaninfo['fields'][] = $afield;
-
-                }
-            }
-
-
-            $beaninfo['fields'][] = $field;
+            $info['fields'][] = $field;
 
         }
 
-        $beanlist['beans'][] = $beaninfo;
+        $nodelist['nodes'][] = $info;
 
     }
 
-    return $beanlist;
+    return $nodelist;
 }
 
 
@@ -216,10 +197,10 @@ function emit_python_node_schema($nodelist)
     print("# Module: " . $nodelist['name'] . "\n\n");
 
 
-    for($i = 0; $i != count($nodelist['beans']); $i++)
+    for($i = 0; $i != count($nodelist['nodes']); $i++)
     {
 
-        $node = $nodelist['beans'][$i];
+        $node = $nodelist['nodes'][$i];
         $fields = $node['fields'];
 
         print("#  Node: " . $node['name'] . "\n\n");
@@ -266,9 +247,9 @@ $module_list[] = array('subpath' => 'features', 'name' => 'cu_hero_unit', 'is_be
 
 //$module_list[] = array('subpath' => 'features', 'name' => 'cu_faq', 'is_bean' => False);
 
-$module_list[] = array('subpath' => 'custom/cu_publications_bundle', 'name' => 'cu_publication', 'is_bean' => False);
+//$module_list[] = array('subpath' => 'custom/cu_publications_bundle', 'name' => 'cu_publication', 'is_bean' => False);
 
-$module_list[] = array('subpath' => 'custom/cu_newsletter_bundle', 'name' => 'cu_newsletter', 'is_bean' => False);
+//$module_list[] = array('subpath' => 'custom/cu_newsletter_bundle', 'name' => 'cu_newsletter', 'is_bean' => False);
 
 $module_list[] = array('subpath' => 'features', 'name' => 'cu_faq', 'is_bean' => False);
 
