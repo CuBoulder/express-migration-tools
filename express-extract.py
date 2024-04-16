@@ -75,23 +75,64 @@ def extract_fields(type, id, revision_id):
 
     return fields
 
+
+node_typemap = {}
+
+# Module: cu_faq
+
+#  Node: faqs
+
+node_faqs_fields = []
+node_faqs_fields.append({'name': 'body', 'type': 'node', 'bundle': 'faqs'})
+node_faqs_fields.append({'name': 'field_qa', 'type': 'field_collection_item', 'bundle': 'field_qa_collection'})
+node_faqs_fields.append({'name': 'field_qa_answer', 'type': 'field_collection_item', 'bundle': 'field_qa'})
+node_faqs_fields.append({'name': 'field_qa_question', 'type': 'field_collection_item', 'bundle': 'field_qa'})
+node_faqs_fields.append(
+    {'name': 'field_qa_collection_title', 'type': 'field_collection_item', 'bundle': 'field_qa_collection'})
+node_faqs_fields.append({'name': 'field_qa_collection', 'type': 'node', 'bundle': 'faqs'})
+node_typemap['faqs'] = node_faqs_fields
+
+def get_field_collection_names(nodetype, fieldname):
+    inner_collection_items = []
+    for field in node_typemap[nodetype]:
+        if field['bundle'] == fieldname and field['type'] == 'field_collection_item':
+            inner_collection_items.append(field['name'])
+    return inner_collection_items
+
+def extract_field(type, fieldname, id, revision_id):
+    field = {}
+    field['field_name'] = fieldname
+    field['type'] = type
+
+    columns = extract_subfields(fieldname)
+
+    data = []
+
+    print(f"select {', '.join(columns)} from field_data_{fieldname} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';")
+
+    fd_result = conn.execute(sqlalchemy.text(
+        f"select {', '.join(columns)} from field_data_{fieldname} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';"))
+
+    for fd_item in fd_result.mappings():
+        field_item = {}
+
+        field_item['collection'] = []
+
+        for colname in columns:
+            field_item[colname] = fd_item[colname]
+
+        if 'entity_id' in field_item and 'delta' in field_item:
+            field_item['id'] = f"{field_item['entity_id']}_{field_item['delta']}"
+
+
+
+        data.append(field_item)
+    field['data'] = data
+    return field
+
 def extract_fields2(type, id, revision_id):
 
-    node_typemap = {}
 
-    # Module: cu_faq
-
-    #  Node: faqs
-
-    node_faqs_fields = []
-    node_faqs_fields.append({'name': 'body', 'type': 'node', 'bundle': 'faqs'})
-    node_faqs_fields.append({'name': 'field_qa', 'type': 'field_collection_item', 'bundle': 'field_qa_collection'})
-    node_faqs_fields.append({'name': 'field_qa_answer', 'type': 'field_collection_item', 'bundle': 'field_qa'})
-    node_faqs_fields.append({'name': 'field_qa_question', 'type': 'field_collection_item', 'bundle': 'field_qa'})
-    node_faqs_fields.append(
-        {'name': 'field_qa_collection_title', 'type': 'field_collection_item', 'bundle': 'field_qa_collection'})
-    node_faqs_fields.append({'name': 'field_qa_collection', 'type': 'node', 'bundle': 'faqs'})
-    node_typemap['faqs'] = node_faqs_fields
 
     if type in node_typemap:
 
@@ -155,16 +196,25 @@ def extract_fields2(type, id, revision_id):
                                         fcif_item[fcif_colname] = f"internal:/{urlaliasmap[fcif_item[fcif_colname]]}"
                             fci_data[fci_item['name']] = fcif_item
 
-                            #Is this a collection item?
-                            inner_collection_items = []
-                            for field3 in field_names:
-                                if field3['bundle'] == fci_item['name'] and field3['type'] == 'field_collection_item':
-                                    inner_collection_items.append(field3['name'])
-                            if len(inner_collection_items) > 0:
-                                print(inner_collection_items)
-                                fci_data[fci_item['name']]['collection'] = inner_collection_items
-                                
-                            print(fci_item)
+                            inner_collection_item_names = get_field_collection_names(type, fci_item['name'])
+
+                            if len(inner_collection_item_names) > 0:
+                                print(inner_collection_item_names)
+
+                                collection = {}
+
+                                for item_name in inner_collection_item_names:
+                                    print(fci_data)
+                                    print(fci_data[fci_item['name']])
+                                    id = fci_data[fci_item['name']][fci_item['name'] + '_value']
+                                    revision_id = fci_data[fci_item['name']][fci_item['name'] + '_revision_id']
+                                    # collection[item_name] = f'{item_name}, {id}, {revision_id}'
+                                    collection[item_name] = extract_field(fci_item['name'], item_name, id, revision_id)
+
+
+
+                                fci_data[fci_item['name']]['collection'] = collection
+
 
 
 
