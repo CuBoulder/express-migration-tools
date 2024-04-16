@@ -245,13 +245,15 @@ $module_list[] = array('subpath' => 'features', 'name' => 'cu_block_section', 'i
 
 $module_list[] = array('subpath' => 'features', 'name' => 'cu_hero_unit', 'is_bean' =>  True);
 
-//$module_list[] = array('subpath' => 'features', 'name' => 'cu_faq', 'is_bean' => False);
+$module_list[] = array('subpath' => 'custom/cu_publications_bundle', 'name' => 'cu_publication', 'is_bean' => False);
 
-//$module_list[] = array('subpath' => 'custom/cu_publications_bundle', 'name' => 'cu_publication', 'is_bean' => False);
-
-//$module_list[] = array('subpath' => 'custom/cu_newsletter_bundle', 'name' => 'cu_newsletter', 'is_bean' => False);
+$module_list[] = array('subpath' => 'custom/cu_newsletter_bundle', 'name' => 'cu_newsletter', 'is_bean' => False);
 
 $module_list[] = array('subpath' => 'features', 'name' => 'cu_faq', 'is_bean' => False);
+
+$module_list[] = array('subpath' => 'features', 'name' => 'photo_gallery', 'is_bean' => False);
+
+$module_list[] = array('subpath' => 'custom/cu_alumni_class_notes_bundle', 'name' => 'cu_class_notes', 'is_bean' => False);
 
 
 ////$subpath = 'features';

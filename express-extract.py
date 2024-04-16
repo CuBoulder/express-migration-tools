@@ -78,6 +78,21 @@ def extract_fields(type, id, revision_id):
 
 node_typemap = {}
 
+# Module: cu_publication
+
+#  Node: issue
+
+node_issue_fields = []
+node_issue_fields.append({'name': 'body', 'type': 'node', 'bundle': 'issue'})
+node_issue_fields.append({'name': 'field_issue_image', 'type': 'node', 'bundle': 'issue'})
+node_issue_fields.append({'name': 'field_issue_image_insert', 'type': 'node', 'bundle': 'issue'})
+node_issue_fields.append({'name': 'field_issue_section_articles', 'type': 'field_collection_item', 'bundle': 'field_issue_section'})
+node_issue_fields.append({'name': 'field_issue_section_display', 'type': 'field_collection_item', 'bundle': 'field_issue_section'})
+node_issue_fields.append({'name': 'field_issue_section_title', 'type': 'field_collection_item', 'bundle': 'field_issue_section'})
+node_issue_fields.append({'name': 'field_issue_section', 'type': 'node', 'bundle': 'issue'})
+node_typemap['issue'] = node_issue_fields
+
+
 # Module: cu_faq
 
 #  Node: faqs
@@ -91,6 +106,17 @@ node_faqs_fields.append(
     {'name': 'field_qa_collection_title', 'type': 'field_collection_item', 'bundle': 'field_qa_collection'})
 node_faqs_fields.append({'name': 'field_qa_collection', 'type': 'node', 'bundle': 'faqs'})
 node_typemap['faqs'] = node_faqs_fields
+
+# Module: photo_gallery
+
+#  Node: photo_gallery
+
+node_photo_gallery_fields = []
+node_photo_gallery_fields.append({'name': 'body', 'type': 'node', 'bundle': 'photo_gallery'})
+node_photo_gallery_fields.append({'name': 'field_photo', 'type': 'node', 'bundle': 'photo_gallery'})
+node_typemap['photo_gallery'] = node_photo_gallery_fields
+
+
 
 def get_field_collection_names(nodetype, fieldname):
     inner_collection_items = []
@@ -108,7 +134,7 @@ def extract_field(type, fieldname, id, revision_id):
 
     data = []
 
-    print(f"select {', '.join(columns)} from field_data_{fieldname} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';")
+    #print(f"select {', '.join(columns)} from field_data_{fieldname} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';")
 
     fd_result = conn.execute(sqlalchemy.text(
         f"select {', '.join(columns)} from field_data_{fieldname} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';"))
@@ -199,13 +225,18 @@ def extract_fields2(type, id, revision_id):
                             inner_collection_item_names = get_field_collection_names(type, fci_item['name'])
 
                             if len(inner_collection_item_names) > 0:
-                                print(inner_collection_item_names)
+                                # print(inner_collection_item_names)
 
                                 collection = {}
 
                                 for item_name in inner_collection_item_names:
-                                    print(fci_data)
-                                    print(fci_data[fci_item['name']])
+
+                                    #print(fci_data[fci_item['name']])
+                                    fci_data[fci_item['name']]['id'] = str(fci_data[fci_item['name']]['entity_id']) + '_' + str(fci_data[fci_item['name']]['delta'])
+                                    # print('test')
+                                    # 
+                                    # print(fci_data)
+
                                     id = fci_data[fci_item['name']][fci_item['name'] + '_value']
                                     revision_id = fci_data[fci_item['name']][fci_item['name'] + '_revision_id']
                                     # collection[item_name] = f'{item_name}, {id}, {revision_id}'
