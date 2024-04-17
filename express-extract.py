@@ -116,6 +116,39 @@ node_photo_gallery_fields.append({'name': 'body', 'type': 'node', 'bundle': 'pho
 node_photo_gallery_fields.append({'name': 'field_photo', 'type': 'node', 'bundle': 'photo_gallery'})
 node_typemap['photo_gallery'] = node_photo_gallery_fields
 
+# Module: cu_newsletter
+
+#  Node: newsletter
+
+node_newsletter_fields = []
+node_newsletter_fields.append({'name': 'body', 'type': 'node', 'bundle': 'newsletter'})
+node_newsletter_fields.append({'name': 'field_newsletter_ad_image', 'type': 'field_collection_item', 'bundle': 'field_newsletter_ad_promo'})
+node_newsletter_fields.append({'name': 'field_newsletter_ad_link', 'type': 'field_collection_item', 'bundle': 'field_newsletter_ad_promo'})
+node_newsletter_fields.append({'name': 'field_newsletter_ad_promo', 'type': 'node', 'bundle': 'newsletter'})
+node_newsletter_fields.append({'name': 'field_newsletter_intro_image', 'type': 'node', 'bundle': 'newsletter'})
+node_newsletter_fields.append({'name': 'field_newsletter_display', 'type': 'field_collection_item', 'bundle': 'field_newsletter_section'})
+node_newsletter_fields.append({'name': 'field_newsletter_more_link', 'type': 'field_collection_item', 'bundle': 'field_newsletter_section'})
+node_newsletter_fields.append({'name': 'field_newsletter_section_content', 'type': 'field_collection_item', 'bundle': 'field_newsletter_section'})
+node_newsletter_fields.append({'name': 'field_newsletter_articles', 'type': 'field_collection_item', 'bundle': 'field_newsletter_section_content'})
+node_newsletter_fields.append({'name': 'field_nl_section_content_body', 'type': 'field_collection_item', 'bundle': 'field_newsletter_section_content'})
+node_newsletter_fields.append({'name': 'field_nl_section_content_image', 'type': 'field_collection_item', 'bundle': 'field_newsletter_section_content'})
+node_newsletter_fields.append({'name': 'field_nl_section_content_title', 'type': 'field_collection_item', 'bundle': 'field_newsletter_section_content'})
+node_newsletter_fields.append({'name': 'field_newsletter_section_title', 'type': 'field_collection_item', 'bundle': 'field_newsletter_section'})
+node_newsletter_fields.append({'name': 'field_newsletter_section', 'type': 'node', 'bundle': 'newsletter'})
+node_newsletter_fields.append({'name': 'field_newsletter_block_body', 'type': 'field_collection_item', 'bundle': 'field_newsletter_text_block'})
+node_newsletter_fields.append({'name': 'field_newsletter_block_title', 'type': 'field_collection_item', 'bundle': 'field_newsletter_text_block'})
+node_newsletter_fields.append({'name': 'field_newsletter_text_block', 'type': 'node', 'bundle': 'newsletter'})
+node_newsletter_fields.append({'name': 'field_newsletter_title', 'type': 'node', 'bundle': 'newsletter'})
+node_newsletter_fields.append({'name': 'field_newsletter_type', 'type': 'node', 'bundle': 'newsletter'})
+node_newsletter_fields.append({'name': 'field_newsletter_design', 'type': 'taxonomy_term', 'bundle': 'newsletter'})
+node_newsletter_fields.append({'name': 'field_newsletter_footer', 'type': 'taxonomy_term', 'bundle': 'newsletter'})
+node_newsletter_fields.append({'name': 'field_newsletter_name_image', 'type': 'taxonomy_term', 'bundle': 'newsletter'})
+node_newsletter_fields.append({'name': 'field_newsletter_path', 'type': 'taxonomy_term', 'bundle': 'newsletter'})
+node_newsletter_fields.append({'name': 'field_newsletter_social_links', 'type': 'taxonomy_term', 'bundle': 'newsletter'})
+node_typemap['newsletter'] = node_newsletter_fields
+
+
+
 
 
 def get_field_collection_names(nodetype, fieldname):
@@ -237,6 +270,10 @@ def extract_fields2(type, id, revision_id):
                                     # 
                                     # print(fci_data)
 
+
+
+
+
                                     id = fci_data[fci_item['name']][fci_item['name'] + '_value']
                                     revision_id = fci_data[fci_item['name']][fci_item['name'] + '_revision_id']
                                     # collection[item_name] = f'{item_name}, {id}, {revision_id}'
@@ -245,6 +282,16 @@ def extract_fields2(type, id, revision_id):
 
 
                                 fci_data[fci_item['name']]['collection'] = collection
+
+                                if fci_item['name'] == 'field_newsletter_section_content':
+                                    # print('field_newsletter_section_content found')
+                                    # pprint.pp(fci_data['field_newsletter_section_content']['collection']['field_nl_section_content_body']['data'])
+                                    if len(fci_data['field_newsletter_section_content']['collection']['field_nl_section_content_body']['data']) > 0:
+                                        pass
+                                    else:
+                                        fci_data['field_newsletter_section_article'] = fci_data.pop('field_newsletter_section_content')
+
+
 
 
 
@@ -1059,6 +1106,8 @@ with engine.connect() as conn:
         node['fields2'] = extract_fields2(x.type, x.nid, x.vid)
 
 
+
+
         if node['type'] == 'section_page':
             node['page_sections'] = []
             # print('Section page node found')
@@ -1149,27 +1198,21 @@ with engine.connect() as conn:
             layout_field_names.append('field_inner_content_left')
             layout_field_names.append('field_inner_content_right')
             layout_field_names.append('BODY')
+            layout_field_names.append('PHOTOGALLERY')
             layout_field_names.append('field_footer')
             layout_field_names.append('field_content_bottom')
             layout_field_names.append('field_wide_2') # WIDE
-
 
 
             layout_field_names.append('field_sidebar_first')
             layout_field_names.append('field_sidebar_second')
 
 
-
-
-
-
-
-
             fields = []
 
             for lfname in layout_field_names:
 
-                if lfname == 'BODY' or lfname == 'TITLE':
+                if lfname == 'BODY' or lfname == 'TITLE' or lfname == 'PHOTOGALLERY':
                     continue
 
                 field = {}
@@ -1332,6 +1375,16 @@ with engine.connect() as conn:
 
                     #title_element['beans'].append('0 title false')
                     combined_page_sections.append(title_element)
+                if ordered_name == 'PHOTOGALLERY' and node['type'] == 'photo_gallery':
+                    pg_element = {}
+                    pg_element['bid'] = node['nid']
+                    pg_element['beans'] = []
+                    column = []
+                    column.append(f'{node["nid"]} photogallery false')
+                    pg_element['beans'].append(column)
+
+                    #title_element['beans'].append('0 title false')
+                    combined_page_sections.append(pg_element)
 
 
 
