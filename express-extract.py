@@ -1561,14 +1561,30 @@ with engine.connect() as conn:
         for vid in vocabulary_result:
             term_result = conn.execute(sqlalchemy.text(f"select tid, name, description, format, weight from taxonomy_term_data WHERE vid = '{vid.vid}';"))
             for t in term_result:
+
+# footer
+# path
+# design
+# name_image
+# social_links
+
                 parent = 0
                 parent_result = conn.execute(sqlalchemy.text(f"select parent from taxonomy_term_hierarchy WHERE tid = '{t.tid}';"));
                 for p in parent_result:
                     parent = p.parent
 
+                term = {'tid': t.tid, 'parent': parent, 'name': t.name, 'description': t.description, 'format': t.format, 'weight': t.weight}
 
+                if vocab['src'] == 'newsletter':
+                    fields = {}
+                    field_result = conn.execute(sqlalchemy.text(f"select field_newsletter_footer_value, field_newsletter_footer_format from field_data_field_newsletter_footer WHERE entity_id = '{t.tid}';"))
+                    for f in field_result:
+                        fields['field_newsletter_footer'] = {}
+                        fields['field_newsletter_footer']['value'] = f.field_newsletter_footer_value
+                        fields['field_newsletter_footer']['format'] = f.field_newsletter_footer_format
+                    term['fields'] = fields
 
-                terms.append({'tid': t.tid, 'parent': parent, 'name': t.name, 'description': t.description, 'format': t.format, 'weight': t.weight})
+                terms.append(term)
         vocabularies[vocab['src']] = terms
 
     #
