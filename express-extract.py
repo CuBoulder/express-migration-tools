@@ -1582,7 +1582,28 @@ with engine.connect() as conn:
                         fields['field_newsletter_footer'] = {}
                         fields['field_newsletter_footer']['value'] = f.field_newsletter_footer_value
                         fields['field_newsletter_footer']['format'] = f.field_newsletter_footer_format
+
+                    field_result = conn.execute(sqlalchemy.text(f"select field_newsletter_path_value from field_data_field_newsletter_path WHERE entity_id = '{t.tid}';"))
+                    for f in field_result:
+                        fields['field_newsletter_path'] = {}
+                        fields['field_newsletter_path']['value'] = f.field_newsletter_path_value
+
+                    field_result = conn.execute(sqlalchemy.text(f"select field_newsletter_design_value from field_data_field_newsletter_design WHERE entity_id = '{t.tid}';"))
+                    for f in field_result:
+                        fields['field_newsletter_design'] = {}
+                        fields['field_newsletter_design']['value'] = f.field_newsletter_design_value
+
+                    field_result = conn.execute(sqlalchemy.text(f"select field_newsletter_name_image_fid from field_data_field_newsletter_name_image WHERE entity_id = '{t.tid}';"))
+                    for f in field_result:
+                        fields['field_newsletter_name_image'] = {}
+                        fields['field_newsletter_name_image']['fid'] = f.field_newsletter_name_image_fid
+
+                    field_result = conn.execute(sqlalchemy.text(f"select field_newsletter_social_links_target_id from field_data_field_newsletter_social_links WHERE entity_id = '{t.tid}';"))
+                    for f in field_result:
+                        fields['field_newsletter_social_links'] = {}
+                        fields['field_newsletter_social_links']['target_id'] = f.field_newsletter_social_links_target_id
                     term['fields'] = fields
+                    
 
                 terms.append(term)
         vocabularies[vocab['src']] = terms
