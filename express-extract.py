@@ -759,10 +759,19 @@ with engine.connect() as conn:
     bean_articles_fields.append({'name': 'field_article_term', 'type': 'bean', 'bundle': 'articles'})
     bean_types['articles'] = bean_articles_fields
 
+    # Module: cu_social_links
 
+    #  Bean: social_links
 
-
-
+    bean_social_links_fields = []
+    bean_social_links_fields.append({'name': 'field_social_links_arrangement', 'type': 'bean', 'bundle': 'social_links'})
+    bean_social_links_fields.append({'name': 'field_social_links_body', 'type': 'bean', 'bundle': 'social_links'})
+    bean_social_links_fields.append({'name': 'field_social_link_type', 'type': 'field_collection_item', 'bundle': 'field_social_links_collection'})
+    bean_social_links_fields.append({'name': 'field_social_link_url', 'type': 'field_collection_item', 'bundle': 'field_social_links_collection'})
+    bean_social_links_fields.append({'name': 'field_social_links_collection', 'type': 'bean', 'bundle': 'social_links'})
+    bean_social_links_fields.append({'name': 'field_social_links_homepage_url', 'type': 'bean', 'bundle': 'social_links'})
+    bean_social_links_fields.append({'name': 'field_social_links_size', 'type': 'bean', 'bundle': 'social_links'})
+    bean_types['social_links'] = bean_social_links_fields
 
 
 
@@ -788,6 +797,9 @@ with engine.connect() as conn:
         if len(bean['title'].strip()) == 0:
             bean['title'] = bean['label']
             bean['display_title'] = 'false'
+
+
+
 
 
         bean_fields = []
@@ -1338,7 +1350,7 @@ with engine.connect() as conn:
                         else:
                             #section['beans']['columns'] = []
                             column = []
-                            column.append(f"{section['bid']} {get_bean_type(section['bid'])} {bean['display_title']} 4")
+                            column.append(f"{section['bid']} {get_bean_type(section['bid'])} {get_bean(section['bid'])['display_title']} 4")
                             section['beans'].append(column)
 
                             #section['beans'].append(f"{section['bid']} {get_bean_type(section['bid'])} {bean['display_title']}")
