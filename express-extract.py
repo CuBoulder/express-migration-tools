@@ -1307,6 +1307,11 @@ with engine.connect() as conn:
                                         block_row = True
                                         b = get_bean(bid)
 
+                                        section['beans'].append('SPLIT')
+                                        br = {}
+                                        br['type'] = 'BLOCKROW'
+                                        br['columns'] = []
+
                                         if 'field_block_row_collection' in b['fields']:
                                             for d in b['fields']['field_block_row_collection']['data']:
                                                 column = []
@@ -1314,10 +1319,12 @@ with engine.connect() as conn:
 
                                                     for ib in d['collection']:
                                                         inner_bean = ib['field_block_row_block']['field_block_row_block_target_id']
-                                                        column.append(f"{inner_bean} {get_bean_type(inner_bean)} {get_bean(inner_bean)['display_title']} 3")
+                                                        column.append(f"{inner_bean} {get_bean_type(inner_bean)} {get_bean(inner_bean)['display_title']} 3 ")
 
                                                 section['beans'].append(column)
+                                                br['columns'].append(column)
                                         section['distribution'] = b['fields']['field_block_row_distribution']['data'][0]['field_block_row_distribution_value']
+                                        section['beans'].append(br)
 
                                     else:
                                         columns.append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {get_bean(c['field_blocks_section_blocks_target_id'])['display_title']} 2")
@@ -1334,14 +1341,8 @@ with engine.connect() as conn:
                                 for d in b['fields']['field_block_row_collection']['data']:
                                     column = []
                                     if 'collection' in d:
-
                                         for ib in d['collection']:
-                                            #inner_bean = d['collection']['field_block_row_block']['field_block_row_block_target_id']
-                                            #section['beans'].append(f"{inner_bean} {get_bean_type(inner_bean)} {bean['display_title']}")
-
                                             inner_bean = ib['field_block_row_block']['field_block_row_block_target_id']
-                                            #section['beans'].append(f"{inner_bean} {get_bean_type(inner_bean)} {bean['display_title']} 3")
-
                                             column.append(f"{inner_bean} {get_bean_type(inner_bean)} {get_bean(inner_bean)['display_title']} 3")
                                     section['beans'].append(column)
                             section['distribution'] = b['fields']['field_block_row_distribution']['data'][0]['field_block_row_distribution_value']
@@ -1367,6 +1368,15 @@ with engine.connect() as conn:
 
 
                     page_sections[field_name].append(section)
+
+            #Ugly block_row fix
+
+            for ordered_name in layout_field_names:
+                if ordered_name in page_sections:
+                    new_section_list = []
+                    for section in page_sections[ordered_name]:
+                        new_section_list.append(section)
+                    print(new_section_list)
 
 
             combined_page_sections = []
