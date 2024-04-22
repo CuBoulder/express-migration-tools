@@ -203,17 +203,19 @@ def set_configuration(sitename):
 
         ucb_breadcrumb_nav = '0'
         if 'use_breadcrumbs' in themesettings:
-            if themesettings['use_breadcrumbs'] == '0':
+            if themesettings['use_breadcrumbs'] == 0:
                 ucb_breadcrumb_nav = 0
-            if themesettings['use_breadcrumbs'] == '1':
+            if themesettings['use_breadcrumbs'] == 1:
                 ucb_breadcrumb_nav = 1
         run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set boulder_base.settings ucb_breadcrumb_nav "{ucb_breadcrumb_nav}" --yes')
 
-        ucb_secondary_menu_position = 'above'
+        ucb_secondary_menu_position = '0'
         if 'use_action_menu' in themesettings:
-            if themesettings['use_action_menu'] == 'above':
+            print(themesettings['use_action_menu'])
+
+            if themesettings['use_action_menu'] == 0:
                 ucb_secondary_menu_position = 0
-            if themesettings['use_action_menu'] == 'inline':
+            if themesettings['use_action_menu'] == 1:
                 ucb_secondary_menu_position = 1
         run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set boulder_base.settings ucb_secondary_menu_position "{ucb_secondary_menu_position}" --yes')
 
@@ -365,7 +367,7 @@ def create_users(sitename):
 def enable_migrate_express(sitename):
     print("Enable Migrate Express...")
 
-    run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code en migrate_express --yes')
+    run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code en migrate_express migrate_devel --yes')
 
 
 

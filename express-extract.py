@@ -1350,7 +1350,16 @@ with engine.connect() as conn:
                         else:
                             #section['beans']['columns'] = []
                             column = []
-                            column.append(f"{section['bid']} {get_bean_type(section['bid'])} {get_bean(section['bid'])['display_title']} 4")
+
+                            if get_bean(section['bid']) is not None:
+                                column.append(f"{section['bid']} {get_bean_type(section['bid'])} {get_bean(section['bid'])['display_title']} 4")
+                            else:
+                                pass
+                            # Check
+                            #    column.append(f"{section['bid']} {get_bean_type(section['bid'])} false 5")
+
+
+
                             section['beans'].append(column)
 
                             #section['beans'].append(f"{section['bid']} {get_bean_type(section['bid'])} {bean['display_title']}")
