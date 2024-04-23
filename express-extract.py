@@ -11,6 +11,7 @@ import sys
 import tinycss2
 import pprint
 import yaml
+import copy
 from bs4 import BeautifulSoup
 
 
@@ -1297,17 +1298,19 @@ with engine.connect() as conn:
                                 if len(b['fields']['field_hero_unit_text_color']['data']) > 0:
                                     section['text_color'] = b['fields']['field_hero_unit_text_color']['data'][0]['field_hero_unit_text_color_value']
 
-                                columns = []
 
-                                block_row = False
+
+                                # block_row = False
 
                                 for c in b['fields']['field_blocks_section_blocks']['data']:
                                     bid = c['field_blocks_section_blocks_target_id']
                                     if get_bean_type(bid) == 'block_row':
+
+                                        columns = []
+
                                         block_row = True
                                         b = get_bean(bid)
 
-                                        section['beans'].append('SPLIT')
                                         br = {}
                                         br['type'] = 'BLOCKROW'
                                         br['columns'] = []
@@ -1321,16 +1324,22 @@ with engine.connect() as conn:
                                                         inner_bean = ib['field_block_row_block']['field_block_row_block_target_id']
                                                         column.append(f"{inner_bean} {get_bean_type(inner_bean)} {get_bean(inner_bean)['display_title']} 3 ")
 
-                                                section['beans'].append(column)
+                                                # section['beans'].append(column)
                                                 br['columns'].append(column)
-                                        section['distribution'] = b['fields']['field_block_row_distribution']['data'][0]['field_block_row_distribution_value']
+                                        br['distribution'] = b['fields']['field_block_row_distribution']['data'][0]['field_block_row_distribution_value']
                                         section['beans'].append(br)
 
                                     else:
-                                        columns.append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {get_bean(c['field_blocks_section_blocks_target_id'])['display_title']} 2")
+                                        #columns.append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {get_bean(c['field_blocks_section_blocks_target_id'])['display_title']} 2")
+                                        sr = {}
+                                        sr['type'] = 'SINGLE'
+                                        sr['columns'] = []
+                                        sr['columns'].append([f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {get_bean(c['field_blocks_section_blocks_target_id'])['display_title']} 2"])
+                                        section['beans'].append(sr)
 
-                                if block_row == False:
-                                    section['beans'].append(columns)
+
+                                # if block_row == False:
+                                #     section['beans'].append(columns)
 
                     if block_section == False:
                         
@@ -1371,12 +1380,74 @@ with engine.connect() as conn:
 
             #Ugly block_row fix
 
+            layout['page_sections_test'] = {}
+
             for ordered_name in layout_field_names:
                 if ordered_name in page_sections:
                     new_section_list = []
                     for section in page_sections[ordered_name]:
-                        new_section_list.append(section)
-                    print(new_section_list)
+                        reprocessing_required = False
+                        for bean in section['beans']:
+                            if 'type' in bean:
+                                reprocessing_required = True
+
+                        if reprocessing_required:
+                            # print('Reprocessing')
+                            new_sections = []
+                            current_section = None
+                            for bean in section['beans']:
+                                if bean['type'] == 'SINGLE':
+                                    if current_section == None:
+                                        current_section = copy.deepcopy(section)
+                                        current_section['beans'] = bean['columns']
+                                    else:
+                                        current_section['beans'][0].extend(bean['columns'][0])
+
+                                    # new_section = copy.deepcopy(section)
+                                    # new_section['beans'] = bean['columns']
+                                    # new_sections.append(new_section)
+                                elif bean['type'] == 'BLOCKROW':
+                                    if current_section is not None:
+                                        new_sections.append(current_section)
+                                        current_section = None
+                                    new_section = copy.deepcopy(section)
+                                    new_section['beans'] = bean['columns']
+                                    new_section['distribution'] = bean['distribution']
+                                    new_sections.append(new_section)
+                            if current_section is not None:
+                                new_sections.append(current_section)
+                                current_section = None
+
+
+                            new_section_list.extend(new_sections)
+
+
+                        else:
+                            new_section_list.append(section)
+
+                    for idx, x in enumerate(new_section_list):
+                        # print(f" enum: {idx} {x}")
+                        if x == 0:
+                            continue
+                        else:
+                            if 'bg_image' in new_section_list[idx] and 'bg_image' in new_section_list[idx - 1]:
+                                # print(f"{new_section_list[idx]['bg_image']} {new_section_list[idx - 1]['bg_image']}")
+                                if new_section_list[idx]['bg_image'] == new_section_list[idx - 1]['bg_image']:
+                                    new_section_list[idx - 1]['bg_effect'] = 'scroll'
+                                    new_section_list[idx]['bg_effect'] = 'scroll'
+                    # page_sections[ordered_name] = new_section_list
+                    # print(new_section_list)
+                    layout['page_sections_test'][ordered_name] = new_section_list
+                    page_sections[ordered_name] = new_section_list
+
+
+
+            # print("PAGE SECTIONS")
+            # pprint.pp(page_sections)
+            # print("PAGE SECTIONS TEST")
+            # pprint.pp(layout['page_sections_test'])
+
+
 
 
             combined_page_sections = []
