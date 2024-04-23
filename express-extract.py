@@ -13,6 +13,7 @@ import pprint
 import yaml
 import copy
 from bs4 import BeautifulSoup
+import cssutils
 
 
 
@@ -1117,6 +1118,79 @@ with engine.connect() as conn:
 
         node['fields'] = extract_fields(x.type, x.nid, x.vid)
         node['fields2'] = extract_fields2(x.type, x.nid, x.vid)
+
+        rules = [
+            {
+                'elements': 'p',
+                'patterns': [
+                    {'name': 'text-align', 'value': 'center', 'class': 'text-align-center'},
+                    {'name': 'text-align', 'value': 'right', 'class': 'text-align-right'}
+                ]
+            },
+            {
+                'elements': 'img',
+                'patterns': [
+                    {'name': 'float', 'value': 'right', 'class': 'align-right'}
+                ]
+            }
+        ]
+
+
+
+
+        if node['nid'] == 44:
+            html = node['fields']['body']['data'][0]['body_value']
+            # print("Initial HTML:")
+            # print(html)
+            # print("Results:")
+
+            soup = BeautifulSoup(html, features="lxml")
+
+            for rule in rules:
+                results = soup.find_all(rule['elements'], style=True)
+                for result in results:
+                    styles = cssutils.parseStyle(result['style'])
+                    for style in styles:
+                        for pattern in rule['patterns']:
+                            if style.name == pattern['name'] and style.value == pattern['value']:
+                                if result.get('class') is None:
+                                    result['class'] = pattern['class']
+                                else:
+                                    result['class'].append(pattern['class'])
+                    del result['style']
+
+            #
+            # result = soup.find_all('p', style=True)
+            # for r in result:
+            #     styles = cssutils.parseStyle(r['style'])
+            #     for s in styles:
+            #         if(s.name == 'text-align' and s.value == 'center'):
+            #             if r.get('class') is None:
+            #                 r['class'] = 'text-align-center'
+            #             else:
+            #                 r['class'].append('text-align-center')
+            #         if(s.name == 'text-align' and s.value == 'right'):
+            #             if r.get('class') is None:
+            #                 r['class'] = 'text-align-right'
+            #             else:
+            #                 r['class'].append('text-align-right')
+            #     del r['style']
+            # result = soup.find_all('img', style=True)
+            # for r in result:
+            #     styles = cssutils.parseStyle(r['style'])
+            #     for s in styles:
+            #         if(s.name == 'float' and s.value == 'right'):
+            #             if r.get('class') is None:
+            #                 r['class'] = 'align-right'
+            #             else:
+            #                 r['class'].append('align-right')
+            #     del r['style']
+
+            node['fields']['body']['data'][0]['body_value'] = str(soup)
+
+
+
+
 
 
 
