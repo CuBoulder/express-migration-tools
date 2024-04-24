@@ -193,6 +193,8 @@ def extract_field(type, fieldname, id, revision_id):
 
 def extract_fields2(type, id, revision_id):
 
+    # print(f"EXTRACT_FIELDS2 A type: {type} id: {id} revision_id: {revision_id}")
+
 
 
     if type in node_typemap:
@@ -209,6 +211,9 @@ def extract_fields2(type, id, revision_id):
                 field['field_name'] = fname['name']
                 field['type'] = type
 
+
+
+
                 columns = extract_subfields(fname['name'])
 
                 collection_fields = []
@@ -217,10 +222,21 @@ def extract_fields2(type, id, revision_id):
                         collection_fields.append(f2)
                 data = []
 
+                # print(f"EXTRACT_FIELDS2 B type: {type} id: {id} revision_id: {revision_id}")
+                #
+                # print(f"TEST 1: {field['field_name']}")
+                # print(collection_fields)
+                # print(f"select {', '.join(columns)} from field_data_{fname['name']} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';")
+                #
+
                 fd_result = conn.execute(sqlalchemy.text(
                     f"select {', '.join(columns)} from field_data_{fname['name']} where bundle = '{type}' AND entity_id = '{id}' AND revision_id = '{revision_id}';"))
 
                 for fd_item in fd_result.mappings():
+
+                    # print(f"TEST 2: {field['field_name']}")
+
+
                     field_item = {}
 
                     field_item['collection'] = []
@@ -233,7 +249,12 @@ def extract_fields2(type, id, revision_id):
 
                     fci_item_fields = []
 
+
+
                     for fci_item in collection_fields:
+
+                        # print(fci_item)
+
                         fci_columns = extract_subfields(fci_item['name'])
 
                         fci_id_column = fname['name'] + '_value'
@@ -259,6 +280,8 @@ def extract_fields2(type, id, revision_id):
 
                             inner_collection_item_names = get_field_collection_names(type, fci_item['name'])
 
+
+
                             if len(inner_collection_item_names) > 0:
                                 # print(inner_collection_item_names)
 
@@ -276,10 +299,10 @@ def extract_fields2(type, id, revision_id):
 
 
 
-                                    id = fci_data[fci_item['name']][fci_item['name'] + '_value']
-                                    revision_id = fci_data[fci_item['name']][fci_item['name'] + '_revision_id']
-                                    # collection[item_name] = f'{item_name}, {id}, {revision_id}'
-                                    collection[item_name] = extract_field(fci_item['name'], item_name, id, revision_id)
+                                    local_id = fci_data[fci_item['name']][fci_item['name'] + '_value']
+                                    local_revision_id = fci_data[fci_item['name']][fci_item['name'] + '_revision_id']
+                                    # collection[item_name] = f'{item_name}, {local_id}, {local_revision_id}'
+                                    collection[item_name] = extract_field(fci_item['name'], item_name, local_id, local_revision_id)
 
 
 
@@ -304,8 +327,42 @@ def extract_fields2(type, id, revision_id):
                     if len(field_item['collection']) == 0:
                         del field_item['collection']
 
+
                     data.append(field_item)
                 field['data'] = data
+
+
+                if field['field_name'] == 'field_newsletter_ad_promo':
+                    simple_ads = {}
+
+                    # pprint.pp(field)
+
+                    for idx, x in enumerate(field['data']):
+                        # print(idx)
+                        if 'collection' in field['data'][idx]:
+                            # print(f"Index {idx}")
+                            # print(field['data'][idx]['collection'])
+
+                            for y in field['data'][idx]['collection']:
+
+                                if 'field_newsletter_ad_image' in y:
+                                    # print("test 1")
+                                    # print(y['field_newsletter_ad_image']['field_newsletter_ad_image_fid'])
+                                    if idx == 0:
+                                        simple_ads['field_newsletter_promo_image_one'] = y['field_newsletter_ad_image']['field_newsletter_ad_image_fid']
+                                    if idx == 1:
+                                        simple_ads['field_newsletter_promo_image_two'] = y['field_newsletter_ad_image']['field_newsletter_ad_image_fid']
+                                if 'field_newsletter_ad_link' in y:
+                                    # print(y['field_newsletter_ad_link']['field_newsletter_ad_link_url'])
+                                    if idx == 0:
+                                        simple_ads['field_newsletter_promo_link_one'] = y['field_newsletter_ad_link']['field_newsletter_ad_link_url']
+                                    if idx == 1:
+                                        simple_ads['field_newsletter_promo_link_two'] = y['field_newsletter_ad_link']['field_newsletter_ad_link_url']
+                    # print(simple_ads)
+                    field['data'] = simple_ads
+                        # image_fid
+                        # pprint.pp(d)
+
                 fields[field['field_name']] = field
         return fields
 
@@ -1121,7 +1178,7 @@ with engine.connect() as conn:
 
         rules = [
             {
-                'elements': 'p',
+                'elements': ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span', 'div', 'tr', 'td', 'th'],
                 'patterns': [
                     {'name': 'text-align', 'value': 'center', 'class': 'text-align-center'},
                     {'name': 'text-align', 'value': 'right', 'class': 'text-align-right'}
@@ -1130,69 +1187,46 @@ with engine.connect() as conn:
             {
                 'elements': 'img',
                 'patterns': [
-                    {'name': 'float', 'value': 'right', 'class': 'align-right'}
+                    {'name': 'float', 'value': 'right', 'class': 'right', 'alt-attr': 'data-align'},
+                    {'name': 'float', 'value': 'center', 'class': 'center', 'alt-attr': 'data-align'},
+                    {'name': 'float', 'value': 'left', 'class': 'left', 'alt-attr': 'data-align'}
                 ]
             }
         ]
 
 
 
+        if 'fields' in node:
+            if 'body' in node['fields']:
+                if 'data' in node['fields']['body']:
+                    for data in node['fields']['body']['data']:
+                        if 'body_value' in data:
 
-        if node['nid'] == 44:
-            html = node['fields']['body']['data'][0]['body_value']
-            # print("Initial HTML:")
-            # print(html)
-            # print("Results:")
+                            html = data['body_value']
+                            # print("Initial HTML:")
+                            # print(html)
+                            # print("Results:")
 
-            soup = BeautifulSoup(html, features="lxml")
+                            soup = BeautifulSoup(html, features="lxml")
 
-            for rule in rules:
-                results = soup.find_all(rule['elements'], style=True)
-                for result in results:
-                    styles = cssutils.parseStyle(result['style'])
-                    for style in styles:
-                        for pattern in rule['patterns']:
-                            if style.name == pattern['name'] and style.value == pattern['value']:
-                                if result.get('class') is None:
-                                    result['class'] = pattern['class']
-                                else:
-                                    result['class'].append(pattern['class'])
-                    del result['style']
+                            for rule in rules:
+                                results = soup.find_all(rule['elements'], style=True)
+                                for result in results:
+                                    styles = cssutils.parseStyle(result['style'])
+                                    for style in styles:
+                                        for pattern in rule['patterns']:
+                                            if style.name == pattern['name'] and style.value == pattern['value']:
+                                                attr = 'class'
+                                                if 'alt-attr' in pattern:
+                                                    attr = pattern['alt-attr']
 
-            #
-            # result = soup.find_all('p', style=True)
-            # for r in result:
-            #     styles = cssutils.parseStyle(r['style'])
-            #     for s in styles:
-            #         if(s.name == 'text-align' and s.value == 'center'):
-            #             if r.get('class') is None:
-            #                 r['class'] = 'text-align-center'
-            #             else:
-            #                 r['class'].append('text-align-center')
-            #         if(s.name == 'text-align' and s.value == 'right'):
-            #             if r.get('class') is None:
-            #                 r['class'] = 'text-align-right'
-            #             else:
-            #                 r['class'].append('text-align-right')
-            #     del r['style']
-            # result = soup.find_all('img', style=True)
-            # for r in result:
-            #     styles = cssutils.parseStyle(r['style'])
-            #     for s in styles:
-            #         if(s.name == 'float' and s.value == 'right'):
-            #             if r.get('class') is None:
-            #                 r['class'] = 'align-right'
-            #             else:
-            #                 r['class'].append('align-right')
-            #     del r['style']
+                                                if result.get(attr) is None:
+                                                    result[attr] = pattern['class']
+                                                else:
+                                                    result[attr].append(pattern['class'])
+                                    del result['style']
 
-            node['fields']['body']['data'][0]['body_value'] = str(soup)
-
-
-
-
-
-
+                            data['body_value'] = str(soup)
 
 
         if node['type'] == 'section_page':
