@@ -423,7 +423,7 @@ with engine.connect() as conn:
 
 
     filemap = {}
-    filemap['images'] = ['image/jpeg', 'image/png']
+    filemap['images'] = ['image/jpeg', 'image/png', 'image/gif']
     filemap['documents'] = ['application/pdf']
     filemap['video'] = []
     filemap['audio'] = []
@@ -1282,7 +1282,7 @@ with engine.connect() as conn:
                         for c in b['fields']['field_blocks_section_blocks']['data']:
                             #print(c)
                             column = []
-                            column.append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {bean['display_title']} 1")
+                            column.append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {get_bean(c['field_blocks_section_blocks_target_id'])['display_title']} 1")
                             bs['beans'].append(column)
 
                             #bs['beans'].append(f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {bean['display_title']} 1")
@@ -1309,17 +1309,17 @@ with engine.connect() as conn:
 
 
             layout_field_names.append('field_intro')  # WIDE
-            layout_field_names.append('field_slider')  # WIDE
+            layout_field_names.append('field_slider')  # not WIDE
 
             layout_field_names.append('TITLE')
 
             layout_field_names.append('field_post_title_wide') # WIDE
             layout_field_names.append('field_post_title')
             layout_field_names.append('field_header')
-            layout_field_names.append('field_inner_content_left')
-            layout_field_names.append('field_inner_content_right')
             layout_field_names.append('BODY')
             layout_field_names.append('PHOTOGALLERY')
+            layout_field_names.append('field_inner_content_left')
+            layout_field_names.append('field_inner_content_right')
             layout_field_names.append('field_footer')
             layout_field_names.append('field_content_bottom')
             layout_field_names.append('field_wide_2') # WIDE
@@ -1561,20 +1561,41 @@ with engine.connect() as conn:
             combined_page_sections = []
             for ordered_name in layout_field_names:
                 if ordered_name in page_sections:
-                    if ordered_name == 'field_intro' or ordered_name == 'field_slider' or ordered_name == 'field_post_title_wide' or ordered_name == 'field_wide_2':
+                    if ordered_name == 'field_intro' or ordered_name == 'field_post_title_wide' or ordered_name == 'field_wide_2':
                         for section in page_sections[ordered_name]:
                             section['container_width'] = 'edge-to-edge'
 
-                    combined_page_sections.extend(page_sections[ordered_name])
+                    if ordered_name != 'field_sidebar_first' and ordered_name != 'field_sidebar_second':
+                        combined_page_sections.extend(page_sections[ordered_name])
                 if ordered_name == 'BODY':
                     body_element = {}
                     body_element['bid'] = 0
                     body_element['beans'] = []
                     column = []
                     column.append('0 body false')
+
+
+                    if 'field_sidebar_first' in page_sections:
+                        field_sidebar_first_column = []
+                        for b in page_sections['field_sidebar_first']:
+                            if field_sidebar_second_column.append(b['beans'][0]) is not None:
+                                field_sidebar_first_column.append(b['beans'][0][0])
+                        body_element['beans'].append(field_sidebar_first_column)
+
                     body_element['beans'].append(column)
-                    #body_element['beans'].append('0 body false')
+
+                    if 'field_sidebar_second' in page_sections:
+                        field_sidebar_second_column = []
+                        for b in page_sections['field_sidebar_second']:
+                            if field_sidebar_second_column.append(b['beans'][0]) is not None:
+                                field_sidebar_second_column.append(b['beans'][0][0])
+                        body_element['beans'].append(field_sidebar_second_column)
+
+                    # print('BODY:')
+                    # print(body_element)
+
                     combined_page_sections.append(body_element)
+
                 if ordered_name == 'TITLE':
                     title_element = {}
                     title_element['bid'] = 0
@@ -1596,9 +1617,6 @@ with engine.connect() as conn:
                     #title_element['beans'].append('0 title false')
                     combined_page_sections.append(pg_element)
 
-
-
-            #layout['page_sections'] = page_sections
             layout['page_sections'] = combined_page_sections
 
 
