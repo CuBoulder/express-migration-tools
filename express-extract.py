@@ -12,6 +12,8 @@ import tinycss2
 import pprint
 import yaml
 import copy
+import datetime
+import dateutil
 from bs4 import BeautifulSoup
 import cssutils
 
@@ -394,7 +396,7 @@ sitename_clean = args.site.replace('-', '')
 
 engine = sqlalchemy.create_engine(f"mariadb+pymysql://root:pass@localhost/{sitename_clean}?charset=utf8mb4", echo=False)
 
-with engine.connect() as conn:
+with (engine.connect() as conn):
 
     output = {}
 
@@ -901,6 +903,11 @@ with engine.connect() as conn:
 
                         field_item['collection'] = []
 
+                        # if fname['name'] == 'field_localist_start_date':
+                        #     print("date test A")
+                        #     print(fd_item['field_localist_start_date_value'])
+                        #     print("date test B")
+
                         for colname in columns:
                             field_item[colname] = fd_item[colname]
 
@@ -955,6 +962,69 @@ with engine.connect() as conn:
                 bean['fields']['field_block_wrapper_reference']['data'][0]['field_block_wrapper_reference_value'] = webform_nid
             else:
                 print("Block wrapper data empty", file=sys.stderr)
+
+        if bean['type'] == 'localist_events':
+            eventdata = {}
+            eventdata['schools'] = 'ucboulder'
+
+            eventfields = []
+            eventfields.append({'field': 'field_localist_results', 'param': 'num'})
+            eventfields.append({'field': 'field_localist_days_ahead', 'param': 'days'})
+            eventfields.append({'field': 'field_localist_show_featured', 'param': 'picks'})
+            eventfields.append({'field': 'field_localist_show_sponsored', 'param': 'sponsored'})
+            eventfields.append({'field': 'field_localist_content_match', 'param': 'match'})
+            eventfields.append({'field': 'field_localist_hide_past_events', 'param': 'hide_past'})
+            eventfields.append({'field': 'field_localist_hide_descriptions', 'param': 'hidedesc'})
+            eventfields.append({'field': 'field_localist_truncate_desc', 'param': 'expand_descriptions'})
+            eventfields.append({'field': 'field_localist_render_html', 'param': 'html_descriptions'})
+            eventfields.append({'field': 'field_localist_hide_images', 'param': 'hideimage'})
+            eventfields.append({'field': 'field_localist_hide_times', 'param': 'show_times'})
+            eventfields.append({'field': 'field_localist_new_window', 'param': 'target_blank'})
+            eventfields.append({'field': 'field_localist_skip_recurring', 'param': 'skip_recurring'})
+            eventfields.append({'field': 'field_localist_all_instances', 'param': 'all_instances'})
+            eventfields.append({'field': 'field_localist_style', 'param': 'template'})
+
+            eventfields.append({'field': 'field_localist_places', 'param': 'venues'})
+            eventfields.append({'field': 'field_localist_filters', 'param': 'types'})
+            eventfields.append({'field': 'field_localist_filters_excluded', 'param': 'exclude_types'})
+            eventfields.append({'field': 'field_localist_groups', 'param': 'groups'})
+            eventfields.append({'field': 'field_localist_tags', 'param': 'tags'})
+            eventfields.append({'field': 'field_localist_start_date', 'param': 'start'})
+
+            for f in eventfields:
+                if len(bean['fields'][f['field']]['data']) > 0:
+                    if f['field'] == 'field_localist_places' or f['field'] == 'field_localist_groups' or f['field'] == 'field_localist_tags':
+                        eventdata[f['param']] = []
+                        for x in bean['fields'][f['field']]['data']:
+                            eventdata[f['param']].append(x[f['field'] + "_value"])
+                        eventdata[f['param']] = ','.join(eventdata[f['param']])
+                    else:
+                        eventdata[f['param']] = bean['fields'][f['field']]['data'][0][f['field'] + "_value"]
+
+
+
+            if 'types' not in eventdata:
+                eventdata['types'] = 0
+
+            if 'exclude_types' not in eventdata:
+                eventdata['exclude_types'] = 0
+
+            if 'start' in eventdata:
+                eventdata['start'] = dateutil.parser.parse(str(eventdata['start'])).strftime("%Y-%m-%d")
+
+            params = ""
+            for param in eventdata:
+                if str(eventdata[param]) != '0':
+                    params += f"{param}={eventdata[param]}&"
+
+            # print(params)
+
+            params = params[:-1]
+            params += "&show-types=0"
+            url = f'<script type="text/javascript" src="https://calendar.colorado.edu/widget/view?{params}"></script>'
+
+            bean['fields']['url'] = url
+
 
 
 
