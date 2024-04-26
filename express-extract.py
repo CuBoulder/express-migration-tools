@@ -949,6 +949,14 @@ with (engine.connect() as conn):
                     field['data'] = data
                     fields[field['field_name']] = field
 
+            #testtest
+            if 'field_hero_unit_link' in fields:
+                if 'data' in fields['field_hero_unit_link']:
+                    for data in fields['field_hero_unit_link']['data']:
+                        if 'field_hero_unit_link_url' in data:
+                            if str(data['field_hero_unit_link_url'][0:5]) == 'node/':
+                                data['field_hero_unit_link_url'] = 'internal:/' + data['field_hero_unit_link_url']
+
             bean['fields'] = fields
 
         if bean['type'] == 'feature_callout':
