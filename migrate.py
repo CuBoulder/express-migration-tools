@@ -214,9 +214,9 @@ def set_configuration(sitename):
             print(themesettings['use_action_menu'])
 
             if themesettings['use_action_menu'] == 0:
-                ucb_secondary_menu_position = 0
+                ucb_secondary_menu_position = 'above'
             if themesettings['use_action_menu'] == 1:
-                ucb_secondary_menu_position = 1
+                ucb_secondary_menu_position = 'inline'
         run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set boulder_base.settings ucb_secondary_menu_position "{ucb_secondary_menu_position}" --yes')
 
 

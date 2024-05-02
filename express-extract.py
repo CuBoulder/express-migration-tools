@@ -956,6 +956,34 @@ with (engine.connect() as conn):
                         if 'field_hero_unit_link_url' in data:
                             if str(data['field_hero_unit_link_url'][0:5]) == 'node/':
                                 data['field_hero_unit_link_url'] = 'internal:/' + data['field_hero_unit_link_url']
+                            if str(data['field_hero_unit_link_url'][0:1]) == '/':
+                                data['field_hero_unit_link_url'] = 'internal:' + data['field_hero_unit_link_url']
+
+            if bean['type'] == 'feature_callout':
+                # pprint.pprint(fields)
+                # print('test 0')
+
+                if 'field_callouts' in fields:
+                    if 'data' in fields['field_callouts']:
+                        for d1 in fields['field_callouts']['data']:
+                            # pprint.pp(d1)
+                            if 'collection' in d1:
+                                for c1 in d1['collection']:
+                                    if 'field_callout_title' in c1:
+                                        if 'field_callout_title_url' in c1['field_callout_title']:
+                                            if str(c1['field_callout_title']['field_callout_title_url']) == '':
+                                                c1['field_callout_title'].pop('field_callout_title_url')
+                                            elif str(c1['field_callout_title']['field_callout_title_url'][0:5]) == 'node/':
+                                                c1['field_callout_title']['field_callout_title_url'] = 'internal:/' + c1['field_callout_title']['field_callout_title_url']
+                                            elif str(c1['field_callout_title']['field_callout_title_url'][0:1]) == '/':
+                                                c1['field_callout_title']['field_callout_title_url'] = 'internal:' + c1['field_callout_title']['field_callout_title_url']
+                                            elif str(c1['field_callout_title']['field_callout_title_url'][0:7]) == 'mailto:':
+                                                pass
+                                            elif str(c1['field_callout_title']['field_callout_title_url'][0:4]) == 'tel:':
+                                                pass
+                                            elif ':' not in str(c1['field_callout_title']['field_callout_title_url']) and '.' not in str(c1['field_callout_title']['field_callout_title_url']):
+                                                c1['field_callout_title']['field_callout_title_url'] = 'internal:/' + c1['field_callout_title']['field_callout_title_url']
+
 
             bean['fields'] = fields
 
@@ -1306,6 +1334,25 @@ with (engine.connect() as conn):
 
                             data['body_value'] = str(soup)
 
+        if 'fields' in node:
+            if 'field_person_title' in node['fields']:
+                if 'data' in node['fields']['field_person_title']:
+                    for data in node['fields']['field_person_title']['data']:
+                        if 'field_person_title_value' in data:
+                            html = data['field_person_title_value']
+                            soup = BeautifulSoup(html, features="lxml")
+                            data['field_person_title_value'] = str(soup.get_text())
+
+
+        #field_person_title_value
+
+        if node['type'] == 'file':
+            for f in output['files']['images']:
+                for item in node['fields']['field_file_attachment']['data']:
+                    if item['field_file_attachment_fid'] == f['fid']:
+                        # print(f['fid'])
+                        # print(node['path'])
+                        f['canonical_path'] = node['path']
 
         if node['type'] == 'section_page':
             node['page_sections'] = []
@@ -1668,6 +1715,12 @@ with (engine.connect() as conn):
                             if field_sidebar_second_column.append(b['beans'][0]) is not None:
                                 field_sidebar_second_column.append(b['beans'][0][0])
                         body_element['beans'].append(field_sidebar_second_column)
+                        
+                    menu_column = []
+                    menu_column.append('0 menu_main false')
+                    menu_column.append('0 menu_secondary false')
+                    menu_column.append('0 menu_footer false')
+                    body_element['beans'].append(menu_column)
 
                     # print('BODY:')
                     # print(body_element)
@@ -1958,6 +2011,29 @@ with (engine.connect() as conn):
                 0x10000 <= codepoint <= 0x10FFFF
         )
 
+    def process_strip_tags():
+        html = data['field_person_title_value']
+        soup = BeautifulSoup(html, features="lxml")
+        data['field_person_title_value'] = str(soup.get_text())
+
+    def process_links():
+        if str(c1['field_callout_title']['field_callout_title_url']) == '':
+            c1['field_callout_title'].pop('field_callout_title_url')
+        elif str(c1['field_callout_title']['field_callout_title_url'][0:5]) == 'node/':
+            c1['field_callout_title']['field_callout_title_url'] = 'internal:/' + c1['field_callout_title'][
+                'field_callout_title_url']
+        elif str(c1['field_callout_title']['field_callout_title_url'][0:1]) == '/':
+            c1['field_callout_title']['field_callout_title_url'] = 'internal:' + c1['field_callout_title'][
+                'field_callout_title_url']
+        elif str(c1['field_callout_title']['field_callout_title_url'][0:7]) == 'mailto:':
+            pass
+        elif str(c1['field_callout_title']['field_callout_title_url'][0:4]) == 'tel:':
+            pass
+        elif ':' not in str(c1['field_callout_title']['field_callout_title_url']) and '.' not in str(
+                c1['field_callout_title']['field_callout_title_url']):
+            c1['field_callout_title']['field_callout_title_url'] = 'internal:/' + c1['field_callout_title'][
+                'field_callout_title_url']
+
     def recurse_xml(root, output):
         if isinstance(output, dict):
             for key in output:
@@ -1972,6 +2048,9 @@ with (engine.connect() as conn):
         if isinstance(output, str):
             cleaned_string = ''.join(c for c in output if valid_xml_char_ordinal(c))
             root.text = cleaned_string
+
+            # pprint.pp(root.tag)
+
 
 
 
