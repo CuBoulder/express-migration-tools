@@ -1,4 +1,12 @@
 sqlalchemy
 pymysql
 phpserialize
-dotenv
+python-dotenv
+bs4
+tinycss2
+dicttoxml
+pymysql
+lxml
+PyYAML
+python-dateutil
+cssutils
