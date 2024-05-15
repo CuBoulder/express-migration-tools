@@ -949,41 +949,41 @@ with (engine.connect() as conn):
                     field['data'] = data
                     fields[field['field_name']] = field
 
-            #testtest
-            if 'field_hero_unit_link' in fields:
-                if 'data' in fields['field_hero_unit_link']:
-                    for data in fields['field_hero_unit_link']['data']:
-                        if 'field_hero_unit_link_url' in data:
-                            if str(data['field_hero_unit_link_url'][0:5]) == 'node/':
-                                data['field_hero_unit_link_url'] = 'internal:/' + data['field_hero_unit_link_url']
-                            if str(data['field_hero_unit_link_url'][0:1]) == '/':
-                                data['field_hero_unit_link_url'] = 'internal:' + data['field_hero_unit_link_url']
+            # #testtest
+            # if 'field_hero_unit_link' in fields:
+            #     if 'data' in fields['field_hero_unit_link']:
+            #         for data in fields['field_hero_unit_link']['data']:
+            #             if 'field_hero_unit_link_url' in data:
+            #                 if str(data['field_hero_unit_link_url'][0:5]) == 'node/':
+            #                     data['field_hero_unit_link_url'] = 'internal:/' + data['field_hero_unit_link_url']
+            #                 if str(data['field_hero_unit_link_url'][0:1]) == '/':
+            #                     data['field_hero_unit_link_url'] = 'internal:' + data['field_hero_unit_link_url']
 
-            if bean['type'] == 'feature_callout':
+            # if bean['type'] == 'feature_callout':
                 # pprint.pprint(fields)
                 # print('test 0')
-
-                if 'field_callouts' in fields:
-                    if 'data' in fields['field_callouts']:
-                        for d1 in fields['field_callouts']['data']:
-                            # pprint.pp(d1)
-                            if 'collection' in d1:
-                                for c1 in d1['collection']:
-                                    if 'field_callout_title' in c1:
-                                        if 'field_callout_title_url' in c1['field_callout_title']:
-                                            if str(c1['field_callout_title']['field_callout_title_url']) == '':
-                                                c1['field_callout_title'].pop('field_callout_title_url')
-                                            elif str(c1['field_callout_title']['field_callout_title_url'][0:5]) == 'node/':
-                                                c1['field_callout_title']['field_callout_title_url'] = 'internal:/' + c1['field_callout_title']['field_callout_title_url']
-                                            elif str(c1['field_callout_title']['field_callout_title_url'][0:1]) == '/':
-                                                c1['field_callout_title']['field_callout_title_url'] = 'internal:' + c1['field_callout_title']['field_callout_title_url']
-                                            elif str(c1['field_callout_title']['field_callout_title_url'][0:7]) == 'mailto:':
-                                                pass
-                                            elif str(c1['field_callout_title']['field_callout_title_url'][0:4]) == 'tel:':
-                                                pass
-                                            elif ':' not in str(c1['field_callout_title']['field_callout_title_url']) and '.' not in str(c1['field_callout_title']['field_callout_title_url']):
-                                                c1['field_callout_title']['field_callout_title_url'] = 'internal:/' + c1['field_callout_title']['field_callout_title_url']
-
+                #
+                # if 'field_callouts' in fields:
+                #     if 'data' in fields['field_callouts']:
+                #         for d1 in fields['field_callouts']['data']:
+                #             # pprint.pp(d1)
+                #             if 'collection' in d1:
+                #                 for c1 in d1['collection']:
+                #                     if 'field_callout_title' in c1:
+                #                         if 'field_callout_title_url' in c1['field_callout_title']:
+                #                             if str(c1['field_callout_title']['field_callout_title_url']) == '':
+                #                                 c1['field_callout_title'].pop('field_callout_title_url')
+                #                             elif str(c1['field_callout_title']['field_callout_title_url'][0:5]) == 'node/':
+                #                                 c1['field_callout_title']['field_callout_title_url'] = 'internal:/' + c1['field_callout_title']['field_callout_title_url']
+                #                             elif str(c1['field_callout_title']['field_callout_title_url'][0:1]) == '/':
+                #                                 c1['field_callout_title']['field_callout_title_url'] = 'internal:' + c1['field_callout_title']['field_callout_title_url']
+                #                             elif str(c1['field_callout_title']['field_callout_title_url'][0:7]) == 'mailto:':
+                #                                 pass
+                #                             elif str(c1['field_callout_title']['field_callout_title_url'][0:4]) == 'tel:':
+                #                                 pass
+                #                             elif ':' not in str(c1['field_callout_title']['field_callout_title_url']) and '.' not in str(c1['field_callout_title']['field_callout_title_url']):
+                #                                 c1['field_callout_title']['field_callout_title_url'] = 'internal:/' + c1['field_callout_title']['field_callout_title_url']
+                #
 
             bean['fields'] = fields
 
@@ -1281,67 +1281,67 @@ with (engine.connect() as conn):
 
         node['fields'] = extract_fields(x.type, x.nid, x.vid)
         node['fields2'] = extract_fields2(x.type, x.nid, x.vid)
+        #
+        # rules = [
+        #     {
+        #         'elements': ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span', 'div', 'tr', 'td', 'th'],
+        #         'patterns': [
+        #             {'name': 'text-align', 'value': 'center', 'class': 'text-align-center'},
+        #             {'name': 'text-align', 'value': 'right', 'class': 'text-align-right'}
+        #         ]
+        #     },
+        #     {
+        #         'elements': 'img',
+        #         'patterns': [
+        #             {'name': 'float', 'value': 'right', 'class': 'right', 'alt-attr': 'data-align'},
+        #             {'name': 'float', 'value': 'center', 'class': 'center', 'alt-attr': 'data-align'},
+        #             {'name': 'float', 'value': 'left', 'class': 'left', 'alt-attr': 'data-align'}
+        #         ]
+        #     }
+        # ]
+        #
+        #
+        #
+        # if 'fields' in node:
+        #     if 'body' in node['fields']:
+        #         if 'data' in node['fields']['body']:
+        #             for data in node['fields']['body']['data']:
+        #                 if 'body_value' in data:
+        #
+        #                     html = data['body_value']
+        #                     # print("Initial HTML:")
+        #                     # print(html)
+        #                     # print("Results:")
+        #
+        #                     soup = BeautifulSoup(html, features="lxml")
+        #
+        #                     for rule in rules:
+        #                         results = soup.find_all(rule['elements'], style=True)
+        #                         for result in results:
+        #                             styles = cssutils.parseStyle(result['style'])
+        #                             for style in styles:
+        #                                 for pattern in rule['patterns']:
+        #                                     if style.name == pattern['name'] and style.value == pattern['value']:
+        #                                         attr = 'class'
+        #                                         if 'alt-attr' in pattern:
+        #                                             attr = pattern['alt-attr']
+        #
+        #                                         if result.get(attr) is None:
+        #                                             result[attr] = pattern['class']
+        #                                         else:
+        #                                             result[attr].append(pattern['class'])
+        #                             del result['style']
+        #
+        #                     data['body_value'] = str(soup)
 
-        rules = [
-            {
-                'elements': ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span', 'div', 'tr', 'td', 'th'],
-                'patterns': [
-                    {'name': 'text-align', 'value': 'center', 'class': 'text-align-center'},
-                    {'name': 'text-align', 'value': 'right', 'class': 'text-align-right'}
-                ]
-            },
-            {
-                'elements': 'img',
-                'patterns': [
-                    {'name': 'float', 'value': 'right', 'class': 'right', 'alt-attr': 'data-align'},
-                    {'name': 'float', 'value': 'center', 'class': 'center', 'alt-attr': 'data-align'},
-                    {'name': 'float', 'value': 'left', 'class': 'left', 'alt-attr': 'data-align'}
-                ]
-            }
-        ]
-
-
-
-        if 'fields' in node:
-            if 'body' in node['fields']:
-                if 'data' in node['fields']['body']:
-                    for data in node['fields']['body']['data']:
-                        if 'body_value' in data:
-
-                            html = data['body_value']
-                            # print("Initial HTML:")
-                            # print(html)
-                            # print("Results:")
-
-                            soup = BeautifulSoup(html, features="lxml")
-
-                            for rule in rules:
-                                results = soup.find_all(rule['elements'], style=True)
-                                for result in results:
-                                    styles = cssutils.parseStyle(result['style'])
-                                    for style in styles:
-                                        for pattern in rule['patterns']:
-                                            if style.name == pattern['name'] and style.value == pattern['value']:
-                                                attr = 'class'
-                                                if 'alt-attr' in pattern:
-                                                    attr = pattern['alt-attr']
-
-                                                if result.get(attr) is None:
-                                                    result[attr] = pattern['class']
-                                                else:
-                                                    result[attr].append(pattern['class'])
-                                    del result['style']
-
-                            data['body_value'] = str(soup)
-
-        if 'fields' in node:
-            if 'field_person_title' in node['fields']:
-                if 'data' in node['fields']['field_person_title']:
-                    for data in node['fields']['field_person_title']['data']:
-                        if 'field_person_title_value' in data:
-                            html = data['field_person_title_value']
-                            soup = BeautifulSoup(html, features="lxml")
-                            data['field_person_title_value'] = str(soup.get_text())
+        # if 'fields' in node:
+        #     if 'field_person_title' in node['fields']:
+        #         if 'data' in node['fields']['field_person_title']:
+        #             for data in node['fields']['field_person_title']['data']:
+        #                 if 'field_person_title_value' in data:
+        #                     html = data['field_person_title_value']
+        #                     soup = BeautifulSoup(html, features="lxml")
+        #                     data['field_person_title_value'] = str(soup.get_text())
 
 
         #field_person_title_value
@@ -1608,7 +1608,6 @@ with (engine.connect() as conn):
                             #section['beans'].append(f"{section['bid']} {get_bean_type(section['bid'])} {bean['display_title']}")
 
 
-
                     page_sections[field_name].append(section)
 
             #Ugly block_row fix
@@ -1747,6 +1746,30 @@ with (engine.connect() as conn):
 
                     #title_element['beans'].append('0 title false')
                     combined_page_sections.append(pg_element)
+
+
+            for s in combined_page_sections:
+                # print(f"Node: {node['nid']}, Columns: {len(section['beans'])}")
+                if len(s['beans']) > 4:
+                    pprint.pp(f"Node: {node['nid']}, {s['beans']}")
+
+                    original_beans = copy.deepcopy(s['beans'])
+                    new_beans = []
+                    new_column = []
+                    for idx, x in enumerate(original_beans):
+                        if idx % 3 == 0:
+                            if len(new_column) > 0:
+                                new_beans.append(new_column)
+                            new_column = []
+                        new_column.append(x[0])
+
+
+                    if len(new_column) > 0:
+                        new_beans.append(new_column)
+
+                    s['beans'] = new_beans
+
+
 
             layout['page_sections'] = combined_page_sections
 
@@ -2011,28 +2034,119 @@ with (engine.connect() as conn):
                 0x10000 <= codepoint <= 0x10FFFF
         )
 
-    def process_strip_tags():
-        html = data['field_person_title_value']
+    def process_striptags(value):
+        html = value
         soup = BeautifulSoup(html, features="lxml")
-        data['field_person_title_value'] = str(soup.get_text())
+        return str(soup.get_text())
 
-    def process_links():
-        if str(c1['field_callout_title']['field_callout_title_url']) == '':
-            c1['field_callout_title'].pop('field_callout_title_url')
-        elif str(c1['field_callout_title']['field_callout_title_url'][0:5]) == 'node/':
-            c1['field_callout_title']['field_callout_title_url'] = 'internal:/' + c1['field_callout_title'][
-                'field_callout_title_url']
-        elif str(c1['field_callout_title']['field_callout_title_url'][0:1]) == '/':
-            c1['field_callout_title']['field_callout_title_url'] = 'internal:' + c1['field_callout_title'][
-                'field_callout_title_url']
-        elif str(c1['field_callout_title']['field_callout_title_url'][0:7]) == 'mailto:':
-            pass
-        elif str(c1['field_callout_title']['field_callout_title_url'][0:4]) == 'tel:':
-            pass
-        elif ':' not in str(c1['field_callout_title']['field_callout_title_url']) and '.' not in str(
-                c1['field_callout_title']['field_callout_title_url']):
-            c1['field_callout_title']['field_callout_title_url'] = 'internal:/' + c1['field_callout_title'][
-                'field_callout_title_url']
+    def process_links(value):
+        # if value == '':
+        #     c1['field_callout_title'].pop('field_callout_title_url')
+        if value[0:5] == 'node/':
+            return 'internal:/' + value
+        elif value[0:1] == '/':
+            return 'internal:' + value
+        elif value[0:7] == 'mailto:':
+            return value
+        elif value[0:4] == 'tel:':
+            return value
+        elif ':' not in value and '.' not in value:
+            return 'internal:/' + value
+        else:
+            return value
+
+    def process_styles(value):
+
+        rules = [
+            {
+                'elements': ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span', 'div', 'tr', 'td', 'th'],
+                'patterns': [
+                    {'name': 'text-align', 'value': 'center', 'class': 'text-align-center'},
+                    {'name': 'text-align', 'value': 'right', 'class': 'text-align-right'}
+                ]
+            },
+            {
+                'elements': 'img',
+                'patterns': [
+                    {'name': 'float', 'value': 'right', 'class': 'right', 'alt-attr': 'data-align'},
+                    {'name': 'float', 'value': 'center', 'class': 'center', 'alt-attr': 'data-align'},
+                    {'name': 'float', 'value': 'left', 'class': 'left', 'alt-attr': 'data-align'}
+                ]
+            }
+        ]
+
+        html = value
+        # print("Initial HTML:")
+        # print(html)
+        # print("Results:")
+
+        soup = BeautifulSoup(html, features="lxml")
+
+        for rule in rules:
+            results = soup.find_all(rule['elements'], style=True)
+            for result in results:
+                styles = cssutils.parseStyle(result['style'])
+                for style in styles:
+                    for pattern in rule['patterns']:
+                        if style.name == pattern['name'] and style.value == pattern['value']:
+                            attr = 'class'
+                            if 'alt-attr' in pattern:
+                                attr = pattern['alt-attr']
+
+                            if result.get(attr) is None:
+                                result[attr] = pattern['class']
+                            else:
+                                result[attr].append(pattern['class'])
+                del result['style']
+
+        return str(soup)
+
+    styles_processing_tags = [
+        'body_value',
+        'field_block_text_value',
+        'field_callout_text_value',
+        'field_collection_body_value',
+        'field_collection_preview_value',
+        'field_cont_seq_body_value',
+        'field_cont_seq_description_value',
+        'field_expandable_text_value',
+        'field_hero_unit_text_value',
+        'field_newsletter_block_body_value',
+        'field_newsletter_footer_value',
+        'field_nl_section_content_body_value',
+        'field_person_address_value',
+        'field_person_office_hours_value',
+        'field_qa_answer_value',
+        'field_slider_teaser_value',
+        'field_social_links_body_value',
+        'field_video_reveal_text_value'
+    ]
+
+    links_processing_tags = [
+        'field_article_byline_url_url',
+        'field_article_external_url_url',
+        'field_article_grid_more_link_url',
+        'field_article_link_url',
+        'field_callout_title_url',
+        'field_category_term_page_link_url',
+        'field_cont_seq_title_url',
+        'field_fb_url_url',
+        'field_hero_unit_link_url',
+        'field_localist_link_url',
+        'field_newsletter_ad_link_url',
+        'field_newsletter_more_link_url',
+        'field_nl_section_content_title_url',
+        'field_person_website_url',
+        'field_slider_link_url',
+        'field_social_link_url_url',
+        'field_social_links_homepage_url_url',
+        'field_tag_term_page_link_url'
+    ]
+
+    striptags_processing_tags = [
+        'field_person_title_value'
+    ]
+
 
     def recurse_xml(root, output):
         if isinstance(output, dict):
@@ -2048,6 +2162,15 @@ with (engine.connect() as conn):
         if isinstance(output, str):
             cleaned_string = ''.join(c for c in output if valid_xml_char_ordinal(c))
             root.text = cleaned_string
+
+            if root.tag in styles_processing_tags:
+                root.text = process_styles(root.text)
+
+            if root.tag in links_processing_tags:
+                root.text = process_links(root.text)
+
+            if root.tag in striptags_processing_tags:
+                root.text = process_striptags(root.text)
 
             # pprint.pp(root.tag)
 
