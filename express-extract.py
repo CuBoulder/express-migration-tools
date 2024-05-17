@@ -1702,27 +1702,40 @@ with (engine.connect() as conn):
                     if 'field_sidebar_first' in page_sections:
                         field_sidebar_first_column = []
                         for b in page_sections['field_sidebar_first']:
-                            if field_sidebar_second_column.append(b['beans'][0]) is not None:
+                            if b['beans'][0]:
                                 field_sidebar_first_column.append(b['beans'][0][0])
+
+
                         body_element['beans'].append(field_sidebar_first_column)
 
                     body_element['beans'].append(column)
 
-                    if 'field_sidebar_second' in page_sections:
-                        field_sidebar_second_column = []
-                        for b in page_sections['field_sidebar_second']:
-                            if field_sidebar_second_column.append(b['beans'][0]) is not None:
-                                field_sidebar_second_column.append(b['beans'][0][0])
-                        body_element['beans'].append(field_sidebar_second_column)
+
                         
                     menu_column = []
                     menu_column.append('0 menu_main false')
                     menu_column.append('0 menu_secondary false')
                     menu_column.append('0 menu_footer false')
+
+
+                    if 'field_sidebar_second' in page_sections:
+                        # field_sidebar_second_column = []
+                        for b in page_sections['field_sidebar_second']:
+                            if b['beans'][0]:
+                                menu_column.append(b['beans'][0][0])
+                        # body_element['beans'].append(field_sidebar_second_column)
+
                     body_element['beans'].append(menu_column)
 
                     # print('BODY:')
                     # print(body_element)
+
+                    if(len(body_element['beans']) == 3):
+                        body_element['distribution'] = 'center'
+
+                    if(len(body_element['beans']) == 2):
+                        body_element['distribution'] = 'left'
+
 
                     combined_page_sections.append(body_element)
 
@@ -1751,7 +1764,7 @@ with (engine.connect() as conn):
             for s in combined_page_sections:
                 # print(f"Node: {node['nid']}, Columns: {len(section['beans'])}")
                 if len(s['beans']) > 4:
-                    pprint.pp(f"Node: {node['nid']}, {s['beans']}")
+                    # pprint.pp(f"Node: {node['nid']}, {s['beans']}")
 
                     original_beans = copy.deepcopy(s['beans'])
                     new_beans = []
@@ -2078,9 +2091,9 @@ with (engine.connect() as conn):
         html = value
         # print("Initial HTML:")
         # print(html)
-        # print("Results:")
 
-        soup = BeautifulSoup(html, features="lxml")
+
+        soup = BeautifulSoup(html, features="html.parser")
 
         for rule in rules:
             results = soup.find_all(rule['elements'], style=True)
@@ -2098,6 +2111,9 @@ with (engine.connect() as conn):
                             else:
                                 result[attr].append(pattern['class'])
                 del result['style']
+
+        # print("Results:")
+        # print(str(soup))
 
         return str(soup)
 
