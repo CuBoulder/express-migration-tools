@@ -2163,10 +2163,61 @@ with (engine.connect() as conn):
         'field_person_title_value'
     ]
 
+    image_fields = [
+        'field_article_thumbnail',
+        'field_block_photo',
+        'field_block_section_bg_image',
+        'field_block_section_bg_image_m',
+        'field_block_section_bg_image_t',
+        'field_callout_image',
+        'field_collection_category_bg',
+        'field_collection_image',
+        'field_collection_thumbnail',
+        'field_cont_seq_photos',
+        'field_feature_title_image',
+        'field_hero_unit_image',
+        'field_image',
+        'field_issue_image',
+        'field_issue_image_insert',
+        'field_newsletter_ad_image',
+        'field_newsletter_intro_image',
+        'field_newsletter_name_image',
+        'field_nl_section_content_image'
+        'field_person_photo',
+        'field_photo',
+        'field_slider_image',
+        'field_video_reveal_image'
+    ]
+
+    image_info_uri = {}
+    image_info_fid = {}
+
+
 
     def recurse_xml(root, output):
         if isinstance(output, dict):
             for key in output:
+
+                if key in image_fields:
+                    # pprint.pp(key)
+                    # pprint.pp(output[key])
+
+                    if key + '_alt' in output[key]:
+                        # print(f"ALT FOUND: {output[key][key + '_fid']} {output[key][key + '_alt']}")
+                        fid = output[key][key + '_fid']
+                        if fid not in image_info_fid:
+                            image_info_fid[fid] = []
+                        image_info_fid[fid].append(output[key][key + '_alt'])
+
+
+                    if 'data' in output[key]:
+                        for d in output[key]['data']:
+                            # print(f"ALT FOUND: {d[key + '_fid']} {d[key + '_alt']}")
+                            fid = d[key + '_fid']
+                            if fid not in image_info_fid:
+                                image_info_fid[fid] = []
+                            image_info_fid[fid].append(d[key + '_alt'])
+
                 element = etree.SubElement(root, key)
                 recurse_xml(element, output[key])
         if isinstance(output, list):
@@ -2179,8 +2230,42 @@ with (engine.connect() as conn):
             cleaned_string = ''.join(c for c in output if valid_xml_char_ordinal(c))
             root.text = cleaned_string
 
+
+
             if root.tag in styles_processing_tags:
+
+                soup = BeautifulSoup(root.text, features="html.parser")
+                results = soup.find_all('img', style=True)
+                for result in results:
+                    # print('img found')
+                    # print(result.get('alt'))
+                    # print(result.get('src'))
+
+                    src = result.get('src')
+                    alt = result.get('alt')
+
+                    if not src.startswith('sites/default/files/'):
+                        continue
+
+                    src = src.split('?')[0]
+                    src = src[20:]
+                    srclist = src.split('/')
+                    if srclist[0] == 'styles':
+                        srclist.pop(0)
+                        srclist.pop(0)
+                        srclist.pop(0)
+
+                    src = "public://" + "/".join(srclist)
+
+
+                    if src not in image_info_uri:
+                        image_info_uri[src] = []
+                    image_info_uri[src].append(alt)
+
+
                 root.text = process_styles(root.text)
+
+
 
             if root.tag in links_processing_tags:
                 root.text = process_links(root.text)
@@ -2198,9 +2283,32 @@ with (engine.connect() as conn):
 
     #print(output)
 
+    dummyroot = etree.Element('root')
+    recurse_xml(dummyroot, output)
+
+    # pprint.pp(image_info_uri)
+    # pprint.pp(image_info_fid)
+
+    for f in output['files']['images']:
+        longest_alt = ""
+        if f['uri'] in image_info_uri:
+            # print('URI found')
+            for i in image_info_uri[f['uri']]:
+                if len(i) > len(longest_alt):
+                    longest_alt = i
+        if f['fid'] in image_info_fid:
+            # print('FID found')
+            for i in image_info_fid[f['fid']]:
+                if len(i) > len(longest_alt):
+                    longest_alt = i
+        # pprint.pp(longest_alt)
+        f['alt'] = longest_alt
+
     root = etree.Element('root')
 
     recurse_xml(root, output)
+
+
 
     print(etree.tostring(root, pretty_print=True).decode())
 
