@@ -834,7 +834,22 @@ with (engine.connect() as conn):
     bean_social_links_fields.append({'name': 'field_social_links_size', 'type': 'bean', 'bundle': 'social_links'})
     bean_types['social_links'] = bean_social_links_fields
 
+    # Module: express_collections_bundle
 
+    #  Bean: collection_grid
+
+    bean_collection_grid_fields = []
+    bean_collection_grid_fields.append({'name': 'field_collection_display_summary', 'type': 'bean', 'bundle': 'collection_grid'})
+    bean_collection_grid_fields.append({'name': 'field_collection_filter_effect', 'type': 'bean', 'bundle': 'collection_grid'})
+    bean_collection_grid_fields.append({'name': 'field_collection_filter_type', 'type': 'bean', 'bundle': 'collection_grid'})
+    bean_collection_grid_fields.append({'name': 'field_collection_category_bg', 'type': 'field_collection_item', 'bundle': 'field_collection_grid_categories'})
+    bean_collection_grid_fields.append({'name': 'field_collection_grid_category', 'type': 'field_collection_item', 'bundle': 'field_collection_grid_categories'})
+    bean_collection_grid_fields.append({'name': 'field_collection_grid_label', 'type': 'field_collection_item', 'bundle': 'field_collection_grid_categories'})
+    bean_collection_grid_fields.append({'name': 'field_collection_grid_categories', 'type': 'bean', 'bundle': 'collection_grid'})
+    bean_collection_grid_fields.append({'name': 'field_collection_grid_category', 'type': 'bean', 'bundle': 'collection_grid'})
+    bean_collection_grid_fields.append({'name': 'field_collection_grid_type', 'type': 'bean', 'bundle': 'collection_grid'})
+    bean_collection_grid_fields.append({'name': 'field_collection_multiselect', 'type': 'bean', 'bundle': 'collection_grid'})
+    bean_types['collection_grid'] = bean_collection_grid_fields
 
     beans = []
     bean_result = conn.execute(sqlalchemy.text("select bid, vid, delta, label, title, type, view_mode, data, uid, created, changed from bean;"))
