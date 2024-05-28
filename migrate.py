@@ -95,7 +95,7 @@ def set_configuration(sitename):
             frontpagealias = "/" + str(result.alias).strip()
 
         print(f'Source homepage is {site_frontpage}, mapped to {frontpagealias}.')
-        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set system.site page.front "{frontpagealias}" --yes')
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set system.site page.front "/{site_frontpage}" --yes')
 
 
 
@@ -110,6 +110,13 @@ def set_configuration(sitename):
         run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set ucb_site_configuration.contact_info general.0.visible 1 --yes --input-format=yaml')
         run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set ucb_site_configuration.contact_info general_visible 1 --yes --input-format=yaml')
 
+        cu_site_affiliation_options = ''
+        cu_site_affiliation_options_result = conn.execute(sqlalchemy.text("select value from variable where name = 'cu_site_affiliation_options';"))
+        for result in cu_site_affiliation_options_result:
+            cu_site_affiliation_options = str(phpserialize.loads(result.value, decode_strings=True)).strip()
+
+        print(f"Affiliation: {cu_site_affiliation_options}")
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set ucb_site_configuration.settings site_affiliation {cu_site_affiliation_options} --yes')
 
 
 
