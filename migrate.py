@@ -345,7 +345,6 @@ def create_users(sitename):
     web_users.append('alco6164')
     web_users.append('joni1621')
     web_users.append('jako6198')
-    web_users.append('crafts')
     web_users.append('titr7839')
     web_users.append('pabr5825')
 
@@ -354,6 +353,18 @@ def create_users(sitename):
     ux_users.append('niwa4700')
     ux_users.append('brokaw')
     ux_users.append('wetu1300')
+    ux_users.append('crafts')
+
+    service_manager_users = []
+    service_manager_users.append('webexpress-manager')
+    'site_manager'
+
+    service_editor_users = []
+    service_manager_users.append('webexpress-editor')
+    'content_editor'
+
+
+
 
     for user in web_users:
         print(f"  Creating web user {user}...")
