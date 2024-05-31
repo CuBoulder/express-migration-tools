@@ -10,5 +10,7 @@
 *.xml
 *.sql
 
+migrate_express
+
 sites
 databases

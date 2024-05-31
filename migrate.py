@@ -50,7 +50,7 @@ def extract_sql_from_remote(sitename):
 def install_drupal(sitename):
     print(f'Installing Drupal...')
     sitename_clean = sitename.replace('-', '')
-    run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code si boulder_profile  --db-url="mysql://root:pass@localhost:3306/{sitename_clean}" --account-name="admin" --account-pass="tiamat.test"  --site-name="{sitename}" install_configure_form.enable_update_status_module=NULL install_configure_form.enable_update_status_emails=NULL --yes')
+    run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code si boulder_profile  --db-url="mysql://root:pass@localhost:3306/{sitename_clean}" --site-name="{sitename}" install_configure_form.enable_update_status_module=NULL install_configure_form.enable_update_status_emails=NULL --site-mail=webexpress_noreply@colorado.edu --yes')
     # output = subprocess.run([cmd], shell=True, capture_output=True)
     # print(output.stdout)
     # print(output.stderr)
@@ -91,6 +91,7 @@ def set_configuration(sitename):
         print(f"{site_frontpage}")
 
         frontpagealias_result = conn.execute(sqlalchemy.text(f"select alias from url_alias where source = '{site_frontpage}';"))
+        frontpagealias = ""
         for result in frontpagealias_result:
             frontpagealias = "/" + str(result.alias).strip()
 
@@ -421,8 +422,9 @@ if args.extract_psa_from_remote:
     #create_users(args.site)
     delete_homepage(args.site)
     enable_migrate_express(args.site)
-    set_configuration(args.site)
     set_files_permissions(args.site)
+    set_configuration(args.site)
+
 
 
 'ln -s ../../data.xml data.xml'
