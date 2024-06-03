@@ -31,6 +31,8 @@ def fetch_git_info(site):
     connection_info = yaml.safe_load(run_command(cmd_connection_info).stdout)
     return connection_info['git_command']
 
+def block_on_workflows(site):
+
 def wake_site(site):
 
     cmd_wake_site = f'terminus env:wake {site["dst"]}.live'

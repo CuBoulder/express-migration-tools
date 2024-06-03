@@ -2052,6 +2052,20 @@ with (engine.connect() as conn):
 
     output['vocabularies'] = vocabularies
 
+    contexts = []
+    context_result = conn.execute(sqlalchemy.text(f"select name, description, tag, conditions, reactions, condition_mode from context;"))
+    for c in context_result:
+        context = {}
+        context['name'] = c.name
+        context['description'] = c.description
+        context['tag'] = c.tag
+        context['conditions'] = c.conditions
+        context['reactions'] = c.reactions
+        context['condition_mode'] = c.condition_mode
+        contexts.append(context)
+
+    output['context'] = contexts
+
     def valid_xml_char_ordinal(c):
         codepoint = ord(c)
         # conditions ordered by presumed frequency
