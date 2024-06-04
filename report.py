@@ -143,7 +143,7 @@ def generate_report(name: str):
                     print(f'{vocabulary.tag} - {len(vocabulary)}')
                     terms = vocabulary.findall('item')
                     for term in terms:
-                        # print(f'  {term.find("name").text}')
+                        print(f'  {term.find("name").text}')
                         pass
 
         print('-----')

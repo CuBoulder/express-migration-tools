@@ -32,6 +32,7 @@ def fetch_git_info(site):
     return connection_info['git_command']
 
 def block_on_workflows(site):
+    pass
 
 def wake_site(site):
 
@@ -39,6 +40,27 @@ def wake_site(site):
     print(cmd_wake_site)
 
     run_command(cmd_wake_site)
+
+def remote_backup(site):
+    cmd_remote_backup = f'terminus backup:create {site["dst"]}.live'
+
+    print(cmd_remote_backup)
+    run_command(cmd_remote_backup)
+
+
+def clear_upstream_cache(site):
+    cmd_clear_upstream_cache = f'terminus site:upstream:clear-cache {site["dst"]}'
+
+    print(cmd_clear_upstream_cache)
+    run_command(cmd_clear_upstream_cache)
+
+def deploy_update(site):
+
+    clear_upstream_cache(site)
+
+    cmd_deploy_update = f'terminus  upstream:updates:apply {site["dst"]}.dev'
+    print(cmd_deploy_update)
+    run_command(cmd_deploy_update)
 
 
 def cache_rebuild(site):
@@ -343,6 +365,24 @@ def user_config_sitelist(name: str):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
             for _ in executor.map(user_config, sitelist['sites']):
+                pass
+
+@app.command()
+def remote_backup_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
+            for _ in executor.map(remote_backup, sitelist['sites']):
+                pass
+
+@app.command()
+def deploy_update_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
+            for _ in executor.map(deploy_update, sitelist['sites']):
                 pass
 
 @app.command()
