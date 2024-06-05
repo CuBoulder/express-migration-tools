@@ -18,6 +18,18 @@
     <p>File Nodes: {{ info.general.file_nodes }}</p>
 
     <h2>Nodes</h2>
+    {% for nodetype in info.nodes %}
+        <p>{{ nodetype.type }}</p>
+        {% for node in nodetype.nodes %}
+            <p>{{ node.title }} - {{ node.nid }} - {{ node.path }}</p>
+            {% for layout in node.layouts %}
+                <p>{{ layout.name }}</p>
+                {% for bean in layout.beans %}
+                    <p>{{ bean.type }} - {{ bean.bid }}</p>
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
 
     <h2>Users</h2>
 

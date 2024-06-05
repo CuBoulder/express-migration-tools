@@ -23,12 +23,18 @@ def getbean(bid, root, parent_map):
             return(parent_map[b])
 
 def printbeaninfo(bid, depth, root, parent_map):
+
+    beaninfo = {}
+    beaninfo['bid'] = bid
+
     bean = getbean(bid, root, parent_map)
     if bean is None:
-        print(f"  BEAN NOT FOUND - {bid}")
-        return
+        # print(f"  BEAN NOT FOUND - {bid}")
+        beaninfo['type'] = 'NOTFOUND'
+        return beaninfo
     type = bean.find('type').text
-    print("  " * depth + f"Bean {bean.find('bid').text} - {type}")
+    beaninfo['type'] = bean.find('type').text
+    # print("  " * depth + f"Bean {bean.find('bid').text} - {type}")
 
     if type == 'block_section':
         section_blocks = bean.findall('./fields/field_blocks_section_blocks/data/item/field_blocks_section_blocks_target_id')
@@ -56,39 +62,66 @@ def printbeaninfo(bid, depth, root, parent_map):
     #     #etree.dump(bean)
     #     pass
 
+    return beaninfo
+
 
 def printnodesinfo(nodes, root, parent_map, type):
+
+    nodelist = {}
+    nodelist['type'] = type
+    nodelist['nodes'] = []
+
     for n in nodes:
         # print(f"---")
+
+        nodeinfo = {}
+        nodeinfo['nid'] = n.find('nid').text
+        nodeinfo['type'] = n.find('type').text
+        nodeinfo['title'] = n.find('title').text
+        nodeinfo['type'] = type
+
 
         # print(f"Layout beans:")
         layouts = n.findall("./layout/fields/item")
 
-        if len(layouts) > 0 and type != 'page':
+        # if len(layouts) > 0 and type != 'page':
+        # if len(layouts) > 0:
 
+        if n.find('path') is not None:
+            # print(f"Node {n.find('nid').text} - {n.find('type').text} - {n.find('title').text} - {n.find('path').text}")
+            nodeinfo['path'] = n.find('path').text
+        else:
+            # print(f"Node {n.find('nid').text} - {n.find('type').text} - {n.find('title').text} - NOPATH")
+            nodeinfo['path'] = "NOPATH"
 
-            if n.find('path') is not None:
-                print(f"Node {n.find('nid').text} - {n.find('type').text} - {n.find('title').text} - {n.find('path').text}")
-            else:
-                print(f"Node {n.find('nid').text} - {n.find('type').text} - {n.find('title').text} - NOPATH")
+        nodeinfo['layouts'] = []
 
-            for l in layouts:
-                # etree.dump(l)
-                print(f"Layout: {l.find('name').text}")
-                for b in l.findall('./beans/item'):
-                    # etree.dump(b)
-                    # print(b.text)
-                    printbeaninfo(b.text, 1, root, parent_map)
-                    pass
-                # bid = s.text
-                # bean = getbean(bid)
-                # etree.dump(bean)
+        for l in layouts:
+            # etree.dump(l)
+            layoutinfo = {}
+            layoutinfo['name'] = l.find('name').text
+            layoutinfo['beans'] = []
+            # print(f"Layout: {l.find('name').text}")
+            for b in l.findall('./beans/item'):
+                # etree.dump(b)
+                # print(b.text)
+                beaninfo = printbeaninfo(b.text, 1, root, parent_map)
+                layoutinfo['beans'].append(beaninfo)
+                pass
+            # bid = s.text
+            # bean = getbean(bid)
+            # etree.dump(bean)
 
-                # printbeaninfo(bid, 0)
+            # printbeaninfo(bid, 0)
+
+            nodeinfo['layouts'].append(layoutinfo)
+        nodelist['nodes'].append(nodeinfo)
+
+    return nodelist
 
 @app.command()
 def generate_report(name: str):
-    print(f'Report for site: {name}')
+    # print(f'Report for site: {name}')
 
     siteinfo = {}
 
@@ -102,12 +135,16 @@ def generate_report(name: str):
         file_node_count = 0
         total_node_count = 0
 
-        print("Node types:")
+        siteinfo['nodes'] = []
+
+        # print("Node types:")
         node_types = root.findall('./nodes/item')
         for type_root in node_types:
             for type in type_root:
-                print(f'---')
-                print(f'Type: {type.tag}, Count: {len(type)}')
+                # print(f'---')
+                # n = {}
+                # n['name'] = type.tag
+                # print(f'Type: {type.tag}, Count: {len(type)}')
 
                 total_node_count += len(type)
 
@@ -115,9 +152,13 @@ def generate_report(name: str):
                     file_node_count = len(type)
 
                 type_root = root.findall(f'./nodes/item/{type.tag}/item')
-                printnodesinfo(type_root, root, parent_map, type.tag)
+                nodesinfo = printnodesinfo(type_root, root, parent_map, type.tag)
 
-        print('-----')
+                siteinfo['nodes'].append(nodesinfo)
+
+
+        # print(siteinfo['nodes'])
+        # print('-----')
 
 
 
@@ -141,7 +182,7 @@ def generate_report(name: str):
 
 
 
-        print('-----')
+        # print('-----')
 
         siteinfo['users'] = []
 
@@ -161,7 +202,7 @@ def generate_report(name: str):
                     u['roles'].append(r)
                     # print(f'  {role.text}')
                 siteinfo['users'].append(u)
-        print('-----')
+        # print('-----')
 
         siteinfo['taxonomies'] = []
 
@@ -182,7 +223,7 @@ def generate_report(name: str):
                         pass
                     siteinfo['taxonomies'].append(v)
 
-        print('-----')
+        # print('-----')
 
         siteinfo['context'] = []
 
