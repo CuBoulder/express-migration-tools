@@ -1,4 +1,4 @@
-import jinja2
+from jinja2 import Environment, PackageLoader, select_autoescape
 import rich
 import yaml
 from lxml import etree
@@ -9,6 +9,8 @@ app = typer.Typer()
 
 parent_map = ''
 root = ''
+
+
 
 
 
@@ -88,6 +90,8 @@ def printnodesinfo(nodes, root, parent_map, type):
 def generate_report(name: str):
     print(f'Report for site: {name}')
 
+    siteinfo = {}
+
 
 
     with open(f'sites/{name}/data.xml', "rb") as input:
@@ -115,42 +119,90 @@ def generate_report(name: str):
 
         print('-----')
 
+
+
         file_images = len(root.findall('./files/images/item'))
         file_documents = len(root.findall('./files/documents/item'))
 
 
-        print(f'Total Node Count: {total_node_count}')
-        print(f'File Node Count: {file_node_count}')
+        # print(f'Total Node Count: {total_node_count}')
+        # print(f'File Node Count: {file_node_count}')
+        #
+        # print(f'Image Files: {file_images}')
+        # print(f'Document Files: {file_documents}')
 
-        print(f'Image Files: {file_images}')
-        print(f'Document Files: {file_documents}')
+
+        siteinfo['general'] = {}
+        siteinfo['general']['sitename'] = name
+        siteinfo['general']['file_images'] = len(root.findall('./files/images/item'))
+        siteinfo['general']['file_documents'] = len(root.findall('./files/documents/item'))
+        siteinfo['general']['file_nodes'] = file_node_count
+        siteinfo['general']['total_nodes'] = total_node_count
+
+
 
         print('-----')
+
+        siteinfo['users'] = []
+
 
         users = root.findall('./users/item')
         for user in users:
             roles = user.find('roles')
             if roles is not None and len(roles) > 0:
-                print(user.find('name').text)
-                for role in roles:
-                    print(f'  {role.text}')
+                u = {}
+                u['name'] = user.find('name').text
+                u['roles'] = []
 
+                # print(user.find('name').text)
+                for role in roles:
+                    r = {}
+                    r['name'] = role.text
+                    u['roles'].append(r)
+                    # print(f'  {role.text}')
+                siteinfo['users'].append(u)
         print('-----')
+
+        siteinfo['taxonomies'] = []
+
         vocabularies_root = root.findall('./vocabularies')
         for vocabularies in vocabularies_root:
             for vocabulary in vocabularies:
                 if len(vocabulary) > 0:
-                    print(f'{vocabulary.tag} - {len(vocabulary)}')
+                    v = {}
+                    v['tag'] = vocabulary.tag
+                    v['terms'] = []
+                    # print(f'{vocabulary.tag} - {len(vocabulary)}')
                     terms = vocabulary.findall('item')
                     for term in terms:
-                        print(f'  {term.find("name").text}')
+                        t = {}
+                        t['name'] = term.find("name").text
+                        v['terms'].append(t)
+                        # print(f'  {term.find("name").text}')
                         pass
+                    siteinfo['taxonomies'].append(v)
 
         print('-----')
+
+        siteinfo['context'] = []
+
         context_root = root.findall('./context')
         for contexts in context_root:
             for context in contexts:
-                print(f"{context.find('name').text} - {context.find('description').text}")
+                c = {}
+                c['name'] = context.find('name').text
+                c['description'] = context.find('description').text
+                siteinfo['context'].append(c)
+                # print(f"{context.find('name').text} - {context.find('description').text}")
+
+    env = Environment(
+        loader=PackageLoader("report"),
+        autoescape=select_autoescape()
+    )
+
+    template = env.get_template("report.html")
+
+    print(template.render(info=siteinfo))
 
 
 

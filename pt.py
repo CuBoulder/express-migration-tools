@@ -58,9 +58,35 @@ def deploy_update(site):
 
     clear_upstream_cache(site)
 
-    cmd_deploy_update = f'terminus  upstream:updates:apply {site["dst"]}.dev'
-    print(cmd_deploy_update)
-    run_command(cmd_deploy_update)
+    cmd_update_apply = f'terminus  upstream:updates:apply {site["dst"]}.dev'
+    print(cmd_update_apply)
+    run_command(cmd_update_apply)
+
+    cmd_update_deploy_test = f'terminus  env:deploy {site["dst"]}.test'
+    print(cmd_update_deploy_test)
+    run_command(cmd_update_deploy_test)
+
+    cmd_update_deploy_live = f'terminus  env:deploy {site["dst"]}.live'
+    print(cmd_update_deploy_live)
+    run_command(cmd_update_deploy_live)
+
+    cmd_enable_modules = f'terminus remote:drush {site["dst"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link  --yes'
+    print(cmd_enable_modules)
+    run_command(cmd_enable_modules)
+
+    cmd_features_import = f'terminus remote:drush {site["dst"]}.live -- features:import cu_boulder_content_types --yes'
+    print(cmd_features_import)
+    run_command(cmd_features_import)
+
+    cmd_config_import = f'terminus remote:drush {site["dst"]}.live -- config:import --partial --source=/code/web/profiles/custom/boulder_profile/config/install --yes'
+    print(cmd_config_import)
+    run_command(cmd_config_import)
+
+    cmd_updatedb = f'terminus remote:drush {site["dst"]}.live -- updb --yes'
+    print(cmd_updatedb)
+    run_command(cmd_updatedb)
+
+    cache_rebuild(site)
 
 
 def cache_rebuild(site):
