@@ -10,6 +10,8 @@
 *.xml
 *.sql
 
+__pycache__
+
 migrate_express
 
 sites
