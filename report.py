@@ -4,6 +4,7 @@ import yaml
 from lxml import etree
 from rich import print
 import typer
+import sqlalchemy
 
 app = typer.Typer()
 
@@ -246,9 +247,58 @@ def generate_report(name: str):
     print(template.render(info=siteinfo))
 
 
+@app.command()
+def generate_migrated_report(name: str):
+    sitename_clean = name.replace('-', '')
+
+    engine = sqlalchemy.create_engine(f"mariadb+pymysql://root:pass@localhost/{sitename_clean}?charset=utf8mb4", echo=False)
 
 
 
+
+
+    with engine.connect() as conn:
+        siteinfo = {}
+
+
+        siteinfo['general'] = {}
+
+        node_count_result = conn.execute(sqlalchemy.text("select count(*) as count from node;"))
+        for count in node_count_result:
+            siteinfo['node_count'] = count.count
+
+        media_image_count_result = conn.execute(sqlalchemy.text("select count(*) as count from media where bundle = 'image';"))
+        for count in media_image_count_result:
+            siteinfo['media_image_count'] = count.count
+
+        media_document_count_result = conn.execute(sqlalchemy.text("select count(*) as count from media where bundle = 'document';"))
+        for count in media_document_count_result:
+            siteinfo['media_document_count'] = count.count
+
+        file_count_result = conn.execute(sqlalchemy.text("select count(*) as count from file_managed;"))
+        for count in file_count_result:
+            siteinfo['file_count'] = count.count
+
+
+        siteinfo['users'] = []
+
+        users_result = conn.execute(sqlalchemy.text("select uid, name from users_field_data;"))
+        for user in users_result:
+            if(user.uid > 1):
+                u = {}
+                u['name'] = user.name
+                u['uid'] = user.uid
+                u['roles'] = []
+
+                roles_result = conn.execute(sqlalchemy.text(f"select roles_target_id from user__roles where entity_id = '{user.uid}';"))
+                for role in roles_result:
+                    u['roles'].append(role.roles_target_id)
+
+
+
+                siteinfo['users'].append(u)
+
+        print(siteinfo)
 
 
 
