@@ -8,30 +8,40 @@
   </head>
   <body>
     <main class="container">
-        <h1>Site Report for {{ info.general.sitename }} </h1>
+        <h1>Site Report for {{ srcinfo.general.sitename }} </h1>
         <h2>General</h2>
         <div class="row">
             <div class="col">
                 <h3>D7 Express</h3>
                 <ul>
-                    <li>Site Name: {{ info.general.sitename }}</li>
-                    <li>Image Files: {{ info.general.file_images }}</li>
-                    <li>Document Files: {{ info.general.file_documents }}</li>
-                    <li>Total Nodes: {{ info.general.total_nodes }}</li>
-                    <li>File Nodes: {{ info.general.file_nodes }}</li>
+                    <li>Site Name: {{ srcinfo.general.sitename }}</li>
+                    <li>Image Files: {{ srcinfo.general.file_images }}</li>
+                    <li>Document Files: {{ srcinfo.general.file_documents }}</li>
+                    <li>Total Nodes: {{ srcinfo.general.total_nodes }}</li>
+                    <li>File Nodes: {{ srcinfo.general.file_nodes }}</li>
                 </ul>
             </div>
             <div class="col">
                 <h3>D10 Express</h3>
                 <ul>
-                    <li>Site Name: {{ }}</li>
-                    <li>Media Images: {{ }}</li>
-                    <li>Media Documents: {{ }}</li>
-                    <li>Total Nodes: {{ }}</li>
+                    <li>Site Name: {{ dstinfo.general.name }}</li>
+                    <li>Media Images: {{ dstinfo.general.media_image_count }}</li>
+                    <li>Media Documents: {{ dstinfo.general.media_document_count }}</li>
+                    <li>Total Nodes: {{ dstinfo.general.node_count }}</li>
+                    <li>Files: {{ dstinfo.general.file_count }}</li>
                     <li></li>
                 </ul>
             </div>
         </div>
+
+    <h2>Destination Nodes</h2>
+    <div>
+        {% for nodetype in dstinfo.nodes %}
+            <div class="card card-body">
+                <p>{{ nodetype.name }} - {{ nodetype.count }}</p>
+            </div>
+        {% endfor %}
+    </div>
 
     <h2>Nodes</h2>
     <div class="row">
@@ -42,7 +52,7 @@
                 </button>
             </p>
             <div id="nodesCollapse" class="collapse">
-                {% for nodetype in info.nodes %}
+                {% for nodetype in srcinfo.nodes %}
                     <div class="card card-body">
                         <p>{{ nodetype.type }}</p>
                         {% for node in nodetype.nodes %}
@@ -60,12 +70,15 @@
         </div>
     </div>
 
+
+
+
     <h2>Users</h2>
     <div class="row">
         <div class="col">
             <h3>D7 Users</h3>
             <ul>
-            {% for u in info.users %}
+            {% for u in srcinfo.users %}
                 <li>{{ u.name }}
                     <ul>
                     {% for r in u.roles %}
@@ -79,7 +92,15 @@
         <div class="col">
             <h3>D10 Users</h3>
             <ul>
-                <li>Coming Soon!</li>
+            {% for u in dstinfo.users %}
+                <li>{{ u.name }}
+                    <ul>
+                    {% for r in u.roles %}
+                        <li>{{ r }}</li>
+                    {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
             </ul>
         </div>
     </div>
@@ -90,7 +111,7 @@
         <div class="col">
             <h3>D7 Vocabularies</h3>
             <ul>
-            {% for v in info.taxonomies %}
+            {% for v in srcinfo.taxonomies %}
                 <li>{{ v.tag }} - {{ v.terms|length }}
                     <ul>
                     {% for t in v.terms %}
@@ -103,6 +124,17 @@
         </div>
         <div class="col">
             <h3>D10 Vocabularies</h3>
+            <ul>
+            {% for v in dstinfo.taxonomies %}
+                <li>{{ v.name }} - {{ v.terms|length }}
+                    <ul>
+                    {% for t in v.terms %}
+                        <li>{{ t }}</li>
+                    {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+            </ul>
         </div>
     </div>
 
@@ -111,7 +143,7 @@
     <div class="row">
         <div class="col">
             <ul>
-            {% for context in info.context %}
+            {% for context in srcinfo.context %}
                 <li>{{ context.name }} - {{ context.description }}</li>
             {% endfor %}
             </ul>
@@ -121,9 +153,9 @@
     <h2>Broken Links</h2>
     <div class="row">
         <div class="col">
-            <ul>
-
-            </ul>
+            <pre>
+            {{ linkinfo.text }}
+            </pre>
         </div>
     </div>
 

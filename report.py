@@ -5,6 +5,7 @@ from lxml import etree
 from rich import print
 import typer
 import sqlalchemy
+import subprocess
 
 app = typer.Typer()
 
@@ -121,7 +122,7 @@ def printnodesinfo(nodes, root, parent_map, type):
     return nodelist
 
 @app.command()
-def generate_report(name: str):
+def generate_source_info(name: str):
     # print(f'Report for site: {name}')
 
     siteinfo = {}
@@ -237,18 +238,19 @@ def generate_report(name: str):
                 siteinfo['context'].append(c)
                 # print(f"{context.find('name').text} - {context.find('description').text}")
 
-    env = Environment(
-        loader=PackageLoader("report"),
-        autoescape=select_autoescape()
-    )
+    # env = Environment(
+    #     loader=PackageLoader("report"),
+    #     autoescape=select_autoescape()
+    # )
 
-    template = env.get_template("report.html")
+    # template = env.get_template("report.html")
 
-    print(template.render(info=siteinfo))
+    # print(template.render(info=siteinfo))
+    return siteinfo
 
 
 @app.command()
-def generate_migrated_report(name: str):
+def generate_destination_info(name: str):
     sitename_clean = name.replace('-', '')
 
     engine = sqlalchemy.create_engine(f"mariadb+pymysql://root:pass@localhost/{sitename_clean}?charset=utf8mb4", echo=False)
@@ -263,22 +265,36 @@ def generate_migrated_report(name: str):
 
         siteinfo['general'] = {}
 
+        siteinfo['general']['name'] = name
+
         node_count_result = conn.execute(sqlalchemy.text("select count(*) as count from node;"))
         for count in node_count_result:
-            siteinfo['node_count'] = count.count
+            siteinfo['general']['node_count'] = count.count
 
         media_image_count_result = conn.execute(sqlalchemy.text("select count(*) as count from media where bundle = 'image';"))
         for count in media_image_count_result:
-            siteinfo['media_image_count'] = count.count
+            siteinfo['general']['media_image_count'] = count.count
 
         media_document_count_result = conn.execute(sqlalchemy.text("select count(*) as count from media where bundle = 'document';"))
         for count in media_document_count_result:
-            siteinfo['media_document_count'] = count.count
+            siteinfo['general']['media_document_count'] = count.count
 
         file_count_result = conn.execute(sqlalchemy.text("select count(*) as count from file_managed;"))
         for count in file_count_result:
-            siteinfo['file_count'] = count.count
+            siteinfo['general']['file_count'] = count.count
 
+
+        siteinfo['nodes'] = []
+        node_types_result = conn.execute(sqlalchemy.text("select unique(type) as type from node;"))
+        for type in node_types_result:
+            nodetype = {}
+            nodetype['name'] = type.type
+
+            node_count_result = conn.execute(sqlalchemy.text(f"select count(*) as count from node where type = '{type.type}';"))
+            for count in node_count_result:
+                nodetype['count'] = count.count
+
+            siteinfo['nodes'].append(nodetype)
 
         siteinfo['users'] = []
 
@@ -298,7 +314,71 @@ def generate_migrated_report(name: str):
 
                 siteinfo['users'].append(u)
 
-        print(siteinfo)
+
+        siteinfo['taxonomies'] = []
+        taxonomies_result = conn.execute(sqlalchemy.text("select unique(vid) as vocabulary from taxonomy_term_field_data;"))
+        for vocabulary in taxonomies_result:
+            v = {}
+            v['name'] = vocabulary.vocabulary
+            v['terms'] = []
+
+            terms_result = conn.execute(sqlalchemy.text(f"select name from taxonomy_term_field_data where vid = '{vocabulary.vocabulary}';"))
+            for term in terms_result:
+                v['terms'].append(term.name)
+
+            siteinfo['taxonomies'].append(v)
+
+        return siteinfo
+
+
+def run_command(cmd):
+    # print('Commands: ' + cmd)
+    output = subprocess.run([cmd], shell=True, capture_output=True, text=True)
+    # print(output.stdout)
+
+    # if len(output.stderr) > 0:
+    #     print(output.stderr)
+
+    return output
+
+@app.command()
+def generate_linkchecker_info(name: str):
+    cmd_linkchecker = 'linkchecker --no-warnings --check-extern http://192.168.1.30'
+    output = run_command(cmd_linkchecker)
+
+    siteinfo = {}
+    siteinfo['text'] = output.stdout
+
+    return siteinfo
+
+
+@app.command()
+def generate_report(name: str):
+    source_info = generate_source_info(name)
+    destination_info = generate_destination_info(name)
+    linkchecker_info = generate_linkchecker_info(name)
+
+    env = Environment(
+        loader=PackageLoader("report"),
+        autoescape=select_autoescape()
+    )
+    template = env.get_template("report.html")
+    print(template.render(srcinfo=source_info, dstinfo=destination_info, linkinfo=linkchecker_info))
+
+@app.command()
+def generate_objects(name: str):
+    source_info = generate_source_info(name)
+    destination_info = generate_destination_info(name)
+    linkchecker_info = generate_linkchecker_info(name)
+
+    print("srcinfo:")
+    print(source_info)
+    print("dstinfo:")
+    print(destination_info)
+    print("linkinfo:")
+    print(linkchecker_info.stdout)
+
+
 
 
 
