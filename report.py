@@ -376,7 +376,7 @@ def generate_objects(name: str):
     print("dstinfo:")
     print(destination_info)
     print("linkinfo:")
-    print(linkchecker_info.stdout)
+    print(linkchecker_info)
 
 
 
