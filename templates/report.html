@@ -7,53 +7,136 @@
     <title>Site Report</title>
   </head>
   <body>
-    <h1>Site Report</h1>
-
-    <h2>General</h2>
-
-    <p>Site Name: {{ info.general.sitename }}</p>
-    <p>Image Files: {{ info.general.file_images }}</p>
-    <p>Document Files: {{ info.general.file_documents }}</p>
-    <p>Total Nodes: {{ info.general.total_nodes }}</p>
-    <p>File Nodes: {{ info.general.file_nodes }}</p>
+    <main class="container">
+        <h1>Site Report for {{ info.general.sitename }} </h1>
+        <h2>General</h2>
+        <div class="row">
+            <div class="col">
+                <h3>D7 Express</h3>
+                <ul>
+                    <li>Site Name: {{ info.general.sitename }}</li>
+                    <li>Image Files: {{ info.general.file_images }}</li>
+                    <li>Document Files: {{ info.general.file_documents }}</li>
+                    <li>Total Nodes: {{ info.general.total_nodes }}</li>
+                    <li>File Nodes: {{ info.general.file_nodes }}</li>
+                </ul>
+            </div>
+            <div class="col">
+                <h3>D10 Express</h3>
+                <ul>
+                    <li>Site Name: {{ }}</li>
+                    <li>Media Images: {{ }}</li>
+                    <li>Media Documents: {{ }}</li>
+                    <li>Total Nodes: {{ }}</li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
 
     <h2>Nodes</h2>
-    {% for nodetype in info.nodes %}
-        <p>{{ nodetype.type }}</p>
-        {% for node in nodetype.nodes %}
-            <p>{{ node.title }} - {{ node.nid }} - {{ node.path }}</p>
-            {% for layout in node.layouts %}
-                <p>{{ layout.name }}</p>
-                {% for bean in layout.beans %}
-                    <p>{{ bean.type }} - {{ bean.bid }}</p>
+    <div class="row">
+        <div class="col">
+            <p>These are entities which contain attached beans for node types which no longer allow layouts.</p>
+            <p> <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#nodesCollapse" aria-expanded="false" aria-controls="nodesCollapse">
+                Show Nodes
+                </button>
+            </p>
+            <div id="nodesCollapse" class="collapse">
+                {% for nodetype in info.nodes %}
+                    <div class="card card-body">
+                        <p>{{ nodetype.type }}</p>
+                        {% for node in nodetype.nodes %}
+                            <p>{{ node.title }} - {{ node.nid }} - {{ node.path }}</p>
+                            {% for layout in node.layouts %}
+                                <p>{{ layout.name }}</p>
+                                {% for bean in layout.beans %}
+                                    <p>{{ bean.type }} - {{ bean.bid }}</p>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
                 {% endfor %}
-            {% endfor %}
-        {% endfor %}
-    {% endfor %}
+            </div>
+        </div>
+    </div>
 
     <h2>Users</h2>
+    <div class="row">
+        <div class="col">
+            <h3>D7 Users</h3>
+            <ul>
+            {% for u in info.users %}
+                <li>{{ u.name }}
+                    <ul>
+                    {% for r in u.roles %}
+                        <li>{{ r.name }}</li>
+                    {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="col">
+            <h3>D10 Users</h3>
+            <ul>
+                <li>Coming Soon!</li>
+            </ul>
+        </div>
+    </div>
 
-    {% for u in info.users %}
-        <p>{{ u.name }}</p>
-        {% for r in u.roles %}
-            <p>{{ r.name }}</p>
-        {% endfor %}
-    {% endfor %}
-
+   
     <h2>Taxonomies</h2>
+    <div class="row">
+        <div class="col">
+            <h3>D7 Vocabularies</h3>
+            <ul>
+            {% for v in info.taxonomies %}
+                <li>{{ v.tag }} - {{ v.terms|length }}
+                    <ul>
+                    {% for t in v.terms %}
+                        <li>{{ t.name }}</li>
+                    {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="col">
+            <h3>D10 Vocabularies</h3>
+        </div>
+    </div>
 
-    {% for v in info.taxonomies %}
-        <p>{{ v.tag }} - {{ v.terms|length }}</p>
-        {% for t in v.terms %}
-            <p>{{ t.name }}</p>
-        {% endfor %}
-    {% endfor %}
 
     <h2>Context</h2>
-    {% for context in info.context %}
-        <p>{{ context.name }} - {{ context.description }}</p>
-    {% endfor %}
+    <div class="row">
+        <div class="col">
+            <ul>
+            {% for context in info.context %}
+                <li>{{ context.name }} - {{ context.description }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
 
+    <h2>Broken Links</h2>
+    <div class="row">
+        <div class="col">
+            <ul>
+
+            </ul>
+        </div>
+    </div>
+
+    <h2>Broken Images</h2>
+    <div class="row">
+        <div class="col">
+            <ul>
+
+            </ul>
+        </div>
+    </div>
+
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>
