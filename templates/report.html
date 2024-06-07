@@ -20,6 +20,23 @@
                     <li>Total Nodes: {{ srcinfo.general.total_nodes }}</li>
                     <li>File Nodes: {{ srcinfo.general.file_nodes }}</li>
                 </ul>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Node</th>
+                            <th scope="col">Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for nodetype in srcinfo.nodes %}
+                        <tr>
+                            <td>{{ nodetype.name }}</td>
+                            <td>{{ nodetyp|lengtht }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
             <div class="col">
                 <h3>D10 Express</h3>
@@ -29,144 +46,138 @@
                     <li>Media Documents: {{ dstinfo.general.media_document_count }}</li>
                     <li>Total Nodes: {{ dstinfo.general.node_count }}</li>
                     <li>Files: {{ dstinfo.general.file_count }}</li>
-                    <li></li>
+                </ul>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Node</th>
+                            <th scope="col">Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for nodetype in dstinfo.nodes %}
+                        <tr>
+                            <td>{{ nodetype.name }}</td>
+                            <td>{{ nodetype.count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <h2>Nodes</h2>
+        <div class="row">
+            <div class="col">
+                <p>These are entities which contain attached beans for node types which no longer allow layouts.</p>
+                <p> 
+                    <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#nodesCollapse" aria-expanded="false" aria-controls="nodesCollapse">
+                    Show Nodes
+                    </button>
+                </p>
+                <div id="nodesCollapse" class="collapse">
+                    {% for nodetype in srcinfo.nodes %}
+                        <div class="card card-body">
+                            <p>{{ nodetype.type }}</p>
+                            {% for node in nodetype.nodes %}
+                                <p>{{ node.title }} - {{ node.nid }} - {{ node.path }}</p>
+                                {% for layout in node.layouts %}
+                                    <p>{{ layout.name }}</p>
+                                    {% for bean in layout.beans %}
+                                        <p>{{ bean.type }} - {{ bean.bid }}</p>
+                                    {% endfor %}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <h2>Users</h2>
+        <div class="row">
+            <div class="col">
+                <h3>D7 Users</h3>
+                <ul>
+                {% for u in srcinfo.users %}
+                    <li>{{ u.name }}
+                        <ul>
+                        {% for r in u.roles %}
+                            <li>{{ r.name }}</li>
+                        {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+            <div class="col">
+                <h3>D10 Users</h3>
+                <ul>
+                {% for u in dstinfo.users %}
+                    <li>{{ u.name }}
+                        <ul>
+                        {% for r in u.roles %}
+                            <li>{{ r }}</li>
+                        {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
                 </ul>
             </div>
         </div>
 
-    <h2>Destination Nodes</h2>
-    <div>
-        {% for nodetype in dstinfo.nodes %}
-            <div class="card card-body">
-                <p>{{ nodetype.name }} - {{ nodetype.count }}</p>
-            </div>
-        {% endfor %}
-    </div>
-
-    <h2>Nodes</h2>
-    <div class="row">
-        <div class="col">
-            <p>These are entities which contain attached beans for node types which no longer allow layouts.</p>
-            <p> <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#nodesCollapse" aria-expanded="false" aria-controls="nodesCollapse">
-                Show Nodes
-                </button>
-            </p>
-            <div id="nodesCollapse" class="collapse">
-                {% for nodetype in srcinfo.nodes %}
-                    <div class="card card-body">
-                        <p>{{ nodetype.type }}</p>
-                        {% for node in nodetype.nodes %}
-                            <p>{{ node.title }} - {{ node.nid }} - {{ node.path }}</p>
-                            {% for layout in node.layouts %}
-                                <p>{{ layout.name }}</p>
-                                {% for bean in layout.beans %}
-                                    <p>{{ bean.type }} - {{ bean.bid }}</p>
-                                {% endfor %}
-                            {% endfor %}
+        <h2>Taxonomies</h2>
+        <div class="row">
+            <div class="col">
+                <h3>D7 Vocabularies</h3>
+                <ul>
+                {% for v in srcinfo.taxonomies %}
+                    <li>{{ v.tag }} - {{ v.terms|length }}
+                        <ul>
+                        {% for t in v.terms %}
+                            <li>{{ t.name }}</li>
                         {% endfor %}
-                    </div>
+                        </ul>
+                    </li>
                 {% endfor %}
+                </ul>
+            </div>
+            <div class="col">
+                <h3>D10 Vocabularies</h3>
+                <ul>
+                {% for v in dstinfo.taxonomies %}
+                    <li>{{ v.name }} - {{ v.terms|length }}
+                        <ul>
+                        {% for t in v.terms %}
+                            <li>{{ t }}</li>
+                        {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+                </ul>
             </div>
         </div>
-    </div>
 
-
-
-
-    <h2>Users</h2>
-    <div class="row">
-        <div class="col">
-            <h3>D7 Users</h3>
-            <ul>
-            {% for u in srcinfo.users %}
-                <li>{{ u.name }}
-                    <ul>
-                    {% for r in u.roles %}
-                        <li>{{ r.name }}</li>
-                    {% endfor %}
-                    </ul>
-                </li>
-            {% endfor %}
-            </ul>
+        <h2>Context</h2>
+        <div class="row">
+            <div class="col">
+                <ul>
+                {% for context in srcinfo.context %}
+                    <li>{{ context.name }} - {{ context.description }}</li>
+                {% endfor %}
+                </ul>
+            </div>
         </div>
-        <div class="col">
-            <h3>D10 Users</h3>
-            <ul>
-            {% for u in dstinfo.users %}
-                <li>{{ u.name }}
-                    <ul>
-                    {% for r in u.roles %}
-                        <li>{{ r }}</li>
-                    {% endfor %}
-                    </ul>
-                </li>
-            {% endfor %}
-            </ul>
-        </div>
-    </div>
 
-   
-    <h2>Taxonomies</h2>
-    <div class="row">
-        <div class="col">
-            <h3>D7 Vocabularies</h3>
-            <ul>
-            {% for v in srcinfo.taxonomies %}
-                <li>{{ v.tag }} - {{ v.terms|length }}
-                    <ul>
-                    {% for t in v.terms %}
-                        <li>{{ t.name }}</li>
-                    {% endfor %}
-                    </ul>
-                </li>
-            {% endfor %}
-            </ul>
+        <h2>Broken Links</h2>
+        <div class="row">
+            <div class="col">
+                <pre>
+                {{ linkinfo.text }}
+                </pre>
+            </div>
         </div>
-        <div class="col">
-            <h3>D10 Vocabularies</h3>
-            <ul>
-            {% for v in dstinfo.taxonomies %}
-                <li>{{ v.name }} - {{ v.terms|length }}
-                    <ul>
-                    {% for t in v.terms %}
-                        <li>{{ t }}</li>
-                    {% endfor %}
-                    </ul>
-                </li>
-            {% endfor %}
-            </ul>
-        </div>
-    </div>
-
-
-    <h2>Context</h2>
-    <div class="row">
-        <div class="col">
-            <ul>
-            {% for context in srcinfo.context %}
-                <li>{{ context.name }} - {{ context.description }}</li>
-            {% endfor %}
-            </ul>
-        </div>
-    </div>
-
-    <h2>Broken Links</h2>
-    <div class="row">
-        <div class="col">
-            <pre>
-            {{ linkinfo.text }}
-            </pre>
-        </div>
-    </div>
-
-    <h2>Broken Images</h2>
-    <div class="row">
-        <div class="col">
-            <ul>
-
-            </ul>
-        </div>
-    </div>
 
     </main>
 
