@@ -32,7 +32,7 @@
                         {% for nodetype in srcinfo.nodes %}
                         <tr>
                             <td>{{ nodetype.name }}</td>
-                            <td>{{ nodetyp|lengtht }}</td>
+                            <td>{{ nodetype|length }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -100,7 +100,7 @@
             <div class="col">
                 <h3>D7 Users</h3>
                 <ul>
-                {% for u in srcinfo.users %}
+                {% for u in srcinfo.users|sort %}
                     <li>{{ u.name }}
                         <ul>
                         {% for r in u.roles %}
@@ -114,7 +114,7 @@
             <div class="col">
                 <h3>D10 Users</h3>
                 <ul>
-                {% for u in dstinfo.users %}
+                {% for u in dstinfo.users|sort %}
                     <li>{{ u.name }}
                         <ul>
                         {% for r in u.roles %}
@@ -173,9 +173,7 @@
         <h2>Broken Links</h2>
         <div class="row">
             <div class="col">
-                <pre>
-                {{ linkinfo.text }}
-                </pre>
+                <pre>{{ linkinfo.text }}</pre>
             </div>
         </div>
 
