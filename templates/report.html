@@ -13,12 +13,12 @@
         <div class="row">
             <div class="col">
                 <h3>D7 Express</h3>
-                <ul>
-                    <li>Site Name: {{ srcinfo.general.sitename }}</li>
-                    <li>Image Files: {{ srcinfo.general.file_images }}</li>
-                    <li>Document Files: {{ srcinfo.general.file_documents }}</li>
-                    <li>Total Nodes: {{ srcinfo.general.total_nodes }}</li>
-                    <li>File Nodes: {{ srcinfo.general.file_nodes }}</li>
+                <ul class="list-group">
+                    <li class="list-group-item">Site Name: {{ srcinfo.general.sitename }}</li>
+                    <li class="list-group-item">Image Files: {{ srcinfo.general.file_images }}</li>
+                    <li class="list-group-item">Document Files: {{ srcinfo.general.file_documents }}</li>
+                    <li class="list-group-item">Total Nodes: {{ srcinfo.general.total_nodes }}</li>
+                    <li class="list-group-item">File Nodes: {{ srcinfo.general.file_nodes }}</li>
                 </ul>
 
                 <table class="table table-striped">
@@ -40,12 +40,12 @@
             </div>
             <div class="col">
                 <h3>D10 Express</h3>
-                <ul>
-                    <li>Site Name: {{ dstinfo.general.name }}</li>
-                    <li>Media Images: {{ dstinfo.general.media_image_count }}</li>
-                    <li>Media Documents: {{ dstinfo.general.media_document_count }}</li>
-                    <li>Total Nodes: {{ dstinfo.general.node_count }}</li>
-                    <li>Files: {{ dstinfo.general.file_count }}</li>
+                <ul class="list-group">
+                    <li class="list-group-item">Site Name: {{ dstinfo.general.name }}</li>
+                    <li class="list-group-item">Media Images: {{ dstinfo.general.media_image_count }}</li>
+                    <li class="list-group-item">Media Documents: {{ dstinfo.general.media_document_count }}</li>
+                    <li class="list-group-item">Total Nodes: {{ dstinfo.general.node_count }}</li>
+                    <li class="list-group-item">Files: {{ dstinfo.general.file_count }}</li>
                 </ul>
 
                 <table class="table table-striped">
@@ -99,9 +99,9 @@
         <div class="row">
             <div class="col">
                 <h3>D7 Users</h3>
-                <ul>
+                <ul class="list-group">
                 {% for u in srcinfo.users|sort %}
-                    <li>{{ u.name }}
+                    <li class="list-group-item">{{ u.name }}
                         <ul>
                         {% for r in u.roles %}
                             <li>{{ r.name }}</li>
@@ -113,9 +113,9 @@
             </div>
             <div class="col">
                 <h3>D10 Users</h3>
-                <ul>
+                <ul class="list-group">
                 {% for u in dstinfo.users|sort %}
-                    <li>{{ u.name }}
+                    <li class="list-group-item">{{ u.name }}
                         <ul>
                         {% for r in u.roles %}
                             <li>{{ r }}</li>
@@ -131,9 +131,9 @@
         <div class="row">
             <div class="col">
                 <h3>D7 Vocabularies</h3>
-                <ul>
+                <ul class="list-group">
                 {% for v in srcinfo.taxonomies %}
-                    <li>{{ v.tag }} - {{ v.terms|length }}
+                    <li class="list-group-item">{{ v.tag }} - {{ v.terms|length }}
                         <ul>
                         {% for t in v.terms %}
                             <li>{{ t.name }}</li>
@@ -145,9 +145,9 @@
             </div>
             <div class="col">
                 <h3>D10 Vocabularies</h3>
-                <ul>
+                <ul class="list-group">
                 {% for v in dstinfo.taxonomies %}
-                    <li>{{ v.name }} - {{ v.terms|length }}
+                    <li class="list-group-item">{{ v.name }} - {{ v.terms|length }}
                         <ul>
                         {% for t in v.terms %}
                             <li>{{ t }}</li>
@@ -162,9 +162,9 @@
         <h2>Context</h2>
         <div class="row">
             <div class="col">
-                <ul>
+                <ul class="list-group">
                 {% for context in srcinfo.context %}
-                    <li>{{ context.name }} - {{ context.description }}</li>
+                    <li class="list-group-item">{{ context.name }} - {{ context.description }}</li>
                 {% endfor %}
                 </ul>
             </div>
