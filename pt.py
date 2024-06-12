@@ -70,7 +70,7 @@ def deploy_update(site):
     print(cmd_update_deploy_live)
     run_command(cmd_update_deploy_live)
 
-    cmd_enable_modules = f'terminus remote:drush {site["dst"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link  --yes'
+    cmd_enable_modules = f'terminus remote:drush {site["dst"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access --yes'
     print(cmd_enable_modules)
     run_command(cmd_enable_modules)
 
@@ -398,7 +398,7 @@ def remote_backup_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=300) as executor:
             for _ in executor.map(remote_backup, sitelist['sites']):
                 pass
 
@@ -407,7 +407,7 @@ def deploy_update_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
             for _ in executor.map(deploy_update, sitelist['sites']):
                 pass
 
