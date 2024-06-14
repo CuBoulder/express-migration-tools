@@ -54,6 +54,24 @@ def clear_upstream_cache(site):
     print(cmd_clear_upstream_cache)
     run_command(cmd_clear_upstream_cache)
 
+def deploy_environment(site):
+
+    clear_upstream_cache(site)
+
+    cmd_update_apply = f'terminus  upstream:updates:apply {site["dst"]}.dev'
+    print(cmd_update_apply)
+    run_command(cmd_update_apply)
+
+    cmd_update_deploy_test = f'terminus  env:deploy {site["dst"]}.test'
+    print(cmd_update_deploy_test)
+    run_command(cmd_update_deploy_test)
+
+    cmd_update_deploy_live = f'terminus  env:deploy {site["dst"]}.live'
+    print(cmd_update_deploy_live)
+    run_command(cmd_update_deploy_live)
+
+
+
 def deploy_update(site):
 
     clear_upstream_cache(site)
@@ -95,6 +113,13 @@ def cache_rebuild(site):
     print(cmd_cache_rebuild)
 
     run_command(cmd_cache_rebuild)
+
+def add_tag(site):
+
+    cmd_add_tag = f'terminus tag:add {site["dst"]} "University of Colorado Boulder" -- "upstream-tiamat"'
+    print(cmd_add_tag)
+
+    run_command(cmd_add_tag)
 
 def print_site(site):
     print(f"https://www.colorado.edu/{site['path']}, https://live-{site['dst']}.pantheonsite.io")
@@ -260,7 +285,7 @@ def create_site(site):
 
     cmd_create_site = f'terminus site:create {site["dst"]} {site["dst"]} --org="University of Colorado Boulder" tiamat_production'
 
-    # print(cmd_create_site)
+    print(cmd_create_site)
     run_command(cmd_create_site)
 
 def deploy_site(site):
@@ -409,6 +434,25 @@ def deploy_update_sitelist(name: str):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
             for _ in executor.map(deploy_update, sitelist['sites']):
+                pass
+
+
+@app.command()
+def deploy_environment_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=300) as executor:
+            for _ in executor.map(deploy_environment, sitelist['sites']):
+                pass
+
+@app.command()
+def add_tag_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            for _ in executor.map(add_tag, sitelist['sites']):
                 pass
 
 @app.command()

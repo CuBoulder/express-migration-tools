@@ -5,7 +5,7 @@ sitelist = {}
 sitelist['sites'] = []
 
 
-with open('batch-test.txt') as input:
+with open('autositelistcomplete.txt') as input:
     for line in input:
         line = line.strip()
         if len(line) == 0:

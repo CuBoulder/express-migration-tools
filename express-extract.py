@@ -426,7 +426,7 @@ with (engine.connect() as conn):
 
     filemap = {}
     filemap['images'] = ['image/jpeg', 'image/png', 'image/gif']
-    filemap['documents'] = ['application/pdf']
+    filemap['documents'] = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
     filemap['video'] = []
     filemap['audio'] = []
 

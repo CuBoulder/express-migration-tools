@@ -1,0 +1,10 @@
+sites:
+- dst: ucbprod-demos-training-foundations
+  path: demos/courses/foundations
+  src: ucbdev-sandbox-training-foundations
+- dst: ucbprod-demos-documentation
+  path: demos/documentation
+  src: ucbdev-sandbox-docs
+- dst: ucbprod-demos-webexpress
+  path: demos/webexpress
+  src: ucbdev-sandbox-demo
