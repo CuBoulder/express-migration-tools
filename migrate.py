@@ -157,6 +157,21 @@ def set_configuration(sitename):
         sitename_result = conn.execute(
             sqlalchemy.text("select value from variable where name = 'site_name';")
         )
+        cu_site_affiliation_options = ""
+        cu_site_affiliation_options_result = conn.execute(
+            sqlalchemy.text(
+                "select value from variable where name = 'cu_site_affiliation_options';"
+            )
+        )
+        for result in cu_site_affiliation_options_result:
+            cu_site_affiliation_options = str(
+                phpserialize.loads(result.value, decode_strings=True)
+            ).strip()
+
+        print(f"Affiliation: {cu_site_affiliation_options}")
+        run_command(
+            f"./sites/{sitename}/code/d --root=sites/{sitename}/code config:set ucb_site_configuration.settings site_affiliation {cu_site_affiliation_options} --yes"
+        )
 
         cfg_sitename = ""
         for result in sitename_result:
@@ -418,7 +433,6 @@ def create_users(sitename):
     web_users.append("alco6164")
     web_users.append("joni1621")
     web_users.append("jako6198")
-    web_users.append("crafts")
     web_users.append("titr7839")
     web_users.append("pabr5825")
 
@@ -427,6 +441,15 @@ def create_users(sitename):
     ux_users.append("niwa4700")
     ux_users.append("brokaw")
     ux_users.append("wetu1300")
+    ux_users.append("crafts")
+
+    service_manager_users = []
+    service_manager_users.append("webexpress-manager")
+    "site_manager"
+
+    service_editor_users = []
+    service_manager_users.append("webexpress-editor")
+    "content_editor"
 
     for user in web_users:
         print(f"  Creating web user {user}...")
@@ -489,8 +512,8 @@ if args.extract_psa_from_remote:
     # create_users(args.site)
     delete_homepage(args.site)
     enable_migrate_express(args.site)
-    set_configuration(args.site)
     set_files_permissions(args.site)
+    set_configuration(args.site)
 
 
 "ln -s ../../data.xml data.xml"

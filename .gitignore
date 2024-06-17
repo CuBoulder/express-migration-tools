@@ -2,11 +2,18 @@
 
 .env
 
+.env.local
+
 .idea
 .vscode
 *.json
 *.xml
 *.sql
 
+__pycache__
+
+migrate_express
+
 sites
 databases
+siterepos
