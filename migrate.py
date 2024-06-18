@@ -121,6 +121,7 @@ def set_configuration(sitename):
 
 
 
+
         sitename_result = conn.execute(sqlalchemy.text("select value from variable where name = 'site_name';"))
 
 
@@ -209,7 +210,7 @@ def set_configuration(sitename):
 
         run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set boulder_base.settings ucb_campus_header_color "{brand_bar_color}" --yes')
 
-        ucb_breadcrumb_nav = '0'
+        ucb_breadcrumb_nav = '1'
         if 'use_breadcrumbs' in themesettings:
             if themesettings['use_breadcrumbs'] == 0:
                 ucb_breadcrumb_nav = 0
@@ -228,6 +229,11 @@ def set_configuration(sitename):
         run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set boulder_base.settings ucb_secondary_menu_position "{ucb_secondary_menu_position}" --yes')
 
 
+        use_sticky_menu = '0'
+        use_sticky_menu_result = conn.execute(sqlalchemy.text("select value from variable where name = 'use_sticky_menu';"))
+        for result in use_sticky_menu_result:
+            use_sticky_menu = str(phpserialize.loads(result.value, decode_strings=True)).strip()
+        run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set boulder_base.settings ucb_sticky_menu "{use_sticky_menu}" --yes')
 
 
 def load_sql_to_local_db(sitename):
