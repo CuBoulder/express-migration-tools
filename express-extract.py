@@ -519,7 +519,9 @@ with (engine.connect() as conn):
             roles.extend(rolemap[y[0]])
 
         user['roles'] = roles
-        users.append(user)
+
+        if len(roles) > 0:
+            users.append(user)
     output['users'] = users
 
 

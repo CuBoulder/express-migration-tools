@@ -31,8 +31,8 @@
                     <tbody>
                         {% for nodetype in srcinfo.nodes %}
                         <tr>
-                            <td>{{ nodetype.name }}</td>
-                            <td>{{ nodetype|length }}</td>
+                            <td>{{ nodetype.type }}</td>
+                            <td>{{ nodetype.nodes|length }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -100,7 +100,7 @@
             <div class="col">
                 <h3>D7 Users</h3>
                 <ul class="list-group">
-                {% for u in srcinfo.users|sort %}
+                {% for u in srcinfo.users|sort(attribute="name") %}
                     <li class="list-group-item">{{ u.name }}
                         <ul>
                         {% for r in u.roles %}
@@ -114,7 +114,7 @@
             <div class="col">
                 <h3>D10 Users</h3>
                 <ul class="list-group">
-                {% for u in dstinfo.users|sort %}
+                {% for u in dstinfo.users|sort(attribute="name") %}
                     <li class="list-group-item">{{ u.name }}
                         <ul>
                         {% for r in u.roles %}
