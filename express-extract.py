@@ -380,7 +380,17 @@ with open('icons.yml') as f:
 with open('shims.json') as f:
     shims_array = json.load(f)
     for shim in shims_array:
-        fa_shims[shim[0]] = shim[2]
+        fa_shims[shim[0]] = {}
+        style = shim[1]
+        if style == 'far':
+            fa_shims[shim[0]]['style'] = 'regular'
+        elif style == 'fab':
+            fa_shims[shim[0]]['style'] = 'brands'
+        else:
+            fa_shims[shim[0]]['style'] = 'solid'
+
+        fa_shims[shim[0]]['name'] = shim[2]
+
 
 
 
@@ -450,7 +460,11 @@ with (engine.connect() as conn):
         file['timestamp'] = x.timestamp
         file['type'] = x.type
 
-        file['filepath'] = '../../files/' + x.uri[9:]
+        if x.uri[:6] == 'public':
+            file['filepath'] = '../../files/' + x.uri[9:]
+        elif x.uri[:7] == 'private':
+            file['filepath'] = '../../files/private/' + x.uri[10:]
+
 
         if x.filemime in filemap['images']:
             fp_result = conn.execute(sqlalchemy.text(f"select focal_point from focal_point where fid = '{file['fid']}';"))
@@ -1231,20 +1245,24 @@ with (engine.connect() as conn):
         if bean['style']['icon'] == 'none' or bean['style']['icon'] == '':
             bean['style']['icon'] = ''
         else:
-            if bean['style']['icon'][3:] in fa_map:
+            fa_style = ''
+            fa_name = ''
+
+            if bean['style']['icon'][3:] in fa_shims:
+                fa_style = fa_shims[bean['style']['icon'][3:]]['style']
+            elif bean['style']['icon'][3:] in fa_map:
                 fa_style = fa_map[bean['style']['icon'][3:]]['styles'][0]
-                bean['style']['icon'] = f'<i class="fa-{fa_style} {bean["style"]["icon"]}">&nbsp;</i>'
-            elif bean['style']['icon'][3:] in fa_shims:
-                bean['style']['icon'] = 'fa-' + fa_shims[bean['style']['icon'][3:]]
-                if bean['style']['icon'][3:] in fa_map:
-                    fa_style = fa_map[bean['style']['icon'][3:]]['styles'][0]
-                    bean['style']['icon'] = f'<i class="fa-{fa_style} {bean["style"]["icon"]}">&nbsp;</i>'
-
-
             else:
-                bean['style']['icon'] = f'<i class="fa-solid {bean["style"]["icon"]}">&nbsp;</i>'
+                fa_style = 'solid'
 
+            if bean['style']['icon'][3:] in fa_map:
+                fa_name = bean['style']['icon'][3:]
+            elif bean['style']['icon'][3:] in fa_shims:
+                fa_name = fa_shims[bean['style']['icon'][3:]]['name']
+            else:
+                fa_name = bean['style']['icon'][3:]
 
+            bean['style']['icon'] = f'<i class="fa-{fa_style} fa-{fa_name}">&nbsp;</i>'
 
         if bean['type'] not in bean_types_map:
             bean_types_map[bean['type']] = []
@@ -2094,6 +2112,8 @@ with (engine.connect() as conn):
             return value
         elif value[0:4] == 'tel:':
             return value
+        elif len(value) == 0:
+            return value
         elif ':' not in value and '.' not in value:
             return 'internal:/' + value
         else:
@@ -2299,6 +2319,10 @@ with (engine.connect() as conn):
 
 
             if root.tag in links_processing_tags:
+                if len(root.text) == 0:
+                    root.tag = 'nulltag'
+                    return
+
                 root.text = process_links(root.text)
 
             if root.tag in striptags_processing_tags:

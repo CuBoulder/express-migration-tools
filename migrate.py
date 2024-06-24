@@ -294,6 +294,7 @@ def update_settings_file(sitename):
 
     with open(f'sites/{sitename}/code/web/sites/default/settings.php', 'a') as settings:
         settings.write(migrate_db_config)
+        settings.write("$settings['file_private_path'] = $app_root . 'sites/default/files/private';")
 
 
 
