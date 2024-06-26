@@ -1896,7 +1896,7 @@ with (engine.connect() as conn):
 
 
             if y.link_path == '<firstchild>':
-                menulink['link_path'] = '<firstchild>'
+                menulink['link_path'] = '<none>'
             elif y.link_path in urlaliasmap:
                 menulink['link_path'] = urlaliasmap[y.link_path]
             else:
@@ -1926,6 +1926,18 @@ with (engine.connect() as conn):
             menulink['p8'] = y.p8
             menulink['p9'] = y.p9
             menulink['updated'] = y.updated
+
+            if y.link_path == '<firstchild>':
+                menulink['link_path'] = '<none>'
+                menulink['options'] = 'a:1:{s:15:"menu_firstchild";a:1:{s:7:"enabled";i:1;}}'
+            elif y.link_path in urlaliasmap:
+                menulink['link_path'] = urlaliasmap[y.link_path]
+            else:
+                menulink['link_path'] = y.link_path
+
+
+
+
             menu['links'].append(menulink)
 
 
