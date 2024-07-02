@@ -1,0 +1,4 @@
+sites:
+- dst: ucbprod-faculty-cadena
+  path: faculty/cadena
+  src: ucb-faculty-cadena

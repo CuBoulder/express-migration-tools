@@ -285,7 +285,7 @@ def migrate_import(site):
     try_limit = 5
     tries = 0
 
-    cmd_migrate_import = f'cd ./sites/{site["src"]}/code && ./d migrate:import --tag=express --execute-dependencies'
+    cmd_migrate_import = f'cd ./sites/{site["src"]}/code && ./d migrate:import --tag=express --execute-dependencies 2>&1 | tee -a migrateoutput.txt'
 
     print(cmd_migrate_import)
 
