@@ -343,13 +343,21 @@ def run_command(cmd):
 
 @app.command()
 def generate_linkchecker_info(name: str):
-    cmd_linkchecker = 'linkchecker --no-warnings --check-extern http://192.168.1.30'
-    output = run_command(cmd_linkchecker)
 
-    siteinfo = {}
-    siteinfo['text'] = output.stdout
+    address = ''
+    if name[0:4] == 'ucb-':
+        address = 'ucbprod-' + name[4:]
 
-    return siteinfo
+        cmd_linkchecker = f'linkchecker --no-warnings --check-extern --no-robots https://live-{address}.pantheonsite.io'
+        # cmd_linkchecker = f'linkchecker --no-warnings --check-extern http://192.168.1.30'
+
+        print(cmd_linkchecker)
+        output = run_command(cmd_linkchecker)
+
+        siteinfo = {}
+        siteinfo['text'] = output.stdout
+
+        return siteinfo
 
 
 @app.command()

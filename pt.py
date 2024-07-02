@@ -88,7 +88,7 @@ def deploy_update(site):
     print(cmd_update_deploy_live)
     run_command(cmd_update_deploy_live)
 
-    cmd_enable_modules = f'terminus remote:drush {site["dst"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access --yes'
+    cmd_enable_modules = f'terminus remote:drush {site["dst"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access ucb_migration_shortcodes --yes'
     print(cmd_enable_modules)
     run_command(cmd_enable_modules)
 
@@ -211,13 +211,22 @@ def upload_local_files(site):
 
     # print(sftp_parts)
 
-    lftp_command = f'lftp -c "open sftp://{sftp_parts[0]}:dummypass@{sftp_parts[1]}:2222; mirror --continue --reverse --delete --parallel=5 . files --verbose"'
+    # lftp_command = f'lftp -c "open sftp://{sftp_parts[0]}:dummypass@{sftp_parts[1]}:2222; mirror --continue --reverse --delete --parallel=5 . files --verbose"'
+
+    rclone_remote_create_command = f'rclone config create {site["dst"]} sftp host={sftp_parts[1]} user={sftp_parts[0]} port=2222 use_ssh_agent=false key_file=/home/$USER/.ssh/id_rsa md5sum_command=none sha1sum_command=none'
+    print(rclone_remote_create_command)
+    run_command(rclone_remote_create_command)
+
+    rclone_sync_command = f'cd ./sites/{site["src"]}/code/web/sites/default/files &&  rclone sync . {site["dst"]}:files --size-only -v'
+    print(rclone_sync_command)
+    run_command(rclone_sync_command)
 
 
-    cmd_upload_local_files = f'cd ./sites/{site["src"]}/code/web/sites/default/files && {lftp_command}'
 
-    print(cmd_upload_local_files)
-    run_command(cmd_upload_local_files)
+    # cmd_upload_local_files = f'cd ./sites/{site["src"]}/code/web/sites/default/files && {lftp_command}'
+    #
+    # print(cmd_upload_local_files)
+    # run_command(cmd_upload_local_files)
 
 def upload_local_database(site):
     # print(site['dst'])
@@ -261,6 +270,14 @@ def configure_modules(site):
 
     print(cmd_configure_modules)
     run_command(cmd_configure_modules)
+
+def convert_shortcodes(site):
+    # print(site['dst'])
+
+    cmd_configure_shortcodes = f'cd ./sites/{site["src"]}/code && ./d scc blah'
+
+    print(cmd_configure_shortcodes)
+    run_command(cmd_configure_shortcodes)
 
 def migrate_import(site):
     # print(site['dst'])
@@ -362,6 +379,15 @@ def configure_modules_sitelist(name: str):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
             for _ in executor.map(configure_modules, sitelist['sites']):
+                pass
+
+@app.command()
+def convert_shortcodes_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            for _ in executor.map(convert_shortcodes, sitelist['sites']):
                 pass
 
 @app.command()

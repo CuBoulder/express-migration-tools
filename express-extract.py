@@ -436,7 +436,13 @@ with (engine.connect() as conn):
 
     filemap = {}
     filemap['images'] = ['image/jpeg', 'image/png', 'image/gif']
-    filemap['documents'] = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+    filemap['documents'] = ['application/pdf',
+                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'application/vnd.ms-excel',
+                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                            'application/msword',
+                            'application/vnd.openxmlformats-officedocument.presentationml.presentation']
     filemap['video'] = []
     filemap['audio'] = []
 
@@ -1020,8 +1026,10 @@ with (engine.connect() as conn):
 
         if bean['type'] == 'feature_callout':
             #print(bean['fields']['field_callout_style']['data'][0]['field_callout_style_value'])
-            if bean['fields']['field_callout_style']['data'][0]['field_callout_style_value'] in ['large_teaser', 'large_teaser_alt', 'teaser', 'tiles', 'tiles_alt', 'feature', 'tiles_large']:
-                bean['type'] = 'content_row'
+
+            if len(bean['fields']['field_callout_style']['data']) > 0:
+                if bean['fields']['field_callout_style']['data'][0]['field_callout_style_value'] in ['large_teaser', 'large_teaser_alt', 'teaser', 'tiles', 'tiles_alt', 'feature', 'tiles_large']:
+                    bean['type'] = 'content_row'
 
         if bean['type'] == 'block_wrapper':
             if len(bean['fields']['field_block_wrapper_reference']['data']) > 0:
@@ -1160,6 +1168,7 @@ with (engine.connect() as conn):
         style_value_map['background_style']['light_gray'] = 'bs_background_style_gray'
         style_value_map['background_style']['dark_gray'] = 'bs_background_style_dark_gray'
         style_value_map['background_style']['tan'] = 'bs_background_style_tan'
+        style_value_map['background_style']['light_blue'] = 'bs_background_style_light_blue'
         style_value_map['background_style']['lightblue'] = 'bs_background_style_light_blue'
         style_value_map['background_style']['blue-medium'] = 'bs_background_style_medium_blue'
         style_value_map['background_style']['blue-dark'] = 'bs_background_style_dark_blue'
