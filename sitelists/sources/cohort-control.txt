@@ -1,0 +1,13 @@
+ucb-biden,biden
+ucb-brand,brand
+ucb-dalailama,dalailama
+ucb-ecenter,ecenter
+ucb-emergencymanagement,emergencymanagement
+ucb-events2,events
+ucb-hometowns,hometowns
+ucb-janegoodall,janegoodall
+ucb-libraries,libraries
+ucb-police,police
+ucb-publicsafety,publicsafety
+ucb-service-digital-signage,service/digital-signage
+ucb-strategicrelations,strategicrelations

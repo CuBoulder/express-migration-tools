@@ -1746,8 +1746,9 @@ with (engine.connect() as conn):
                     if 'field_sidebar_first' in page_sections:
                         field_sidebar_first_column = []
                         for b in page_sections['field_sidebar_first']:
-                            if b['beans'][0]:
-                                field_sidebar_first_column.append(b['beans'][0][0])
+                            if len(b['beans']) > 0:
+                                if b['beans'][0]:
+                                    field_sidebar_first_column.append(b['beans'][0][0])
 
 
                         body_element['beans'].append(field_sidebar_first_column)
@@ -1765,8 +1766,9 @@ with (engine.connect() as conn):
                     if 'field_sidebar_second' in page_sections:
                         # field_sidebar_second_column = []
                         for b in page_sections['field_sidebar_second']:
-                            if b['beans'][0]:
-                                menu_column.append(b['beans'][0][0])
+                            if len(b['beans']) > 0:
+                                if b['beans'][0]:
+                                    menu_column.append(b['beans'][0][0])
                         # body_element['beans'].append(field_sidebar_second_column)
 
                     body_element['beans'].append(menu_column)

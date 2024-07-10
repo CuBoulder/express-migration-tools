@@ -240,6 +240,7 @@ def load_sql_to_local_db(sitename):
     print(f'Loading SQL to local source DB...')
     sitename_clean = sitename.replace('-', '')
     run_command(f'mariadb -u root -ppass {sitename_clean}src < sites/{sitename}/database.sql')
+    run_command(f'mariadb -u root -ppass {sitename_clean}src < webform_fix.sql')
     # output = subprocess.run([cmd], shell=True, capture_output=True)
     # print(output.stdout)
     # print(output.stderr)

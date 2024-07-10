@@ -27,7 +27,7 @@ def fetch_connection_information(site):
 
 def fetch_git_info(site):
 
-    cmd_connection_info = f'terminus connection:info {site["dst"]}.dev --format=yaml'
+    cmd_connection_info = f'terminus connection:info {site["training"]}.dev --format=yaml'
     connection_info = yaml.safe_load(run_command(cmd_connection_info).stdout)
     return connection_info['git_command']
 
@@ -58,15 +58,15 @@ def deploy_environment(site):
 
     clear_upstream_cache(site)
 
-    cmd_update_apply = f'terminus  upstream:updates:apply {site["dst"]}.dev'
+    cmd_update_apply = f'terminus  upstream:updates:apply {site["training"]}.dev'
     print(cmd_update_apply)
     run_command(cmd_update_apply)
 
-    cmd_update_deploy_test = f'terminus  env:deploy {site["dst"]}.test'
+    cmd_update_deploy_test = f'terminus  env:deploy {site["training"]}.test'
     print(cmd_update_deploy_test)
     run_command(cmd_update_deploy_test)
 
-    cmd_update_deploy_live = f'terminus  env:deploy {site["dst"]}.live'
+    cmd_update_deploy_live = f'terminus  env:deploy {site["training"]}.live'
     print(cmd_update_deploy_live)
     run_command(cmd_update_deploy_live)
 
@@ -196,7 +196,7 @@ def saml_config(site):
     print(cmd_fetch_repo)
     run_command(cmd_fetch_repo)
 
-    cmd_update_saml_config = f'cd ./siterepos/{site["dst"]} && cp -r ~/Projects/private-config/* . && git add -A && git commit -m "Add config" && git push'
+    cmd_update_saml_config = f'cd ./siterepos/{site["training"]} && cp -r ~/Projects/private-config/* . && git add -A && git commit -m "Add config" && git push'
     print(cmd_update_saml_config)
     run_command(cmd_update_saml_config)
 
@@ -300,7 +300,7 @@ def migrate_import(site):
 def create_site(site):
     # print(site['dst'])
 
-    cmd_create_site = f'terminus site:create {site["dst"]} {site["dst"]} --org="University of Colorado Boulder" tiamat_production'
+    cmd_create_site = f'terminus site:create {site["training"][0:51]} {site["training"][0:51]} --org="University of Colorado Boulder" tiamat_production'
 
     print(cmd_create_site)
     run_command(cmd_create_site)
@@ -309,7 +309,7 @@ def deploy_site(site):
     # print(site['dst'])
 
 
-    cmd_deploy_site = f'terminus env:deploy {site["dst"]}.test --yes && terminus env:deploy {site["dst"]}.live --yes'
+    cmd_deploy_site = f'terminus env:deploy {site["training"]}.test --yes && terminus env:deploy {site["training"]}.live --yes'
 
     # print(cmd_deploy_site)
     run_command(cmd_deploy_site)
@@ -349,7 +349,7 @@ def saml_config_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             for _ in executor.map(saml_config, sitelist['sites']):
                 pass
 

@@ -5,7 +5,7 @@ sitelist = {}
 sitelist['sites'] = []
 
 
-with open('autositelistcomplete.txt') as input:
+with open('sitelists/sources/cohort-8.txt') as input:
     for line in input:
         line = line.strip()
         if len(line) == 0:
@@ -13,8 +13,12 @@ with open('autositelistcomplete.txt') as input:
         line = line.split(',')
         site = {}
         site['src'] = line[0]
+        site['src'] = site['src'][0:51]
         site['path'] = line[1]
         site['dst'] = 'ucbprod-' + line[0][4:]
+        site['dst'] = site['dst'][0:51]
+        site['training'] = 'ucbtraining-' + line[0][4:]
+        site['training'] = site['training'][0:51]
         # rich.print(site)
         found = False
         for s in sitelist['sites']:

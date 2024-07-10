@@ -1,0 +1,2 @@
+ucbsub-online,online.colorado.edu
+ucbsub-ce,ce.colorado.edu
