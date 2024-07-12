@@ -16,6 +16,7 @@ parser.add_argument('-s', '--site', help='Sitename')
 parser.add_argument('--extract-sql-from-remote', action='store_true', help='Extract SQL from Pantheon')
 parser.add_argument('--extract-files-from-remote', action='store_true', help='Extract files from Pantheon')
 parser.add_argument('--extract-psa-from-remote', action='store_true', help='Extract files from Pantheon')
+parser.add_argument('--create-local-training-site', action='store_true', help='Extract files from Pantheon')
 parser.add_argument('--delete-users', action='store_true', help='Delete users')
 
 args = parser.parse_args()
@@ -70,9 +71,20 @@ def create_migrate_express_symlink(sitename):
     # print(output.stdout)
     # print(output.stderr)
 
+
 def create_dataxml_symlink(sitename):
     print(f'Creating data.xml symlink...')
     run_command(f'ln -s ../../data.xml sites/{sitename}/code/web/data.xml')
+    # output = subprocess.run([cmd], shell=True, capture_output=True)
+    # print(output.stdout)
+    # print(output.stderr)
+
+
+def create_training_dataxml_symlink(sitename):
+    print(f'Creating data.xml symlink...')
+    cmd = f'ln -s ../../../ucb-{sitename[12:]}/data.xml sites/{sitename}/code/web/data.xml'
+    print(cmd)
+    run_command(cmd)
     # output = subprocess.run([cmd], shell=True, capture_output=True)
     # print(output.stdout)
     # print(output.stderr)
@@ -298,6 +310,38 @@ def update_settings_file(sitename):
         settings.write("$settings['file_private_path'] = $app_root . 'sites/default/files/private';")
 
 
+def update_training_settings_file(sitename):
+    print(f'Updating settings file...')
+
+    sitename_clean = sitename.replace('-', '')
+
+    os.chmod(f'sites/{sitename}/code/web/sites/default/settings.php', 0o644)
+
+    migrate_db_config = f"""
+
+    $databases['migrate']['default'] = array (
+      'database' => 'ucb{sitename_clean[11:]}src',
+      'username' => 'root',
+      'password' => 'pass',
+      'prefix' => '',
+      'host' => 'localhost',
+      'port' => '3306',
+      'isolation_level' => 'READ COMMITTED',
+      'namespace' => 'Drupal\\mysql\\Driver\\Database\\mysql',
+      'driver' => 'mysql',
+      'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',
+    );
+    """
+
+    print(migrate_db_config)
+
+    with open(f'sites/{sitename}/code/web/sites/default/settings.php', 'a') as settings:
+        settings.write(migrate_db_config)
+        settings.write("$settings['file_private_path'] = $app_root . 'sites/default/files/private';")
+
+
+
+
 
 def extract_files_from_remote(sitename):
     print('Extracting files...')
@@ -308,7 +352,7 @@ def extract_files_from_remote(sitename):
     # print(output.stdout)
     # print(output.stderr)
 
-    run_command(f'tar -xzvf /home/tirazel/pantheon-local-copies/files/{sitename}-files.tgz -C sites/{sitename}')
+    run_command(f'tar -xzvf ~/pantheon-local-copies/files/{sitename}-files.tgz -C sites/{sitename}')
     # output = subprocess.run([cmd], shell=True, capture_output=True)
     # print(output.stdout)
     # print(output.stderr)
@@ -407,6 +451,20 @@ if args.extract_sql_from_remote:
 
 if args.extract_files_from_remote:
     extract_files_from_remote(args.site)
+
+
+if args.create_local_training_site:
+    # create_local_db(args.site)
+    # clone_template(args.site)
+    # composer_update(args.site)
+    # create_drush_symlink(args.site)
+    # create_migrate_express_symlink(args.site)
+    # create_training_dataxml_symlink(args.site)
+    # install_drupal(args.site)
+    update_training_settings_file(args.site)
+    # delete_users(args.site)
+    # enable_migrate_express(args.site)
+    # set_files_permissions(args.site)
 
 if args.extract_psa_from_remote:
     extract_sql_from_remote(args.site)
