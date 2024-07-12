@@ -10,3 +10,4 @@ lxml
 PyYAML
 python-dateutil
 cssutils
+typer[all]
