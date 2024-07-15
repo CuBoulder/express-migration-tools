@@ -454,17 +454,17 @@ if args.extract_files_from_remote:
 
 
 if args.create_local_training_site:
-    # create_local_db(args.site)
-    # clone_template(args.site)
-    # composer_update(args.site)
-    # create_drush_symlink(args.site)
-    # create_migrate_express_symlink(args.site)
-    # create_training_dataxml_symlink(args.site)
-    # install_drupal(args.site)
+    create_local_db(args.site)
+    clone_template(args.site)
+    composer_update(args.site)
+    create_drush_symlink(args.site)
+    create_migrate_express_symlink(args.site)
+    create_training_dataxml_symlink(args.site)
+    install_drupal(args.site)
     update_training_settings_file(args.site)
-    # delete_users(args.site)
-    # enable_migrate_express(args.site)
-    # set_files_permissions(args.site)
+    delete_users(args.site)
+    enable_migrate_express(args.site)
+    set_files_permissions(args.site)
 
 if args.extract_psa_from_remote:
     extract_sql_from_remote(args.site)

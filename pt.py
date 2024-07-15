@@ -711,7 +711,7 @@ def user_config_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
             for _ in executor.map(user_config, sitelist['sites']):
                 pass
 
@@ -720,7 +720,7 @@ def user_training_config_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
             for _ in executor.map(user_training_config, sitelist['sites']):
                 pass
 
@@ -738,7 +738,7 @@ def deploy_update_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
             for _ in executor.map(deploy_update, sitelist['sites']):
                 pass
 
@@ -747,7 +747,7 @@ def deploy_training_update_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
             for _ in executor.map(deploy_training_update, sitelist['sites']):
                 pass
 
