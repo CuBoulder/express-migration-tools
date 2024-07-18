@@ -355,6 +355,8 @@ def upload_training_local_files(site):
     wake_training_site(site)
 
     connection_info = fetch_training_connection_information(site)
+    if connection_info is None:
+        return
 
     sftp_parts = connection_info['sftp_command'].split(" ")[3].split('@')
 
@@ -384,6 +386,8 @@ def upload_training_local_database(site):
     wake_training_site(site)
 
     connection_info = fetch_training_connection_information(site)
+    if connection_info is None:
+        return
 
     cmd_upload_local_database = f'cd ./sites/{site["training"]}/code && {connection_info["mysql_command"]} < database.sql'
 
@@ -512,6 +516,10 @@ def deploy_site(site):
     run_command(cmd_deploy_site)
     
 def download_site(site):
+
+
+    wake_site(site)
+
     cmd_download_site = f'./migrate.py --extract-psa-from-remote --site={site["src"]}'
 
     print(cmd_download_site)

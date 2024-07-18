@@ -5,14 +5,14 @@ sitelist = {}
 sitelist['sites'] = []
 
 
-with open('sitelists/cohort-2.yml', 'r') as input:
+with open('sitelists/cohort-8.yml', 'r') as input:
 
     y = yaml.safe_load(input)
 
     for key in y['sites']:
         # print(key)
 
-        print(f"{key['src']},/{key['path']},{key['dst']},{key['training']},https://live-{key['dst']}.pantheonsite.io,https://live-{key['training']}.pantheonsite.io")
+        print(f"{key['src']},colorado.edu/{key['path']},{key['dst']},{key['training']},https://live-{key['dst']}.pantheonsite.io,https://live-{key['training']}.pantheonsite.io")
 
 
 

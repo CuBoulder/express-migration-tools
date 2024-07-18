@@ -1,0 +1,5 @@
+sites:
+- dst: ucbprod-aerospaceventures
+  path: aerospaceventures
+  src: ucb-aerospaceventures
+  training: ucbtraining-aerospaceventures

@@ -1,0 +1,15 @@
+sites:
+- dst: ucbdev-bakerrap
+- dst: ucbdev-globalstudiesrap
+- dst: ucbdev-hrap
+- dst: ucbdev-libbyrap
+- dst: ucbdev-srap
+- dst: ucbdev-program-teacherleadership
+- dst: ucbdev-graduateschool
+- dst: ucbdev-lab-emery
+- dst: ucbdev-lab-biochem-instruments
+- dst: ucbdev-lab-wirg
+- dst: ucbdev-urop
+- dst: ucbdev-fiske
+- dst: ucbdev-sportsclubs
+

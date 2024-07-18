@@ -8,3 +8,10 @@ sites:
 - dst: ucbprod-demos-webexpress
   path: demos/webexpress
   src: ucbdev-sandbox-demo
+- dst: ucbprod-chancellor
+  path: chancellor
+  src: ucbdev-sandbox-chancellor
+- dst: ucbprod-demos-training-nextsteps
+  path: demos/courses/next-steps
+  src: ucbdev-sandbox-training-nextsteps
+
