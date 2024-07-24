@@ -5,7 +5,7 @@ import rich
 import typer
 import concurrent.futures
 import subprocess
-from rich import print
+# from rich import print
 
 app = typer.Typer()
 
@@ -92,12 +92,18 @@ def deploy_environment(site):
     run_command(cmd_update_deploy_live)
 
 
+def configure_smtp(site):
+    password = ""
+    cmd_smtp_password_set = f'terminus remote:drush {site["dst"]}.live -- config:set smtp.settings smtp_password "{password}" --yes'
+    print(cmd_smtp_password_set)
+    run_command(cmd_smtp_password_set)
+
 
 def deploy_update(site):
 
     clear_upstream_cache(site)
 
-    cmd_update_apply = f'terminus  upstream:updates:apply {site["dst"]}.dev'
+    cmd_update_apply = f'terminus  upstream:updates:apply {site["dst"]}.dev --accept-upstream'
     print(cmd_update_apply)
     run_command(cmd_update_apply)
 
@@ -132,7 +138,7 @@ def deploy_training_update(site):
 
     clear_training_upstream_cache(site)
 
-    cmd_update_apply = f'terminus  upstream:updates:apply {site["training"]}.dev'
+    cmd_update_apply = f'terminus  upstream:updates:apply {site["training"]}.dev --accept-upstream'
     print(cmd_update_apply)
     run_command(cmd_update_apply)
 
@@ -183,7 +189,32 @@ def add_tag(site):
 
     cmd_add_tag = f'terminus tag:add {site["dst"]} "University of Colorado Boulder" -- "upstream-tiamat"'
     print(cmd_add_tag)
+    run_command(cmd_add_tag)
 
+    cmd_add_tag = f'terminus tag:add {site["dst"]} "University of Colorado Boulder" -- "migration-in-progress"'
+    print(cmd_add_tag)
+    run_command(cmd_add_tag)
+
+    cmd_add_tag = f'terminus tag:add {site["dst"]} "University of Colorado Boulder" -- "ucb-colorado"'
+    print(cmd_add_tag)
+    run_command(cmd_add_tag)
+
+    cmd_add_tag = f'terminus tag:add {site["dst"]} "University of Colorado Boulder" -- "cohort-control"'
+    print(cmd_add_tag)
+    run_command(cmd_add_tag)
+
+def add_training_tag(site):
+
+    cmd_add_tag = f'terminus tag:add {site["training"]} "University of Colorado Boulder" -- "upstream-tiamat"'
+    print(cmd_add_tag)
+    run_command(cmd_add_tag)
+
+    cmd_add_tag = f'terminus tag:add {site["training"]} "University of Colorado Boulder" -- "migration-training"'
+    print(cmd_add_tag)
+    run_command(cmd_add_tag)
+
+    cmd_add_tag = f'terminus tag:add {site["training"]} "University of Colorado Boulder" -- "cohort-control"'
+    print(cmd_add_tag)
     run_command(cmd_add_tag)
 
 def print_site(site):
@@ -480,6 +511,23 @@ def migrate_import(site):
         if output.returncode == 0:
             break
 
+def migrate_users_import(site):
+    # print(site['dst'])
+
+    try_limit = 5
+    tries = 0
+
+    cmd_migrate_import = f'cd ./sites/{site["src"]}/code && ./d migrate:import express_users --execute-dependencies 2>&1 | tee -a migrateoutput.txt'
+
+    print(cmd_migrate_import)
+
+    while tries < try_limit:
+        tries += 1
+        print(f"Try: {tries}")
+        output = run_command(cmd_migrate_import)
+        if output.returncode == 0:
+            break
+
 def migrate_training_import(site):
     # print(site['dst'])
 
@@ -582,7 +630,7 @@ def create_training_site_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
             for _ in executor.map(create_training_site, sitelist['sites']):
                 pass
 
@@ -593,6 +641,15 @@ def migrate_import_sitelist(name: str):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
             for _ in executor.map(migrate_import, sitelist['sites']):
+                pass
+
+@app.command()
+def migrate_users_import_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+            for _ in executor.map(migrate_users_import, sitelist['sites']):
                 pass
 
 @app.command()
@@ -751,6 +808,15 @@ def deploy_update_sitelist(name: str):
                 pass
 
 @app.command()
+def configure_smtp_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+            for _ in executor.map(configure_smtp, sitelist['sites']):
+                pass
+
+@app.command()
 def deploy_training_update_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
@@ -776,6 +842,15 @@ def add_tag_sitelist(name: str):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             for _ in executor.map(add_tag, sitelist['sites']):
+                pass
+
+@app.command()
+def add_training_tag_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            for _ in executor.map(add_training_tag, sitelist['sites']):
                 pass
 
 @app.command()

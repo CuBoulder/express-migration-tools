@@ -83,6 +83,15 @@ def install_destination_drupal(sitename):
 
     # sitename_clean = sitename.replace('-', '')
 
+def install_training_destination_drupal(sitename):
+    print(f'Installing Destination Drupal...')
+
+    dstsite = sitename
+
+    install_cmd = f'terminus remote:drush {dstsite}.live -- si boulder_profile --site-name="Express Training" install_configure_form.enable_update_status_module=NULL install_configure_form.enable_update_status_emails=NULL --site-mail=webexpress_noreply@colorado.edu --yes'
+    print(install_cmd)
+    run_command(install_cmd)
+
 def fetch_destination_database(sitename):
     print(f'Fetching Destination Drupal DB...')
 
@@ -96,12 +105,35 @@ def fetch_destination_database(sitename):
     print(sqldump_cmd)
     run_command(sqldump_cmd)
 
+def fetch_training_destination_database(sitename):
+    print(f'Fetching Destination Drupal DB...')
+
+    # ci = fetch_destination_connection_information(sitename)
+    # dstdb = ci['mysql_command']
+    # print(dstdb)
+
+    dstsite = sitename
+
+    sqldump_cmd = f'terminus remote:drush {dstsite}.live -- sql-dump --skip-tables-list=cache,cache_* > sites/{sitename}/code/database-training.sql'
+    print(sqldump_cmd)
+    run_command(sqldump_cmd)
+
 def import_destination_database(sitename):
     print("Importing destination database...")
 
     sitename_clean = sitename.replace('-', '')
 
     import_cmd = f'mariadb -u root -ppass {sitename_clean} < sites/{sitename}/code/database-dst.sql'
+
+    print(import_cmd)
+    run_command(import_cmd)
+
+def import_training_destination_database(sitename):
+    print("Importing destination database...")
+
+    sitename_clean = sitename.replace('-', '')
+
+    import_cmd = f'mariadb -u root -ppass {sitename_clean} < sites/{sitename}/code/database-training.sql'
 
     print(import_cmd)
     run_command(import_cmd)
@@ -516,6 +548,11 @@ if args.create_local_training_site:
     create_migrate_express_symlink(args.site)
     create_training_dataxml_symlink(args.site)
     install_drupal(args.site)
+
+    install_training_destination_drupal(args.site)
+    fetch_training_destination_database(args.site)
+    import_training_destination_database(args.site)
+
     update_training_settings_file(args.site)
     delete_users(args.site)
     enable_migrate_express(args.site)

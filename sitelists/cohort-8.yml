@@ -183,10 +183,6 @@ sites:
   path: staffcouncil
   src: ucb-staffcouncil
   training: ucbtraining-staffcouncil
-- dst: ucbprod-today
-  path: today
-  src: ucb-today
-  training: ucbtraining-today
 - dst: ucbprod-volunteer
   path: volunteer
   src: ucb-volunteer

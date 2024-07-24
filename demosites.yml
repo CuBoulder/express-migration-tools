@@ -1,17 +1,7 @@
 sites:
 - dst: ucbprod-demos-training-foundations
-  path: demos/courses/foundations
-  src: ucbdev-sandbox-training-foundations
 - dst: ucbprod-demos-documentation
-  path: demos/documentation
-  src: ucbdev-sandbox-docs
 - dst: ucbprod-demos-webexpress
-  path: demos/webexpress
-  src: ucbdev-sandbox-demo
 - dst: ucbprod-chancellor
-  path: chancellor
-  src: ucbdev-sandbox-chancellor
 - dst: ucbprod-demos-training-nextsteps
-  path: demos/courses/next-steps
-  src: ucbdev-sandbox-training-nextsteps
 

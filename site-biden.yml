@@ -1,0 +1,5 @@
+sites:
+- dst: ucbprod-biden
+  path: biden
+  src: ucb-biden
+  training: ucbtraining-biden
