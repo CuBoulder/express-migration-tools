@@ -2,7 +2,7 @@
 set -e
 
 terminus site:upstream:clear-cache $1
-terminus upstream:updates:apply $1.dev
+terminus upstream:updates:apply $1.dev --accept-upstream
 terminus env:deploy $1.test --yes
 terminus env:deploy $1.live --yes --updatedb --cc
 terminus remote:drush $1.live -- cr

@@ -62,6 +62,12 @@ def remote_backup(site):
     print(cmd_remote_backup)
     run_command(cmd_remote_backup)
 
+def remote_training_backup(site):
+    cmd_remote_backup = f'terminus backup:create {site["training"]}.live'
+
+    print(cmd_remote_backup)
+    run_command(cmd_remote_backup)
+
 
 def clear_upstream_cache(site):
     cmd_clear_upstream_cache = f'terminus site:upstream:clear-cache {site["dst"]}'
@@ -796,6 +802,15 @@ def remote_backup_sitelist(name: str):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=300) as executor:
             for _ in executor.map(remote_backup, sitelist['sites']):
+                pass
+
+@app.command()
+def remote_training_backup_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=300) as executor:
+            for _ in executor.map(remote_training_backup, sitelist['sites']):
                 pass
 
 @app.command()

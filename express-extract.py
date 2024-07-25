@@ -16,6 +16,7 @@ import datetime
 import dateutil
 from bs4 import BeautifulSoup
 import cssutils
+import re
 
 
 
@@ -2338,6 +2339,24 @@ with (engine.connect() as conn):
 
 
                 root.text = process_styles(root.text)
+
+                if '[column' in root.text:
+                    chunks = re.split('(\[{1,2}.*?\]{1,2})', root.text, 0)
+                    in_column = False
+                    colset_start = -1
+                    colset_end = -1
+                    for n in range(len(chunks)):
+                        if chunks[n].strip().startswith('[column') and in_column == False:
+                            in_column = True
+                            colset_start = n
+
+                        if chunks[n].strip().startswith('[/column') and in_column == True:
+                            colset_end = n
+
+                    chunks.insert(colset_start, '[colset]')
+                    chunks.insert(colset_end+2, '[/colset]')
+
+                    root.text = ''.join(chunks)
 
 
 

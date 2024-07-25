@@ -16,6 +16,7 @@ parser.add_argument('-s', '--site', help='Sitename')
 parser.add_argument('--extract-sql-from-remote', action='store_true', help='Extract SQL from Pantheon')
 parser.add_argument('--extract-files-from-remote', action='store_true', help='Extract files from Pantheon')
 parser.add_argument('--extract-psa-from-remote', action='store_true', help='Extract files from Pantheon')
+parser.add_argument('--extract-psa-from-remote-localdev', action='store_true', help='Extract files from Pantheon')
 parser.add_argument('--create-local-training-site', action='store_true', help='Extract files from Pantheon')
 parser.add_argument('--delete-users', action='store_true', help='Delete users')
 
@@ -578,6 +579,37 @@ if args.extract_psa_from_remote:
     install_destination_drupal(args.site)
     fetch_destination_database(args.site)
     import_destination_database(args.site)
+
+    update_settings_file(args.site)
+    generate_dataxml(args.site)
+    delete_users(args.site)
+    #create_users(args.site)
+    delete_homepage(args.site)
+    enable_migrate_express(args.site)
+    set_files_permissions(args.site)
+    set_configuration(args.site)
+
+
+if args.extract_psa_from_remote_localdev:
+    extract_sql_from_remote(args.site)
+    extract_files_from_remote(args.site)
+    create_local_db(args.site)
+    create_local_db(args.site + '-src')
+    load_sql_to_local_db(args.site)
+
+    sitename_clean = (args.site+'-src').replace('-', '')
+    engine = sqlalchemy.create_engine(f"mariadb+pymysql://root:pass@localhost/{sitename_clean}?charset=utf8mb4", echo=False)
+
+    clone_template(args.site)
+    composer_update(args.site)
+    create_drush_symlink(args.site)
+    create_migrate_express_symlink(args.site)
+    create_dataxml_symlink(args.site)
+    install_drupal(args.site)
+
+    # install_destination_drupal(args.site)
+    # fetch_destination_database(args.site)
+    # import_destination_database(args.site)
 
     update_settings_file(args.site)
     generate_dataxml(args.site)
