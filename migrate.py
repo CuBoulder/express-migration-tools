@@ -17,6 +17,7 @@ parser.add_argument('--extract-sql-from-remote', action='store_true', help='Extr
 parser.add_argument('--extract-files-from-remote', action='store_true', help='Extract files from Pantheon')
 parser.add_argument('--extract-psa-from-remote', action='store_true', help='Extract files from Pantheon')
 parser.add_argument('--extract-psa-from-remote-localdev', action='store_true', help='Extract files from Pantheon')
+parser.add_argument('--shortcode-fix', action='store_true', help='Extract files from Pantheon')
 parser.add_argument('--create-local-training-site', action='store_true', help='Extract files from Pantheon')
 parser.add_argument('--delete-users', action='store_true', help='Delete users')
 
@@ -219,10 +220,26 @@ def set_configuration(sitename):
 
 
 
+            cfg_gtm = ''
+            gtm_result = conn.execute(sqlalchemy.text("select value from variable where name = 'google_container_id';"))
+            for result in gtm_result:
+                cfg_gtm = str(phpserialize.loads(result.value, decode_strings=True)).strip()
+            if(len(cfg_gtm)):
+                print(f'GTM: {cfg_gtm}')
+                run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set --input-format=yaml google_tag.container.GTM-M3DX2QP.65de22067902c7.57590325 tag_container_ids [GTM-M3DX2QP,{cfg_gtm}]  --yes')
+
+                run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set google_tag.container.GTM-M3DX2QP.65de22067902c7.57590325 advanced_settings.gtm.{cfg_gtm}.data_layer dataLayer --yes')
+                run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set google_tag.container.GTM-M3DX2QP.65de22067902c7.57590325 advanced_settings.gtm.{cfg_gtm}.include_classes 0 --yes')
+                run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set google_tag.container.GTM-M3DX2QP.65de22067902c7.57590325 advanced_settings.gtm.{cfg_gtm}.allowlist_classes "" --yes')
+                run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set google_tag.container.GTM-M3DX2QP.65de22067902c7.57590325 advanced_settings.gtm.{cfg_gtm}.blocklist_classes "" --yes')
+                run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set google_tag.container.GTM-M3DX2QP.65de22067902c7.57590325 advanced_settings.gtm.{cfg_gtm}.include_environment 0 --yes')
+                run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set google_tag.container.GTM-M3DX2QP.65de22067902c7.57590325 advanced_settings.gtm.{cfg_gtm}.environment_id "" --yes')
+                run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set google_tag.container.GTM-M3DX2QP.65de22067902c7.57590325 advanced_settings.gtm.{cfg_gtm}.environment_token "" --yes')
+
+
+
 
             sitename_result = conn.execute(sqlalchemy.text("select value from variable where name = 'site_name';"))
-
-
             cfg_sitename = ''
             for result in sitename_result:
                 cfg_sitename = str(phpserialize.loads(result.value, decode_strings=True)).strip()
@@ -333,7 +350,7 @@ def set_configuration(sitename):
                 use_sticky_menu = str(phpserialize.loads(result.value, decode_strings=True)).strip()
             run_command(f'./sites/{sitename}/code/d --root=sites/{sitename}/code config:set boulder_base.settings ucb_sticky_menu "{use_sticky_menu}" --yes')
         except Exception as e:
-            print("Exception")
+            print(f"Exception: {e}")
 
 
 def load_sql_to_local_db(sitename):
@@ -341,6 +358,14 @@ def load_sql_to_local_db(sitename):
     sitename_clean = sitename.replace('-', '')
     run_command(f'mariadb -u root -ppass {sitename_clean}src < sites/{sitename}/database.sql')
     run_command(f'mariadb -u root -ppass {sitename_clean}src < webform_fix.sql')
+    # output = subprocess.run([cmd], shell=True, capture_output=True)
+    # print(output.stdout)
+    # print(output.stderr)
+
+def load_sql_to_local_db_dst(sitename):
+    print(f'Loading SQL to local source DB...')
+    sitename_clean = sitename.replace('-', '')
+    run_command(f'mariadb -u root -ppass {sitename_clean} < sites/{sitename}/database.sql')
     # output = subprocess.run([cmd], shell=True, capture_output=True)
     # print(output.stdout)
     # print(output.stderr)
@@ -576,9 +601,9 @@ if args.extract_psa_from_remote:
     create_dataxml_symlink(args.site)
     install_drupal(args.site)
 
-    install_destination_drupal(args.site)
-    fetch_destination_database(args.site)
-    import_destination_database(args.site)
+    # install_destination_drupal(args.site)
+    # fetch_destination_database(args.site)
+    # import_destination_database(args.site)
 
     update_settings_file(args.site)
     generate_dataxml(args.site)
@@ -619,6 +644,17 @@ if args.extract_psa_from_remote_localdev:
     enable_migrate_express(args.site)
     set_files_permissions(args.site)
     set_configuration(args.site)
+
+if args.shortcode_fix:
+    extract_sql_from_remote(args.site)
+    extract_files_from_remote(args.site)
+    create_local_db(args.site)
+    clone_template(args.site)
+    composer_update(args.site)
+    create_drush_symlink(args.site)
+    create_migrate_express_symlink(args.site)
+    install_drupal(args.site)
+    load_sql_to_local_db_dst(args.site)
 
 
 
