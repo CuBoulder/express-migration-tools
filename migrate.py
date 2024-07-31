@@ -20,6 +20,7 @@ parser.add_argument('--extract-psa-from-remote-localdev', action='store_true', h
 parser.add_argument('--shortcode-fix', action='store_true', help='Extract files from Pantheon')
 parser.add_argument('--create-local-training-site', action='store_true', help='Extract files from Pantheon')
 parser.add_argument('--delete-users', action='store_true', help='Delete users')
+parser.add_argument('--enable-firstchild', action='store_true', help='Enable firstchild')
 
 args = parser.parse_args()
 
@@ -175,6 +176,36 @@ def create_training_dataxml_symlink(sitename):
     # print(output.stdout)
     # print(output.stderr)
 
+
+def enable_firstchild(sitename):
+    with engine.connect() as conn:
+        try:
+            menu_ids = []
+            firstchild_result = conn.execute(sqlalchemy.text("select id from menu_link_content_data where link__uri = 'internal:/<none>';"))
+            for result in firstchild_result:
+                menu_link_content_data_sql = "update menu_link_content_field_revision set link__uri = 'route:<none>', link__options = 'a:1:{s:15:\"menu_firstchild\";a:1:{s:7:\"enabled\";i:1;}}' WHERE link__uri = 'internal:/<none>';"
+                conn.execute(sqlalchemy.text(menu_link_content_data_sql))
+
+                menutree_sql = "update menu_tree SET options = 'a:1:{s:15:\"menu_firstchild\";a:1:{s:7:\"enabled\";i:1;}}'  WHERE metadata like '%\"" + str(result.id) + "\"%';"
+                conn.execute(sqlalchemy.text(menutree_sql))
+
+            conn.execute(sqlalchemy.text("TRUNCATE cache_config;"))
+            conn.execute(sqlalchemy.text("TRUNCATE cache_container;"))
+            conn.execute(sqlalchemy.text("TRUNCATE cache_data;"))
+            conn.execute(sqlalchemy.text("TRUNCATE cache_default;"))
+            conn.execute(sqlalchemy.text("TRUNCATE cache_discovery;"))
+            conn.execute(sqlalchemy.text("TRUNCATE cache_entity;"))
+            conn.execute(sqlalchemy.text("TRUNCATE cache_menu;"))
+            conn.execute(sqlalchemy.text("TRUNCATE cache_render;"))
+            conn.execute(sqlalchemy.text("TRUNCATE cache_toolbar;"))
+
+        except Exception as e:
+            print(f"Exception: {e}")
+
+
+
+
+# update menu_link_content_field_revision set link__uri = 'route:<none>', link__options = 'a:1:{s:15:"menu_firstchild";a:1:{s:7:"enabled";i:1;}}' WHERE link__uri = 'internal:/<none>';
 
 def set_configuration(sitename):
     print(f'Set configuration variables...')
@@ -564,6 +595,13 @@ if args.extract_sql_from_remote:
 
 if args.extract_files_from_remote:
     extract_files_from_remote(args.site)
+
+
+if args.enable_firstchild:
+    sitename_clean = (args.site).replace('-', '')
+    engine = sqlalchemy.create_engine(f"mariadb+pymysql://root:pass@localhost/{sitename_clean}?charset=utf8mb4", echo=False)
+
+    enable_firstchild(args.site)
 
 
 if args.create_local_training_site:

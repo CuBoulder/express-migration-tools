@@ -541,7 +541,7 @@ with (engine.connect() as conn):
 
         user['roles'] = roles
 
-        if len(roles) > 0:
+        if len(roles) > 0 and user['status'] != 0:
             users.append(user)
     output['users'] = users
 
