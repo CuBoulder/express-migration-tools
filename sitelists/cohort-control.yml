@@ -3,10 +3,6 @@ sites:
   path: biden
   src: ucb-biden
   training: ucbtraining-biden
-- dst: ucbprod-brand
-  path: brand
-  src: ucb-brand
-  training: ucbtraining-brand
 - dst: ucbprod-dalailama
   path: dalailama
   src: ucb-dalailama
