@@ -5,7 +5,7 @@ sitelist = {}
 sitelist['sites'] = []
 
 
-with open('sitelists/sources/cohort-8.txt') as input:
+with open('sitelists/sources/cohort-1-final.txt') as input:
     for line in input:
         line = line.strip()
         if len(line) == 0:
@@ -14,7 +14,7 @@ with open('sitelists/sources/cohort-8.txt') as input:
         site = {}
         site['src'] = line[0]
         site['src'] = site['src'][0:51]
-        site['path'] = line[1]
+        site['path'] = line[1][13:]
         site['dst'] = 'ucbprod-' + line[0][4:]
         site['dst'] = site['dst'][0:51]
         site['training'] = 'ucbtraining-' + line[0][4:]

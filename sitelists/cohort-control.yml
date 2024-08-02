@@ -15,7 +15,7 @@ sites:
   path: emergencymanagement
   src: ucb-emergencymanagement
   training: ucbtraining-emergencymanagement
-- dst: ucbprod-events2
+- dst: ucbprod-events
   path: events
   src: ucb-events2
   training: ucbtraining-events2
@@ -27,7 +27,7 @@ sites:
   path: janegoodall
   src: ucb-janegoodall
   training: ucbtraining-janegoodall
-- dst: ucbprod-libraries
+- dst: ucbsub-libraries
   path: libraries
   src: ucb-libraries
   training: ucbtraining-libraries
