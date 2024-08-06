@@ -1397,7 +1397,8 @@ with (engine.connect() as conn):
                     if item['field_file_attachment_fid'] == f['fid']:
                         # print(f['fid'])
                         # print(node['path'])
-                        f['canonical_path'] = node['path']
+                        if 'path' in node:
+                            f['canonical_path'] = node['path']
 
         if node['type'] == 'section_page':
             node['page_sections'] = []
@@ -2138,6 +2139,8 @@ with (engine.connect() as conn):
             return value
         elif len(value) == 0:
             return value
+        elif ':' not in value and '.' in value:
+            return 'https://' + value
         elif ':' not in value and '.' not in value:
             return 'internal:/' + value
         else:

@@ -104,6 +104,16 @@ def configure_smtp(site):
     print(cmd_smtp_password_set)
     run_command(cmd_smtp_password_set)
 
+def configure_beacon(site):
+    cmd_beacon_set = f'terminus remote:drush {site["dst"]}.live -- config:set ucb_admin_menus.configuration admin_helpscout_beacon_id 7aeb6f1c-247c-4a83-b44f-4cee2784bb63 -y'
+    print(cmd_beacon_set)
+    run_command(cmd_beacon_set)
+
+def configure_training_beacon(site):
+    cmd_beacon_set = f'terminus remote:drush {site["training"]}.live -- config:set ucb_admin_menus.configuration admin_helpscout_beacon_id 7aeb6f1c-247c-4a83-b44f-4cee2784bb63 -y'
+    print(cmd_beacon_set)
+    run_command(cmd_beacon_set)
+
 
 def deploy_update(site):
 
@@ -372,6 +382,7 @@ def saml_config(site):
 
 
 
+
 def upload_local_files(site):
     wake_site(site)
 
@@ -495,13 +506,35 @@ def configure_training_modules(site):
 def convert_shortcodes(site):
     # print(site['dst'])
 
-    cmd_configure_shortcodes = f'cd ./sites/{site["src"]}/code && ./d scc blah'
+    cmd_enable_modules = f'cd ./sites/{site["src"]}/code && ./d en ucb_migration_shortcodes --yes'
+    print(cmd_enable_modules)
+    run_command(cmd_enable_modules)
 
+    cmd_configure_shortcodes = f'cd ./sites/{site["src"]}/code && ./d scc blah'
     print(cmd_configure_shortcodes)
     run_command(cmd_configure_shortcodes)
 
+    cmd_disable_modules = f'cd ./sites/{site["src"]}/code && ./d pmu ucb_migration_shortcodes shortcode --yes'
+    print(cmd_disable_modules)
+    run_command(cmd_disable_modules)
+
+def correct_firstchild(site):
+    print(site['dst'])
+
+    cmd_enable_modules = f'./migrate.py --enable-firstchild --site={site["src"]}'
+    print(cmd_enable_modules)
+    run_command(cmd_enable_modules)
+
+
 def migrate_import(site):
     # print(site['dst'])
+
+
+    cmd_configure_modules = f'cd ./sites/{site["src"]}/code && ./d en migrate_express --yes'
+
+    print(cmd_configure_modules)
+    run_command(cmd_configure_modules)
+
 
     try_limit = 5
     tries = 0
@@ -696,6 +729,15 @@ def convert_shortcodes_sitelist(name: str):
                 pass
 
 @app.command()
+def correct_firstchild_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            for _ in executor.map(correct_firstchild, sitelist['sites']):
+                pass
+
+@app.command()
 def export_local_database_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
@@ -829,6 +871,24 @@ def configure_smtp_sitelist(name: str):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
             for _ in executor.map(configure_smtp, sitelist['sites']):
+                pass
+
+@app.command()
+def configure_beacon_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+            for _ in executor.map(configure_beacon, sitelist['sites']):
+                pass
+
+@app.command()
+def configure_training_beacon_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+            for _ in executor.map(configure_training_beacon, sitelist['sites']):
                 pass
 
 @app.command()

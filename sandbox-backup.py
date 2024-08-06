@@ -33,7 +33,7 @@ def multiaction(site):
 
     # print(backupcmd)
 
-    output = subprocess.run([backupcmd], shell=True, capture_output=True)
+    output = subprocess.run([updatecmd], shell=True, capture_output=True)
     if(len(str(output.stdout)) > 0):
         print(f"Site - {name} - stdout:" + str(output.stdout))
     if (len(str(output.stderr)) > 0):

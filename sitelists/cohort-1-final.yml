@@ -83,10 +83,10 @@ sites:
   path: conference/rmihc
   src: ucb-conference-rmihc
   training: ucbtraining-conference-rmihc
-- dst: ucbprod-rado.edu/conferenceservices
+- dst: ucbprod-conferenceservices
   path: conferenceservices
-  src: colorado.edu/conferenceservices
-  training: ucbtraining-rado.edu/conferenceservices
+  src: ucb-conferenceservices
+  training: ucbtraining-conferenceservices
 - dst: ucbprod-counseling
   path: counseling
   src: ucb-counseling

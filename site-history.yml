@@ -1,5 +1,0 @@
-sites:
-- dst: ucbprod-history
-  path: history
-  src: ucb-history
-  training: ucbtraining-history

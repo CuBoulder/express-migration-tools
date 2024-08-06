@@ -1,0 +1,5 @@
+sites:
+- dst: ucbprod-envs
+  path: envs
+  src: ucb-envs
+  training: ucbtraining-envs
