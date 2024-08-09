@@ -5,7 +5,7 @@ sitelist = {}
 sitelist['sites'] = []
 
 
-with open('sitelists/sources/cohort-1-final.txt') as input:
+with open('sitelists/sources/cohort-3-update.txt') as input:
     for line in input:
         line = line.strip()
         if len(line) == 0:

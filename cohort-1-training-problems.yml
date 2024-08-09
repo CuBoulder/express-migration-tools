@@ -1,0 +1,10 @@
+sites:
+- dst: ucbprod-faculty-samueloberdick
+  path: faculty/samueloberdick
+  src: ucb-faculty-samueloberdick
+  training: ucbtraining-faculty-samueloberdick
+- dst: ucbprod-pathwaytospace
+  path: pathwaytospace
+  src: ucb-pathwaytospace
+  training: ucbtraining-pathwaytospace
+

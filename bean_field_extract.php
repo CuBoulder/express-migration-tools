@@ -259,6 +259,8 @@ $module_list[] = array('subpath' => 'custom/cu_alumni_class_notes_bundle', 'name
 
 $module_list[] = array('subpath' => 'custom', 'name' => 'express_collections_bundle', 'is_bean' => True);
 
+$module_list[] = array('subpath' => 'custom', 'name' => 'cu_content_list', 'is_bean' => True);
+
 
 ////$subpath = 'features';
 ////$module_name = 'cu_feature_callout';

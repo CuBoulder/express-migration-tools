@@ -874,6 +874,16 @@ with (engine.connect() as conn):
     bean_collection_grid_fields.append({'name': 'field_collection_multiselect', 'type': 'bean', 'bundle': 'collection_grid'})
     bean_types['collection_grid'] = bean_collection_grid_fields
 
+    # Module: cu_content_list
+
+    #  Bean: content_list
+
+    bean_content_list_fields = []
+    bean_content_list_fields.append({'name': 'field_content_list_display', 'type': 'bean', 'bundle': 'content_list'})
+    bean_content_list_fields.append({'name': 'field_content_list_reference', 'type': 'bean', 'bundle': 'content_list'})
+    bean_content_list_fields.append({'name': 'field_content_list_sort', 'type': 'bean', 'bundle': 'content_list'})
+    bean_types['content_list'] = bean_content_list_fields
+
     beans = []
     bean_result = conn.execute(sqlalchemy.text("select bid, vid, delta, label, title, type, view_mode, data, uid, created, changed from bean;"))
     bean_types_map = {}
