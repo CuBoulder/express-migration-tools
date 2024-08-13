@@ -1,0 +1,5 @@
+sites:
+- dst: ucbprod-ecee
+  path: ecee
+  src: ucb-ecee
+  training: ucbtraining-ecee

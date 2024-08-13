@@ -263,7 +263,6 @@ def user_config(site):
 
     ux_users = []
     ux_users.append('linebarg')
-    ux_users.append('niwa4700')
     ux_users.append('brokaw')
     ux_users.append('wetu1300')
     ux_users.append('crafts')
@@ -329,7 +328,6 @@ def user_training_config(site):
 
     ux_users = []
     ux_users.append('linebarg')
-    ux_users.append('niwa4700')
     ux_users.append('brokaw')
     ux_users.append('wetu1300')
     ux_users.append('crafts')

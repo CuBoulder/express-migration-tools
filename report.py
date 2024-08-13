@@ -6,6 +6,7 @@ from rich import print
 import typer
 import sqlalchemy
 import subprocess
+from bs4 import BeautifulSoup
 
 app = typer.Typer()
 
@@ -348,14 +349,19 @@ def generate_linkchecker_info(name: str):
     if name[0:4] == 'ucb-':
         address = 'ucbprod-' + name[4:]
 
-        cmd_linkchecker = f'linkchecker --no-warnings --check-extern --no-robots https://live-{address}.pantheonsite.io'
+        cmd_linkchecker = f"linkchecker --no-warnings --check-extern --no-robots --no-follow-url='!live-{address}' -o HTML https://live-{address}.pantheonsite.io"
         # cmd_linkchecker = f'linkchecker --no-warnings --check-extern http://192.168.1.30'
 
         print(cmd_linkchecker)
         output = run_command(cmd_linkchecker)
 
+        soup = BeautifulSoup(output.stdout, features="html.parser")
+        body = soup.body
+
+        # print(body.encode_contents().decode("utf-8"))
+
         siteinfo = {}
-        siteinfo['text'] = output.stdout
+        siteinfo['text'] = body.encode_contents().decode("utf-8")
 
         return siteinfo
 
