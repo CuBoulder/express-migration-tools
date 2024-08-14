@@ -143,7 +143,7 @@ def deploy_update(site):
     print(cmd_update_deploy_live)
     run_command(cmd_update_deploy_live)
 
-    cmd_enable_modules = f'terminus remote:drush {site["dst"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access ucb_migration_shortcodes ckeditor5_bootstrap_accordion --yes'
+    cmd_enable_modules = f'terminus remote:drush {site["dst"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access ucb_migration_shortcodes ckeditor5_bootstrap_accordion ucb_drush_commands --yes'
     print(cmd_enable_modules)
     run_command(cmd_enable_modules)
 
@@ -178,7 +178,7 @@ def deploy_training_update(site):
     print(cmd_update_deploy_live)
     run_command(cmd_update_deploy_live)
 
-    cmd_enable_modules = f'terminus remote:drush {site["training"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access ucb_migration_shortcodes ckeditor5_bootstrap_accordion --yes'
+    cmd_enable_modules = f'terminus remote:drush {site["training"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access ucb_migration_shortcodes ckeditor5_bootstrap_accordion ucb_drush_commands --yes'
     print(cmd_enable_modules)
     run_command(cmd_enable_modules)
 
@@ -212,6 +212,28 @@ def cache_training_rebuild(site):
     print(cmd_cache_rebuild)
 
     run_command(cmd_cache_rebuild)
+
+def set_plan_basic(site):
+    cmd_set_plan_basic = f'terminus plan:set {site["dst"]} plan-basic_small-contract-annual-1'
+    print(cmd_set_plan_basic)
+
+    run_command(cmd_set_plan_basic)
+
+def set_domain(site):
+    cmd_set_domain = f'terminus domain:add {site["dst"]}.live {site["dst"]}.agcdn.colorado.edu'
+    print(cmd_set_domain)
+
+    run_command(cmd_set_domain)
+
+def set_domain_masking_config(site):
+    cmd_set_domain_masking_domain = f'terminus remote:drush {site["dst"]}.live -- config:set pantheon_domain_masking.settings domain www.colorado.edu --yes'
+    print(cmd_set_domain_masking_domain)
+    run_command(cmd_set_domain_masking_domain)
+
+    cmd_set_domain_masking_subpath = f'terminus remote:drush {site["dst"]}.live -- config:set pantheon_domain_masking.settings subpath {site["path"]} --yes'
+    print(cmd_set_domain_masking_subpath)
+    run_command(cmd_set_domain_masking_subpath)
+
 
 def add_tag(site):
 
@@ -954,6 +976,33 @@ def add_training_tag_sitelist(name: str):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             for _ in executor.map(add_training_tag, sitelist['sites']):
+                pass
+
+@app.command()
+def set_plan_basic_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            for _ in executor.map(set_plan_basic, sitelist['sites']):
+                pass
+
+@app.command()
+def set_domain_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            for _ in executor.map(set_domain, sitelist['sites']):
+                pass
+
+@app.command()
+def set_domain_masking_config_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            for _ in executor.map(set_domain_masking_config, sitelist['sites']):
                 pass
 
 @app.command()
