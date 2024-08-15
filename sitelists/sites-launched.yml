@@ -1,7 +1,12 @@
 sites:
 - dst: ucbprod-demos-training-foundations
+  path: demos/courses/foundations
 - dst: ucbprod-demos-documentation
+  path: demos/documentation
 - dst: ucbprod-demos-webexpress
+  path: demos/webexpress
 - dst: ucbprod-chancellor
+  path: chancellor
 - dst: ucbprod-demos-training-nextsteps
+  path: demos/courses/next-steps
 

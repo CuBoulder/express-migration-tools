@@ -126,6 +126,15 @@ def configure_training_beacon(site):
     print(cmd_beacon_set)
     run_command(cmd_beacon_set)
 
+def execute_cron(site):
+    cmd_execute_cron = f'terminus remote:drush {site["dst"]}.live -- cron'
+    print(cmd_execute_cron)
+    run_command(cmd_execute_cron)
+
+def set_sitemap_baseurl(site):
+    cmd_sitemap_baseurl_set = f'terminus remote:drush {site["dst"]}.live -- config:set simple_sitemap.settings base_url https://www.colorado.edu/{site["path"]} -y'
+    print(cmd_sitemap_baseurl_set)
+    run_command(cmd_sitemap_baseurl_set)
 
 def deploy_update(site):
 
@@ -233,6 +242,11 @@ def set_domain_masking_config(site):
     cmd_set_domain_masking_subpath = f'terminus remote:drush {site["dst"]}.live -- config:set pantheon_domain_masking.settings subpath {site["path"]} --yes'
     print(cmd_set_domain_masking_subpath)
     run_command(cmd_set_domain_masking_subpath)
+
+def set_domain_masking_enable(site):
+    cmd_set_domain_masking_enable = f'terminus remote:drush {site["dst"]}.live -- config:set pantheon_domain_masking.settings enabled yes --yes'
+    print(cmd_set_domain_masking_enable)
+    run_command(cmd_set_domain_masking_enable)
 
 
 def add_tag(site):
@@ -829,8 +843,26 @@ def cache_rebuild_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
             for _ in executor.map(cache_rebuild, sitelist['sites']):
+                pass
+
+@app.command()
+def execute_cron_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+            for _ in executor.map(execute_cron, sitelist['sites']):
+                pass
+
+@app.command()
+def set_sitemap_baseurl_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+            for _ in executor.map(set_sitemap_baseurl, sitelist['sites']):
                 pass
 
 @app.command()
@@ -1003,6 +1035,15 @@ def set_domain_masking_config_sitelist(name: str):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             for _ in executor.map(set_domain_masking_config, sitelist['sites']):
+                pass
+
+@app.command()
+def set_domain_masking_enable_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            for _ in executor.map(set_domain_masking_enable, sitelist['sites']):
                 pass
 
 @app.command()
