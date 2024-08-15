@@ -9,4 +9,5 @@ sites:
   path: chancellor
 - dst: ucbprod-demos-training-nextsteps
   path: demos/courses/next-steps
-
+- dst: ucbprod-faculty-trantow
+  path: faculty/trantow
