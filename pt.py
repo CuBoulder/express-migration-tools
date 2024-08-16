@@ -81,6 +81,13 @@ def remote_source_disable_saml(site):
     run_command(cmd_remote_backup)
 
 
+def remote_source_enable_saml(site):
+    cmd_remote_backup = f'terminus remote:drush {site["src"]}.live -- en cu_saml --yes'
+
+    print(cmd_remote_backup)
+    run_command(cmd_remote_backup)
+
+
 def clear_upstream_cache(site):
     cmd_clear_upstream_cache = f'terminus site:upstream:clear-cache {site["dst"]}'
 
@@ -108,6 +115,11 @@ def deploy_environment(site):
     cmd_update_deploy_live = f'terminus  env:deploy {site["dst"]}.live'
     print(cmd_update_deploy_live)
     run_command(cmd_update_deploy_live)
+
+def run_c404(site):
+    cmd_run_c404 = f'terminus remote:drush {site["dst"]}.live -- c404'
+    print(cmd_run_c404)
+    run_command(cmd_run_c404)
 
 
 def configure_smtp(site):
@@ -929,6 +941,15 @@ def remote_source_disable_saml_sitelist(name: str):
                 pass
 
 @app.command()
+def remote_source_enable_saml_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=300) as executor:
+            for _ in executor.map(remote_source_enable_saml, sitelist['sites']):
+                pass
+
+@app.command()
 def remote_training_backup_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
@@ -1044,6 +1065,15 @@ def set_domain_masking_enable_sitelist(name: str):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             for _ in executor.map(set_domain_masking_enable, sitelist['sites']):
+                pass
+
+@app.command()
+def run_c404_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            for _ in executor.map(run_c404, sitelist['sites']):
                 pass
 
 @app.command()
