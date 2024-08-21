@@ -49,6 +49,13 @@ def wake_site(site):
 
     run_command(cmd_wake_site)
 
+def wake_src_site(site):
+
+    cmd_wake_site = f'terminus env:wake {site["src"]}.live'
+    print(cmd_wake_site)
+
+    run_command(cmd_wake_site)
+
 def wake_training_site(site):
 
     cmd_wake_site = f'terminus env:wake {site["training"]}.live'
@@ -115,6 +122,25 @@ def deploy_environment(site):
     cmd_update_deploy_live = f'terminus  env:deploy {site["dst"]}.live'
     print(cmd_update_deploy_live)
     run_command(cmd_update_deploy_live)
+
+def generate_prelaunch_report(site):
+    cmd_prelaunch_generate_report = f'python report.py generate-report {site["src"]} > sites/{site["src"]}/migration-report.html'
+    print(cmd_prelaunch_generate_report)
+    run_command(cmd_prelaunch_generate_report)
+
+def store_report(site):
+
+    wake_site(site)
+
+    connection_info = fetch_connection_information(site)
+
+    cmd_upload_report = f"{connection_info['sftp_command']} <<< 'put sites/{site['src']}/migration-report.html /files/migration-report.html'"
+    print(cmd_upload_report)
+    run_command(cmd_upload_report)
+
+    cmd_store_report = f'terminus remote:drush {site["dst"]}.live -- ucb_drush_commands:store-report'
+    print(cmd_store_report)
+    run_command(cmd_store_report)
 
 def run_c404(site):
     cmd_run_c404 = f'terminus remote:drush {site["dst"]}.live -- c404'
@@ -239,6 +265,12 @@ def set_plan_basic(site):
     print(cmd_set_plan_basic)
 
     run_command(cmd_set_plan_basic)
+
+def unlock_pantheon_site(site):
+    cmd_unlock_pantheon_site = f'terminus lock:disable {site["src"]}.live'
+    print(cmd_unlock_pantheon_site)
+
+    run_command(cmd_unlock_pantheon_site)
 
 def set_domain(site):
     cmd_set_domain = f'terminus domain:add {site["dst"]}.live {site["dst"]}.agcdn.colorado.edu'
@@ -548,7 +580,7 @@ def export_training_local_database(site):
 def configure_modules(site):
     # print(site['dst'])
 
-    cmd_configure_modules = f'cd ./sites/{site["src"]}/code && ./d pmu migrate_devel migrate_express'
+    cmd_configure_modules = f'cd ./sites/{site["src"]}/code && ./d pmu migrate_devel migrate_express --yes'
 
     print(cmd_configure_modules)
     run_command(cmd_configure_modules)
@@ -556,7 +588,7 @@ def configure_modules(site):
 def configure_training_modules(site):
     # print(site['dst'])
 
-    cmd_configure_training_modules = f'cd ./sites/{site["training"]}/code && ./d pmu migrate_devel migrate_express'
+    cmd_configure_training_modules = f'cd ./sites/{site["training"]}/code && ./d pmu migrate_devel migrate_express --yes'
 
     print(cmd_configure_training_modules)
     run_command(cmd_configure_training_modules)
@@ -564,11 +596,11 @@ def configure_training_modules(site):
 def convert_shortcodes(site):
     # print(site['dst'])
 
-    cmd_enable_modules = f'cd ./sites/{site["src"]}/code && ./d en ucb_migration_shortcodes --yes'
+    cmd_enable_modules = f'cd ./sites/{site["src"]}/code && ./d en ucb_migration_shortcodes migrate_express --yes'
     print(cmd_enable_modules)
     run_command(cmd_enable_modules)
 
-    cmd_configure_shortcodes = f'cd ./sites/{site["src"]}/code && ./d scc blah'
+    cmd_configure_shortcodes = f'cd ./sites/{site["src"]}/code && ./d migrate_express:shortcode-convert blah'
     print(cmd_configure_shortcodes)
     run_command(cmd_configure_shortcodes)
 
@@ -663,7 +695,8 @@ def deploy_site(site):
 def download_site(site):
 
 
-    wake_site(site)
+    wake_src_site(site)
+
 
     cmd_download_site = f'./migrate.py --extract-psa-from-remote --site={site["src"]}'
 
@@ -1068,12 +1101,39 @@ def set_domain_masking_enable_sitelist(name: str):
                 pass
 
 @app.command()
+def generate_prelaunch_report_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+            for _ in executor.map(generate_prelaunch_report, sitelist['sites']):
+                pass
+
+@app.command()
+def store_report_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            for _ in executor.map(store_report, sitelist['sites']):
+                pass
+
+@app.command()
 def run_c404_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             for _ in executor.map(run_c404, sitelist['sites']):
+                pass
+
+@app.command()
+def unlock_pantheon_site_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+            for _ in executor.map(unlock_pantheon_site, sitelist['sites']):
                 pass
 
 @app.command()

@@ -1,0 +1,5 @@
+sites:
+- dst: ucbprod-lmcf
+  path: lmcf
+  src: ucb-lmcf
+  training: ucbtraining-lmcf
