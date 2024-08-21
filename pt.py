@@ -190,7 +190,7 @@ def deploy_update(site):
     print(cmd_update_deploy_live)
     run_command(cmd_update_deploy_live)
 
-    cmd_enable_modules = f'terminus remote:drush {site["dst"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access ucb_migration_shortcodes ckeditor5_bootstrap_accordion ucb_drush_commands --yes'
+    cmd_enable_modules = f'terminus remote:drush {site["dst"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access ucb_migration_shortcodes ckeditor5_bootstrap_accordion ucb_drush_commands menu_item_extras ucb_styled_block --yes'
     print(cmd_enable_modules)
     run_command(cmd_enable_modules)
 
@@ -225,7 +225,7 @@ def deploy_training_update(site):
     print(cmd_update_deploy_live)
     run_command(cmd_update_deploy_live)
 
-    cmd_enable_modules = f'terminus remote:drush {site["training"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access ucb_migration_shortcodes ckeditor5_bootstrap_accordion ucb_drush_commands --yes'
+    cmd_enable_modules = f'terminus remote:drush {site["training"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access ucb_migration_shortcodes ckeditor5_bootstrap_accordion ucb_drush_commands menu_item_extras ucb_styled_block --yes'
     print(cmd_enable_modules)
     run_command(cmd_enable_modules)
 
