@@ -632,7 +632,7 @@ if args.extract_psa_from_remote:
     sitename_clean = (args.site+'-src').replace('-', '')
     engine = sqlalchemy.create_engine(f"mariadb+pymysql://root:pass@localhost/{sitename_clean}?charset=utf8mb4", echo=False)
 
-    # clone_template(args.site)
+    clone_template(args.site)
     composer_update(args.site)
     create_drush_symlink(args.site)
     create_migrate_express_symlink(args.site)

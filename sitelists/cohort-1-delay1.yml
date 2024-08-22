@@ -3,13 +3,6 @@ sites:
   path: artssciences-advising
   src: ucb-artssciences-advising
   training: ucbtraining-artssciences-advising
-- dst: ucbprod-ecee
-  path: ecee
-  src: ucb-ecee
-- dst: ucbprod-ehs
-  path: ehs
-  src: ucb-ehs
-  training: ucbtraining-ehs
 - dst: ucbprod-facility-biochemistry-cell-culture
   path: facility/biochemistry-cell-culture
   src: ucb-facility-biochemistry-cell-culture
@@ -21,13 +14,6 @@ sites:
 - dst: ucbprod-faculty-samueloberdick
   path: faculty/samueloberdick
   src: ucb-faculty-samueloberdick
-- dst: ucbprod-lab-aaron-whiteley
-  path: lab/aaron-whiteley
-  src: ucb-lab-aaron-whiteley
-  training: ucbtraining-lab-aaron-whiteley
-- dst: ucbprod-lab-antenna
-  path: lab/antenna
-  src: ucb-lab-antenna
 - dst: ucbprod-lab-betterton
   path: lab/betterton/
   src: ucb-lab-betterton
@@ -37,9 +23,6 @@ sites:
 - dst: ucbprod-pathwaytospace
   path: pathwaytospace
   src: ucb-pathwaytospace
-- dst: ucbprod-project-bbb
-  path: project/bbb
-  src: ucb-project-bbb
 - dst: ucbprod-project-cmpshowcase
   path: project/cmpshowcase
   src: ucb-project-cmpshowcase

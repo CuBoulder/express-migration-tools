@@ -47,4 +47,8 @@ sites:
   path: strategicrelations
   src: ucb-strategicrelations
   training: ucbtraining-strategicrelations
+- dst: ucbprod-brand
+  path: brand
+  src: ucb-brand
+  training: ucbtraining-brand
 

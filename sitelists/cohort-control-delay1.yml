@@ -1,5 +1,0 @@
-sites:
-- dst: ucbprod-brand
-  path: brand
-  src: ucb-brand
-  training: ucbtraining-brand
