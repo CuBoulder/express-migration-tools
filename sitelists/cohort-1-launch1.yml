@@ -424,4 +424,20 @@ sites:
 - dst: ucbprod-ecee
   path: ecee
   src: ucb-ecee
+- dst: ucbprod-faculty-samueloberdick
+  path: faculty/samueloberdick
+  src: ucb-faculty-samueloberdick
+- dst: ucbprod-artssciences-advising
+  path: artssciences-advising
+  src: ucb-artssciences-advising
+- dst: ucbprod-facility-biochemistry-cell-culture
+  path: facility/biochemistry-cell-culture
+  src: ucb-facility-biochemistry-cell-culture
+- dst: ucbprod-lab-dukovicgroup
+  path: lab/dukovicgroup
+  src: ucb-lab-dukovicgroup
+- dst: ucbprod-facility-ems
+  path: facility/ems
+  src: ucb-facility-ems
+  training: ucbtraining-facility-ems
 

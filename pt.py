@@ -149,7 +149,7 @@ def run_c404(site):
 
 
 def configure_smtp(site):
-    password = "oU^qWivEwa3j5j#@RYJN"
+    password = ""
     cmd_smtp_password_set = f'terminus remote:drush {site["dst"]}.live -- config:set smtp.settings smtp_password "{password}" --yes'
     print(cmd_smtp_password_set)
     run_command(cmd_smtp_password_set)

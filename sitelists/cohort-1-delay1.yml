@@ -1,25 +1,7 @@
 sites:
-- dst: ucbprod-artssciences-advising
-  path: artssciences-advising
-  src: ucb-artssciences-advising
-  training: ucbtraining-artssciences-advising
-- dst: ucbprod-facility-biochemistry-cell-culture
-  path: facility/biochemistry-cell-culture
-  src: ucb-facility-biochemistry-cell-culture
-  training: ucbtraining-facility-biochemistry-cell-culture
-- dst: ucbprod-facility-ems
-  path: facility/ems
-  src: ucb-facility-ems
-  training: ucbtraining-facility-ems
-- dst: ucbprod-faculty-samueloberdick
-  path: faculty/samueloberdick
-  src: ucb-faculty-samueloberdick
 - dst: ucbprod-lab-betterton
   path: lab/betterton/
   src: ucb-lab-betterton
-- dst: ucbprod-lab-dukovicgroup
-  path: lab/dukovicgroup
-  src: ucb-lab-dukovicgroup
 - dst: ucbprod-pathwaytospace
   path: pathwaytospace
   src: ucb-pathwaytospace
