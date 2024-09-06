@@ -2,21 +2,3 @@ sites:
 - dst: ucbprod-lab-betterton
   path: lab/betterton/
   src: ucb-lab-betterton
-- dst: ucbprod-pathwaytospace
-  path: pathwaytospace
-  src: ucb-pathwaytospace
-- dst: ucbprod-project-cmpshowcase
-  path: project/cmpshowcase
-  src: ucb-project-cmpshowcase
-  training: ucbtraining-project-cmpshowcase
-- dst: ucbprod-project-imagine-ai
-  path: project/imagine-ai
-  src: ucb-project-imagine-ai
-  training: ucbtraining-project-imagine-ai
-- dst: ucbprod-socialreactors
-  path: socialreactors
-  src: ucb-socialreactors
-  training: ucbtraining-socialreactors
-- dst: ucbprod-spaceminor
-  path: spaceminor
-  src: ucb-spaceminor

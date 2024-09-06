@@ -45,7 +45,7 @@ def multiaction(site):
 
 sites = []
 
-with open('sandboxlist-converttoprod') as input:
+with open('sandboxlist') as input:
     for line in input:
         sites.append(line.strip())
 

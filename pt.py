@@ -107,6 +107,12 @@ def clear_training_upstream_cache(site):
     print(cmd_clear_upstream_cache)
     run_command(cmd_clear_upstream_cache)
 
+def enable_linkmod(site):
+    cmd_enable_linkmod = f'terminus remote:drush {site["dst"]}.live -- en ucb_linkmod --yes'
+
+    print(cmd_enable_linkmod)
+    run_command(cmd_enable_linkmod)
+
 def deploy_environment(site):
 
     clear_upstream_cache(site)
@@ -266,6 +272,12 @@ def set_plan_basic(site):
 
     run_command(cmd_set_plan_basic)
 
+def set_plan_free(site):
+    cmd_set_plan_free = f'terminus plan:set {site["src"]} plan-free-preferred-monthly-1'
+    print(cmd_set_plan_free)
+
+    run_command(cmd_set_plan_free)
+
 def unlock_pantheon_site(site):
     cmd_unlock_pantheon_site = f'terminus lock:disable {site["src"]}.live'
     print(cmd_unlock_pantheon_site)
@@ -277,6 +289,12 @@ def set_domain(site):
     print(cmd_set_domain)
 
     run_command(cmd_set_domain)
+
+def remove_domain(site):
+    cmd_remove_domain = f'terminus domain:remove {site["src"]}.live {site["src"]}.agcdn.colorado.edu'
+    print(cmd_remove_domain)
+
+    run_command(cmd_remove_domain)
 
 def set_domain_masking_config(site):
     cmd_set_domain_masking_domain = f'terminus remote:drush {site["dst"]}.live -- config:set pantheon_domain_masking.settings domain www.colorado.edu --yes'
@@ -893,6 +911,15 @@ def cache_rebuild_sitelist(name: str):
                 pass
 
 @app.command()
+def enable_linkmod_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+            for _ in executor.map(enable_linkmod, sitelist['sites']):
+                pass
+
+@app.command()
 def execute_cron_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
@@ -1074,12 +1101,30 @@ def set_plan_basic_sitelist(name: str):
                 pass
 
 @app.command()
+def set_plan_free_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            for _ in executor.map(set_plan_free, sitelist['sites']):
+                pass
+
+@app.command()
 def set_domain_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             for _ in executor.map(set_domain, sitelist['sites']):
+                pass
+
+@app.command()
+def remove_domain_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            for _ in executor.map(remove_domain, sitelist['sites']):
                 pass
 
 @app.command()

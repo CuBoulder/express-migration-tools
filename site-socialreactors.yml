@@ -1,0 +1,5 @@
+sites:
+- dst: ucbprod-socialreactors
+  path: socialreactors
+  src: ucb-socialreactors
+  training: ucbtraining-socialreactors
