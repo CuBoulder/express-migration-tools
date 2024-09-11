@@ -115,10 +115,6 @@ sites:
   path: eventsplanning
   src: ucb-eventsplanning
   training: ucbtraining-eventsplanning
-- dst: ucbprod-lab-falke
-  path: lab/falke
-  src: ucb-lab-falke
-  training: ucbtraining-lab-falke
 - dst: ucbprod-project-lunar-farside
   path: project/lunar-farside
   src: ucb-project-lunar-farside

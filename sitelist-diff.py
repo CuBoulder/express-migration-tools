@@ -5,10 +5,10 @@ sitelist = {}
 sitelist['sites'] = []
 
 
-with open('sitelists/cohort-1-final.yml') as input:
+with open('sitelists/cohort-2-final.yml') as input:
     sitelist1 = yaml.safe_load(input)
 
-with open('sitelists/cohort-1-launch-1.yml') as input:
+with open('sitelists/cohort-2-tolaunch.yml') as input:
     sitelist2 = yaml.safe_load(input)
 
 dst1 = []
