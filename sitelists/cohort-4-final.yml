@@ -79,10 +79,6 @@ sites:
   path: center/crmt
   src: ucb-center-crmt
   training: ucbtraining-center-crmt
-- dst: ucbprod-center-cuchange
-  path: center/cuchange
-  src: ucb-center-cuchange
-  training: ucbtraining-center-cuchange
 - dst: ucbprod-center-demtech
   path: center/demtech
   src: ucb-center-demtech

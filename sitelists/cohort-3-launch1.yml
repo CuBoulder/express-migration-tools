@@ -155,10 +155,6 @@ sites:
   path: project/maxwellcubesat
   src: ucb-project-maxwellcubesat
   training: ucbtraining-project-maxwellcubesat
-- dst: ucbprod-saebaja
-  path: saebaja
-  src: ucb-saebaja
-  training: ucbtraining-saebaja
 - dst: ucbprod-fis
   path: fis
   src: ucb-fis

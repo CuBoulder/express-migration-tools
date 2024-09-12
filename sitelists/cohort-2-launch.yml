@@ -1,0 +1,9 @@
+sites:
+- dst: ucbprod-facility-biomolecular-x-ray-crystallography
+  path: facility/biomolecular-x-ray-crystallography
+  src: ucb-facility-biomolecular-x-ray-crystallography
+  training: ucbtraining-facility-biomolecular-x-ray-crystallogr
+- dst: ucbprod-faculty-hodge
+  path: faculty/hodge
+  src: ucb-faculty-hodge
+  training: ucbtraining-faculty-hodge

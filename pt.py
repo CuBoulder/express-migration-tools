@@ -1096,7 +1096,7 @@ def set_plan_basic_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
             for _ in executor.map(set_plan_basic, sitelist['sites']):
                 pass
 
