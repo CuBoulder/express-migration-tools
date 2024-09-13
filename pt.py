@@ -180,6 +180,33 @@ def set_sitemap_baseurl(site):
     print(cmd_sitemap_baseurl_set)
     run_command(cmd_sitemap_baseurl_set)
 
+
+
+def preupdate(site):
+
+    clear_upstream_cache(site)
+
+    cmd_update_apply = f'terminus  upstream:updates:apply {site["dst"]}.dev --accept-upstream'
+    print(cmd_update_apply)
+    run_command(cmd_update_apply)
+
+    cmd_update_deploy_test = f'terminus  env:deploy {site["dst"]}.test'
+    print(cmd_update_deploy_test)
+    run_command(cmd_update_deploy_test)
+
+def training_preupdate(site):
+
+    clear_training_upstream_cache(site)
+
+    cmd_update_apply = f'terminus  upstream:updates:apply {site["training"]}.dev --accept-upstream'
+    print(cmd_update_apply)
+    run_command(cmd_update_apply)
+
+    cmd_update_deploy_test = f'terminus  env:deploy {site["training"]}.test'
+    print(cmd_update_deploy_test)
+    run_command(cmd_update_deploy_test)
+
+
 def deploy_update(site):
 
     clear_upstream_cache(site)
@@ -211,6 +238,10 @@ def deploy_update(site):
     cmd_updatedb = f'terminus remote:drush {site["dst"]}.live -- updb --yes'
     print(cmd_updatedb)
     run_command(cmd_updatedb)
+
+    cmd_update_version = f'terminus remote:drush {site["dst"]}.live -- config:set boulder_base.settings web_express_version 20240911 --yes'
+    print(cmd_update_version)
+    run_command(cmd_update_version)
 
     cache_rebuild(site)
 
@@ -1016,6 +1047,25 @@ def remote_training_backup_sitelist(name: str):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=300) as executor:
             for _ in executor.map(remote_training_backup, sitelist['sites']):
+                pass
+
+
+@app.command()
+def preupdate_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+            for _ in executor.map(preupdate, sitelist['sites']):
+                pass
+
+@app.command()
+def training_preupdate_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+            for _ in executor.map(training_preupdate, sitelist['sites']):
                 pass
 
 @app.command()

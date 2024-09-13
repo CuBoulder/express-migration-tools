@@ -404,7 +404,7 @@ def load_sql_to_local_db_dst(sitename):
 def clone_template(sitename):
     print(f'Clone template...')
     run_command(f'git clone https://github.com/CuBoulder/tiamat10-project-template.git sites/{sitename}/code')
-    run_command(f'git -C sites/{sitename}/code checkout -b release origin/20240904')
+    run_command(f'git -C sites/{sitename}/code checkout -b release origin/20240911')
     # output = subprocess.run([cmd], shell=True, capture_output=True)
     # print(output.stdout)
     # print(output.stderr)
