@@ -411,7 +411,12 @@ def clone_template(sitename):
 
 def composer_update(sitename):
     print(f'Running composer update...')
-    run_command(f'composer update --working-dir=sites/{sitename}/code --no-interaction')
+
+    run_command(f'composer config --working-dir=sites/{sitename}/code --no-plugins allow-plugins.simplesamlphp/composer-xmlprovider-installer true')
+
+    # run_command(f'composer update --working-dir=sites/{sitename}/code --no-interaction')
+    run_command(f'composer install --working-dir=sites/{sitename}/code --no-interaction')
+
     # output = subprocess.run([cmd], shell=True, capture_output=True)
     # print(output.stdout)
     # print(output.stderr)

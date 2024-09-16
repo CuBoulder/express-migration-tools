@@ -2353,8 +2353,24 @@ with (engine.connect() as conn):
                         image_info_uri[src] = []
                     image_info_uri[src].append(alt)
 
+                original_text = root.text
+                processed_text = process_styles(root.text)
+                try:
+                    if processed_text is not None:
+                        root.text = processed_text
+                except Exception as e:
+                    root.text= original_text
+                    # print(processed_text)
 
-                root.text = process_styles(root.text)
+                # try:
+                #     if process_styles(root.text) is not None:
+                #         # print(root.text)
+                #         root.text = process_styles(root.text)
+                # except Exception as e:
+                #     print("Catch 3")
+                #     print(e)
+                #     # print(root.text)
+
 
                 if '[column' in root.text:
                     chunks = re.split('(\[{1,2}.*?\]{1,2})', root.text, 0)
@@ -2397,7 +2413,11 @@ with (engine.connect() as conn):
     #print(output)
 
     dummyroot = etree.Element('root')
+
     recurse_xml(dummyroot, output)
+
+
+
 
     # pprint.pp(image_info_uri)
     # pprint.pp(image_info_fid)
@@ -2420,6 +2440,7 @@ with (engine.connect() as conn):
     root = etree.Element('root')
 
     recurse_xml(root, output)
+
 
 
 
