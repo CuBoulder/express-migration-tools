@@ -88,6 +88,8 @@ def remote_source_disable_saml(site):
     run_command(cmd_remote_backup)
 
 
+
+
 def remote_source_enable_saml(site):
     cmd_remote_backup = f'terminus remote:drush {site["src"]}.live -- en cu_saml --yes'
 
@@ -657,6 +659,12 @@ def convert_shortcodes(site):
     print(cmd_disable_modules)
     run_command(cmd_disable_modules)
 
+def remote_disable_shortcodes(site):
+    cmd_disable_shortcodes = f'terminus remote:drush {site["dst"]}.live -- pm-disable shortcode ucb_migration_shortcodes --yes'
+    print(cmd_disable_shortcodes)
+    run_command(cmd_disable_shortcodes)
+
+
 def correct_firstchild(site):
     print(site['dst'])
 
@@ -866,6 +874,15 @@ def convert_shortcodes_sitelist(name: str):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
             for _ in executor.map(convert_shortcodes, sitelist['sites']):
+                pass
+
+@app.command()
+def remote_disable_shortcodes_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            for _ in executor.map(remote_disable_shortcodes, sitelist['sites']):
                 pass
 
 @app.command()

@@ -11,4 +11,4 @@ terminus remote:drush $1.live -- features:import cu_boulder_content_types --yes
 terminus remote:drush $1.live -- config:import --partial --source=/code/web/profiles/custom/boulder_profile/config/install --yes
 terminus remote:drush $1.live -- updb --yes;
 terminus remote:drush $1.live -- cr;
-terminus remote:drush $1.live -- config:set boulder_base.settings web_express_version "20240911"
+terminus remote:drush $1.live -- config:set boulder_base.settings web_express_version "20240918" --yes
