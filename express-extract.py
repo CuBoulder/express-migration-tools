@@ -1823,7 +1823,8 @@ with (engine.connect() as conn):
                 # print(f"Node: {node['nid']}, Columns: {len(section['beans'])}")
 
                 if len(s['beans']) == 0:
-                    del s['container_width']
+                    if 'container_width' in s:
+                        del s['container_width']
 
                 if len(s['beans']) > 4:
                     # pprint.pp(f"Node: {node['nid']}, {s['beans']}")

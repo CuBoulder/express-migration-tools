@@ -1,0 +1,3 @@
+sites:
+- dst: ucbprod-infrastructure-resilience
+  path: infrastructure-resilience

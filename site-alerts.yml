@@ -1,0 +1,5 @@
+sites:
+- dst: ucbsub-alerts
+  path: alerts.colorado.edu
+  src: ucb-alerts
+  training: ucbtraining-alerts

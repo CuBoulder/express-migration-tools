@@ -11,3 +11,5 @@ sites:
   path: demos/courses/next-steps
 - dst: ucbprod-faculty-trantow
   path: faculty/trantow
+- dst: ucbprod-advancement
+  path: advancement

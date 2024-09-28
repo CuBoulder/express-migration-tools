@@ -247,10 +247,10 @@ sites:
   path: infoscience
   src: ucb-infoscience
   training: ucbtraining-infoscience
-- dst: ucbprod-infrastructure-sustainability
-  path: infrastructure-sustainability
-  src: ucb-infrastructure-sustainability
-  training: ucbtraining-infrastructure-sustainability
+- dst: ucbprod-infrastructure-resilience
+  path: infrastructure-resilience
+  src: ucb-infrastructure-resilience
+  training: ucbtraining-infrastructure-resilience
 - dst: ucbprod-initiative-crics
   path: initiative/crics
   src: ucb-initiative-crics

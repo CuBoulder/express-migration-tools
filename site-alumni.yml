@@ -1,0 +1,5 @@
+sites:
+- dst: ucbprod-alumni
+  path: alumni
+  src: ucb-alumni
+  training: ucbtraining-alumni

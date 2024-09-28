@@ -225,7 +225,7 @@ def deploy_update(site):
     print(cmd_update_deploy_live)
     run_command(cmd_update_deploy_live)
 
-    cmd_enable_modules = f'terminus remote:drush {site["dst"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access ucb_migration_shortcodes ckeditor5_bootstrap_accordion ucb_drush_commands menu_item_extras ucb_styled_block --yes'
+    cmd_enable_modules = f'terminus remote:drush {site["dst"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access ckeditor5_bootstrap_accordion ucb_drush_commands menu_item_extras ucb_styled_block --yes'
     print(cmd_enable_modules)
     run_command(cmd_enable_modules)
 
@@ -241,7 +241,7 @@ def deploy_update(site):
     print(cmd_updatedb)
     run_command(cmd_updatedb)
 
-    cmd_update_version = f'terminus remote:drush {site["dst"]}.live -- config:set boulder_base.settings web_express_version 20240911 --yes'
+    cmd_update_version = f'terminus remote:drush {site["dst"]}.live -- config:set boulder_base.settings web_express_version 20240925 --yes'
     print(cmd_update_version)
     run_command(cmd_update_version)
 
@@ -264,7 +264,7 @@ def deploy_training_update(site):
     print(cmd_update_deploy_live)
     run_command(cmd_update_deploy_live)
 
-    cmd_enable_modules = f'terminus remote:drush {site["training"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access ucb_migration_shortcodes ckeditor5_bootstrap_accordion ucb_drush_commands menu_item_extras ucb_styled_block --yes'
+    cmd_enable_modules = f'terminus remote:drush {site["training"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access ckeditor5_bootstrap_accordion ucb_drush_commands menu_item_extras ucb_styled_block --yes'
     print(cmd_enable_modules)
     run_command(cmd_enable_modules)
 
@@ -283,7 +283,12 @@ def deploy_training_update(site):
     cache_training_rebuild(site)
 
 
+def cron(site):
 
+    cmd_cron = f'terminus remote:drush {site["dst"]}.live -- cron'
+    print(cmd_cron)
+
+    run_command(cmd_cron)
 
 def cache_rebuild(site):
 
@@ -347,10 +352,6 @@ def set_domain_masking_enable(site):
 def add_tag(site):
 
     cmd_add_tag = f'terminus tag:add {site["dst"]} "University of Colorado Boulder" -- "upstream-tiamat"'
-    print(cmd_add_tag)
-    run_command(cmd_add_tag)
-
-    cmd_add_tag = f'terminus tag:add {site["dst"]} "University of Colorado Boulder" -- "migration-in-progress"'
     print(cmd_add_tag)
     run_command(cmd_add_tag)
 
@@ -660,7 +661,7 @@ def convert_shortcodes(site):
     run_command(cmd_disable_modules)
 
 def remote_disable_shortcodes(site):
-    cmd_disable_shortcodes = f'terminus remote:drush {site["dst"]}.live -- pm-disable shortcode ucb_migration_shortcodes --yes'
+    cmd_disable_shortcodes = f'terminus remote:drush {site["dst"]}.live -- pmu shortcode ucb_migration_shortcodes --yes'
     print(cmd_disable_shortcodes)
     run_command(cmd_disable_shortcodes)
 
@@ -881,7 +882,7 @@ def remote_disable_shortcodes_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
             for _ in executor.map(remote_disable_shortcodes, sitelist['sites']):
                 pass
 
@@ -956,6 +957,15 @@ def cache_rebuild_sitelist(name: str):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
             for _ in executor.map(cache_rebuild, sitelist['sites']):
+                pass
+
+@app.command()
+def cron_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+            for _ in executor.map(cron, sitelist['sites']):
                 pass
 
 @app.command()
