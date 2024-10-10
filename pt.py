@@ -185,6 +185,7 @@ def set_sitemap_baseurl(site):
 
 
 def preupdate(site):
+    wake_site(site)
 
     clear_upstream_cache(site)
 
@@ -197,6 +198,7 @@ def preupdate(site):
     run_command(cmd_update_deploy_test)
 
 def training_preupdate(site):
+    wake_training_site(site)
 
     clear_training_upstream_cache(site)
 
@@ -210,6 +212,7 @@ def training_preupdate(site):
 
 
 def deploy_update(site):
+    wake_site(site)
 
     clear_upstream_cache(site)
 
@@ -241,7 +244,7 @@ def deploy_update(site):
     print(cmd_updatedb)
     run_command(cmd_updatedb)
 
-    cmd_update_version = f'terminus remote:drush {site["dst"]}.live -- config:set boulder_base.settings web_express_version 20240925 --yes'
+    cmd_update_version = f'terminus remote:drush {site["dst"]}.live -- config:set boulder_base.settings web_express_version 20241002 --yes'
     print(cmd_update_version)
     run_command(cmd_update_version)
 
@@ -249,6 +252,7 @@ def deploy_update(site):
 
 
 def deploy_training_update(site):
+    wake_training_site(site)
 
     clear_training_upstream_cache(site)
 
@@ -343,11 +347,19 @@ def set_domain_masking_config(site):
     print(cmd_set_domain_masking_subpath)
     run_command(cmd_set_domain_masking_subpath)
 
+    cmd_set_domain_masking_allow_platform = f'terminus remote:drush {site["dst"]}.live -- config:set pantheon_domain_masking.settings allow_platform no --yes'
+    print(cmd_set_domain_masking_allow_platform)
+    run_command(cmd_set_domain_masking_allow_platform)
+
 def set_domain_masking_enable(site):
     cmd_set_domain_masking_enable = f'terminus remote:drush {site["dst"]}.live -- config:set pantheon_domain_masking.settings enabled yes --yes'
     print(cmd_set_domain_masking_enable)
     run_command(cmd_set_domain_masking_enable)
 
+def delete_training_site(site):
+    cmd_delete_training_site = f'terminus site:delete {site["training"]} --yes'
+    print(cmd_delete_training_site)
+    run_command(cmd_delete_training_site)
 
 def add_tag(site):
 
@@ -359,7 +371,7 @@ def add_tag(site):
     print(cmd_add_tag)
     run_command(cmd_add_tag)
 
-    cmd_add_tag = f'terminus tag:add {site["dst"]} "University of Colorado Boulder" -- "cohort-control"'
+    cmd_add_tag = f'terminus tag:add {site["dst"]} "University of Colorado Boulder" -- "cohort-3"'
     print(cmd_add_tag)
     run_command(cmd_add_tag)
 
@@ -370,10 +382,6 @@ def add_training_tag(site):
     run_command(cmd_add_tag)
 
     cmd_add_tag = f'terminus tag:add {site["training"]} "University of Colorado Boulder" -- "migration-training"'
-    print(cmd_add_tag)
-    run_command(cmd_add_tag)
-
-    cmd_add_tag = f'terminus tag:add {site["training"]} "University of Colorado Boulder" -- "cohort-control"'
     print(cmd_add_tag)
     run_command(cmd_add_tag)
 
@@ -1155,7 +1163,7 @@ def add_tag_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
             for _ in executor.map(add_tag, sitelist['sites']):
                 pass
 
@@ -1256,6 +1264,15 @@ def unlock_pantheon_site_sitelist(name: str):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
             for _ in executor.map(unlock_pantheon_site, sitelist['sites']):
+                pass
+
+@app.command()
+def delete_training_site_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            for _ in executor.map(delete_training_site, sitelist['sites']):
                 pass
 
 @app.command()
