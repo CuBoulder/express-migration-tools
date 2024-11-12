@@ -1,0 +1,14 @@
+sites:
+- dst: ucbprod-center-a-queer-endeavor
+  path: center/a-queer-endeavor
+  src: ucb-center-a-queer-endeavor
+  training: ucbtraining-center-a-queer-endeavor
+- dst: ucbprod-lab-welkerlab
+  path: lab/welkerlab
+  src: ucb-lab-welkerlab
+  training: ucbtraining-lab-welkerlab
+- dst: ucbprod-studentgroups-cusrl
+  path: studentgroups/cusrl
+  src: ucb-studentgroups-cusrl
+  training: ucbtraining-studentgroups-cusrl
+

@@ -1,0 +1,6 @@
+sites:
+- dst: ucbprod-education
+  path: education
+  src: ucb-education
+  training: ucbtraining-education
+

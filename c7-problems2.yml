@@ -1,0 +1,18 @@
+sites:
+- dst: ucbprod-tcm
+  path: tcm
+  src: ucb-tcm
+  training: ucbtraining-tcm
+- dst: ucbprod-studentgroups-performance-as-research
+  path: studentgroups/performance-as-research
+  src: ucb-studentgroups-performance-as-research
+  training: ucbtraining-studentgroups-performance-as-research
+- dst: ucbprod-studentgroups-prssa
+  path: studentgroups/prssa
+  src: ucb-studentgroups-prssa
+  training: ucbtraining-studentgroups-prssa
+- dst: ucbprod-asmagazine
+  path: asmagazine
+  src: ucb-asmagazine
+  training: ucbtraining-asmagazine
+

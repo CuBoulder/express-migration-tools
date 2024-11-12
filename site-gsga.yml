@@ -1,6 +1,0 @@
-sites:
-- dst: ucbprod-studentgroups-gsga
-  path: studentgroups/gsga
-  src: ucb-studentgroups-gsga
-  training: ucbtraining-studentgroups-gsga
-

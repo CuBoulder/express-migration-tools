@@ -1,0 +1,18 @@
+sites:
+- dst: ucbprod-assett
+  path: assett
+  src: ucb-assett
+  training: ucbtraining-assett
+- dst: ucbprod-financialaid
+  path: financialaid
+  src: ucb-financialaid
+  training: ucbtraining-financialaid
+- dst: ucbprod-asmagazine-archive
+  path: asmagazine-archive
+  src: ucb-asmagazine-archive
+  training: ucbtraining-asmagazine-archive
+- dst: ucbprod-ethnicstudies
+  path: ethnicstudies
+  src: ucb-ethnicstudies
+  training: ucbtraining-ethnicstudies
+

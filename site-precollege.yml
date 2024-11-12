@@ -1,6 +1,0 @@
-sites:
-- dst: ucbprod-precollege
-  path: precollege
-  src: ucb-precollege
-  training: ucbtraining-precollege
-

@@ -1,0 +1,6 @@
+sites:
+- dst: ucbprod-registrar2
+  path: registrar
+  src: ucb-registrar2
+  training: ucbtraining-registrar2
+

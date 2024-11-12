@@ -1,0 +1,4 @@
+sites:
+- dst: ucbsubprod-ce
+  src: ucbsub-ce
+  training: ucbtraining-ce

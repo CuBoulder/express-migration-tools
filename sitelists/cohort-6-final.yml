@@ -31,10 +31,6 @@ sites:
   path: center/bueno-esp
   src: ucb-center-bueno-esp
   training: ucbtraining-center-bueno-esp
-- dst: ucbprod-center-gwc
-  path: center/gwc
-  src: ucb-center-gwc
-  training: ucbtraining-center-gwc
 - dst: ucbprod-center-iec
   path: center/iec
   src: ucb-center-iec

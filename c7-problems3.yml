@@ -1,0 +1,6 @@
+sites:
+- dst: ucbprod-cmci
+  path: cmci
+  src: ucb-cmci
+  training: ucbtraining-cmci
+

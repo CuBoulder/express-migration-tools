@@ -1336,6 +1336,22 @@ with (engine.connect() as conn):
 
         node['fields'] = extract_fields(x.type, x.nid, x.vid)
         node['fields2'] = extract_fields2(x.type, x.nid, x.vid)
+
+        title_image_result = conn.execute(sqlalchemy.text(f"select field_feature_title_image_fid, field_feature_title_image_alt from field_data_field_feature_title_image where entity_id = '{x.nid}';"))
+        for r in title_image_result:
+
+            node['fields']['title_image_fid'] = r.field_feature_title_image_fid
+            node['fields']['title_image_alt'] = r.field_feature_title_image_alt
+
+        if node['type'] == 'article':
+            if 'body' in node['fields']:
+                if len(node['fields']['body']['data']) > 0:
+                    if '<img' in node['fields']['body']['data'][0]['body_value']:
+                        if 'field_image' in node['fields']:
+                            node['fields']['include_media'] = 'yes'
+                            # del node['fields']['field_image']
+
+
         #
         # rules = [
         #     {
@@ -1611,7 +1627,8 @@ with (engine.connect() as conn):
 
                                                     for ib in d['collection']:
                                                         inner_bean = ib['field_block_row_block']['field_block_row_block_target_id']
-                                                        column.append(f"{inner_bean} {get_bean_type(inner_bean)} {get_bean(inner_bean)['display_title']} 3 ")
+                                                        if get_bean(inner_bean) is not None:
+                                                            column.append(f"{inner_bean} {get_bean_type(inner_bean)} {get_bean(inner_bean)['display_title']} 3 ")
 
                                                 # section['beans'].append(column)
                                                 br['columns'].append(column)
@@ -1623,7 +1640,9 @@ with (engine.connect() as conn):
                                         sr = {}
                                         sr['type'] = 'SINGLE'
                                         sr['columns'] = []
-                                        sr['columns'].append([f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {get_bean(c['field_blocks_section_blocks_target_id'])['display_title']} 2"])
+
+                                        if get_bean(c['field_blocks_section_blocks_target_id']) is not None:
+                                            sr['columns'].append([f"{c['field_blocks_section_blocks_target_id']} {get_bean_type(c['field_blocks_section_blocks_target_id'])} {get_bean(c['field_blocks_section_blocks_target_id'])['display_title']} 2"])
                                         section['beans'].append(sr)
 
 
@@ -1641,7 +1660,8 @@ with (engine.connect() as conn):
                                     if 'collection' in d:
                                         for ib in d['collection']:
                                             inner_bean = ib['field_block_row_block']['field_block_row_block_target_id']
-                                            column.append(f"{inner_bean} {get_bean_type(inner_bean)} {get_bean(inner_bean)['display_title']} 3")
+                                            if get_bean(inner_bean) is not None:
+                                                column.append(f"{inner_bean} {get_bean_type(inner_bean)} {get_bean(inner_bean)['display_title']} 3")
                                     section['beans'].append(column)
                             section['distribution'] = b['fields']['field_block_row_distribution']['data'][0]['field_block_row_distribution_value']
 
@@ -2023,6 +2043,8 @@ with (engine.connect() as conn):
         {'src': 'category', 'dst': 'category'},
         {'src': 'collection_categories', 'dst': ''},
         {'src': 'collection_type', 'dst': ''},
+        {'src': 'syndication_audience', 'dst': 'syndication_audience'},
+        {'src': 'syndication_unit', 'dst': 'syndication_unit'},
     ]
 
     for vocab in vocabularies_mapping:
@@ -2340,6 +2362,9 @@ with (engine.connect() as conn):
                     src = result.get('src')
                     alt = result.get('alt')
 
+                    if src is None:
+                        continue
+
                     if not src.startswith('sites/default/files/'):
                         continue
 
@@ -2432,13 +2457,15 @@ with (engine.connect() as conn):
         if f['uri'] in image_info_uri:
             # print('URI found')
             for i in image_info_uri[f['uri']]:
-                if len(i) > len(longest_alt):
-                    longest_alt = i
+                if i is not None:
+                    if len(i) > len(longest_alt):
+                        longest_alt = i
         if f['fid'] in image_info_fid:
             # print('FID found')
             for i in image_info_fid[f['fid']]:
-                if len(i) > len(longest_alt):
-                    longest_alt = i
+                if i is not None:
+                    if len(i) > len(longest_alt):
+                        longest_alt = i
         # pprint.pp(longest_alt)
         f['alt'] = longest_alt
 

@@ -404,7 +404,7 @@ def load_sql_to_local_db_dst(sitename):
 def clone_template(sitename):
     print(f'Clone template...')
     run_command(f'git clone https://github.com/CuBoulder/tiamat10-project-template.git sites/{sitename}/code')
-    run_command(f'git -C sites/{sitename}/code checkout -b release origin/20240911')
+    run_command(f'git -C sites/{sitename}/code checkout -b release origin/20241023')
     # output = subprocess.run([cmd], shell=True, capture_output=True)
     # print(output.stdout)
     # print(output.stderr)
@@ -619,9 +619,9 @@ if args.create_local_training_site:
     create_training_dataxml_symlink(args.site)
     install_drupal(args.site)
 
-    install_training_destination_drupal(args.site)
-    fetch_training_destination_database(args.site)
-    import_training_destination_database(args.site)
+    # install_training_destination_drupal(args.site)
+    # fetch_training_destination_database(args.site)
+    # import_training_destination_database(args.site)
 
     update_training_settings_file(args.site)
     delete_users(args.site)

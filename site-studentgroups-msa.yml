@@ -1,5 +1,0 @@
-sites:
-- dst: ucbprod-studentgroups-msa
-  path: studentgroups/msa
-  src: ucb-studentgroups-msa
-  training: ucbtraining-studentgroups-msa

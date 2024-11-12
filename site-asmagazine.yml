@@ -1,0 +1,6 @@
+sites:
+- dst: ucbprod-asmagazine
+  path: asmagazine
+  src: ucb-asmagazine
+  training: ucbtraining-asmagazine
+

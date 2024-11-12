@@ -1,0 +1,6 @@
+sites:
+- dst: ucbprod-law
+  path: law
+  src: ucb-law
+  training: ucbtraining-law
+

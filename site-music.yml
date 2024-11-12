@@ -1,0 +1,6 @@
+sites:
+- dst: ucbprod-music
+  path: music
+  src: ucb-music
+  training: ucbtraining-music
+

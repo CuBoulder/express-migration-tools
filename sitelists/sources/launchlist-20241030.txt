@@ -1,0 +1,4 @@
+ucb-assett,colorado.edu/assett
+ucb-financialaid,colorado.edu/financialaid
+ucb-asmagazine-archive,colorado.edu/asmagazine-archive
+ucb-ethnicstudies,colorado.edu/ethnicstudies

@@ -5,7 +5,7 @@ import rich
 import typer
 import concurrent.futures
 import subprocess
-# from rich import print
+import json
 
 app = typer.Typer()
 
@@ -212,6 +212,10 @@ def training_preupdate(site):
 
 
 def deploy_update(site):
+
+
+    print(site)
+
     wake_site(site)
 
     clear_upstream_cache(site)
@@ -244,7 +248,7 @@ def deploy_update(site):
     print(cmd_updatedb)
     run_command(cmd_updatedb)
 
-    cmd_update_version = f'terminus remote:drush {site["dst"]}.live -- config:set boulder_base.settings web_express_version 20241002 --yes'
+    cmd_update_version = f'terminus remote:drush {site["dst"]}.live -- config:set boulder_base.settings web_express_version 20241030 --yes'
     print(cmd_update_version)
     run_command(cmd_update_version)
 
@@ -355,6 +359,11 @@ def set_domain_masking_enable(site):
     cmd_set_domain_masking_enable = f'terminus remote:drush {site["dst"]}.live -- config:set pantheon_domain_masking.settings enabled yes --yes'
     print(cmd_set_domain_masking_enable)
     run_command(cmd_set_domain_masking_enable)
+
+def apf(site):
+    cmd_apf = f'terminus remote:drush {site["dst"]}.live -- apf'
+    print(cmd_apf)
+    run_command(cmd_apf)
 
 def delete_training_site(site):
     cmd_delete_training_site = f'terminus site:delete {site["training"]} --yes'
@@ -529,7 +538,6 @@ def saml_config(site):
     cmd_update_saml_config = f'cd ./siterepos/{site["dst"]} && cp -r ~/Projects/private-config/* . && git add -A && git commit -m "Add config" && git push'
     print(cmd_update_saml_config)
     run_command(cmd_update_saml_config)
-
 
 
 
@@ -1276,6 +1284,15 @@ def delete_training_site_sitelist(name: str):
                 pass
 
 @app.command()
+def apf_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            for _ in executor.map(apf, sitelist['sites']):
+                pass
+
+@app.command()
 def print_site_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
@@ -1283,7 +1300,61 @@ def print_site_sitelist(name: str):
         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
             for _ in executor.map(print_site, sitelist['sites']):
                 pass
-        
+
+
+@app.command()
+def deploy_prod_update_tags():
+
+    sitelist = []
+    output = subprocess.run([f'terminus org:site:list "University of Colorado Boulder" --tag=upstream-tiamat --format=json'], shell=True, capture_output=True)
+    sites_result = json.loads(output.stdout)
+    for site in sites_result:
+        s = {}
+        s['dst'] = sites_result[site]['name']
+        sitelist.append(s)
+
+    print(sitelist)
+    print(f"Number of sites: {len(sitelist)}")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+        for _ in executor.map(deploy_update, sitelist):
+            pass
+
+@app.command()
+def deploy_preupdate_tags():
+
+    sitelist = []
+    output = subprocess.run([f'terminus org:site:list "University of Colorado Boulder" --tag=upstream-tiamat --format=json'], shell=True, capture_output=True)
+    sites_result = json.loads(output.stdout)
+    for site in sites_result:
+        s = {}
+        s['dst'] = sites_result[site]['name']
+        sitelist.append(s)
+
+    print(sitelist)
+    print(f"Number of sites: {len(sitelist)}")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+        for _ in executor.map(preupdate, sitelist):
+            pass
+
+@app.command()
+def remote_backup_tags():
+
+    sitelist = []
+    output = subprocess.run([f'terminus org:site:list "University of Colorado Boulder" --tag=upstream-tiamat --format=json'], shell=True, capture_output=True)
+    sites_result = json.loads(output.stdout)
+    for site in sites_result:
+        s = {}
+        s['dst'] = sites_result[site]['name']
+        sitelist.append(s)
+
+    print(sitelist)
+    print(f"Number of sites: {len(sitelist)}")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+        for _ in executor.map(remote_backup, sitelist):
+            pass
 
 @app.command()
 def prepare_site(name: str):

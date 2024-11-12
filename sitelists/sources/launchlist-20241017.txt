@@ -1,0 +1,9 @@
+ucb-research-qsense,colorado.edu/research/qsense
+ucb-chemistry,colorado.edu/chemistry
+ucb-summer,colorado.edu/summer
+ucb-bfa,colorado.edu/bfa
+ucb-ptea-curriculum,colorado.edu/ptea-curriculum
+ucb-ptea,colorado.edu/ptea
+ucb-boettcher-daniels-norlin-scholars,colorado.edu/boettcher-daniels-norlin-scholars
+ucb-lab-cemnl,colorado.edu/lab/cemnl
+ucb-emp,colorado.edu/emp

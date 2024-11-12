@@ -1,5 +1,0 @@
-sites:
-- dst: ucbprod-faculty-bielefeldt
-  path: faculty/bielefeldt
-  src: ucb-faculty-bielefeldt
-  training: ucbtraining-faculty-bielefeldt

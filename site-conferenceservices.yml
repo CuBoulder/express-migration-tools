@@ -1,5 +1,0 @@
-sites:
-- dst: ucbprod-conferenceservices
-  path: conferenceservices
-  src: ucb-conferenceservices
-  training: ucbtraining-conferenceservices

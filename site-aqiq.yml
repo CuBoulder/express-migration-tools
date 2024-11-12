@@ -1,5 +1,0 @@
-sites:
-- dst: ucbprod-aqiq
-  path: aqiq
-  src: ucb-aqiq
-  training: ucbtraining-aqiq

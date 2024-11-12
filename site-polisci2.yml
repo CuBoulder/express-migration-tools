@@ -1,0 +1,6 @@
+sites:
+- dst: ucbprod-polisci2
+  path: polisci
+  src: ucb-polisci2
+  training: ucbtraining-polisci2
+

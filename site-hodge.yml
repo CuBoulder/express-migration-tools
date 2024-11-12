@@ -1,5 +1,0 @@
-sites:
-- dst: ucbprod-faculty-hodge
-  path: faculty/hodge
-  src: ucb-faculty-hodge
-  training: ucbtraining-faculty-hodge

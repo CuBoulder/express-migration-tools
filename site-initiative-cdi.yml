@@ -1,6 +1,0 @@
-sites:
-- dst: ucbprod-initiative-cdi
-  path: initiative/cdi
-  src: ucb-initiative-cdi
-  training: ucbtraining-initiative-cdi
-
