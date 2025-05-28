@@ -1,0 +1,34 @@
+sites:
+- dst: ucbdev2-aems
+  src: ucbdev-aems
+- dst: ucbdev2-data-driven-engineering-science
+  src: ucbdev-data-driven-engineering-science
+- dst: ucbdev2-faculty-madabhushi
+  src: ucbdev-faculty-madabhushi
+- dst: ucbdev2-lab-curan
+  src: ucbdev-lab-curan
+#- dst: ucbdev2-lab-raman-neutron-xray-scattering
+#  src: ucbdev-lab-raman-neutron-xray-scattering
+#- dst: ucbdev2-rasei
+#  src: ucbdev-rasei
+#- dst: ucbdev2-lab-developmental-psychopathology
+#  src: ucbdev-lab-developmental-psychopathology
+#- dst: ucbdev2-lab-miyake
+#  src: ucbdev-lab-miyake
+#- dst: ucbdev2-lab-dacs
+#  src: ucbdev-lab-dacs
+- dst: ucbdev2-faculty-affairs
+  src: ucbdev-faculty-affairs
+- dst: ucbdev2-env-health-safety
+  src: ucbdev-env-health-safety
+#- dst: ucbdev2-project-swarmexcubesat
+#  src: ucbdev-project-swarmexcubesat
+- dst: ucbdev2-subito-press
+  src: ucbdev-subito-press
+- dst: ucbdev2-office-of-admissions
+  src: ucbdev-office-of-admissions
+- dst: ucbdev2-abroad
+  src: ucbdev-abroad
+- dst: ucbdev2-faculty-bhattia-alpna
+  src: ucb-dev-faculty-bhattia-alpna
+

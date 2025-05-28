@@ -1,0 +1,3 @@
+sites:
+- dst: ucbprod-conference-safal2025
+  path: conference/safal2025

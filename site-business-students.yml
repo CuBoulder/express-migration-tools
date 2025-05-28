@@ -1,0 +1,3 @@
+sites:
+- dst: ucbprod-business-students
+  path: business-students

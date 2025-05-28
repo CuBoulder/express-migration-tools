@@ -1,0 +1,4 @@
+sites:
+- dst: ucbprod-research-learn-dbir 
+  path: research/learn-dbir
+  src: ucb-research-learn-dbir

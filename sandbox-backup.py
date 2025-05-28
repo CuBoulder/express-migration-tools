@@ -31,8 +31,6 @@ def multiaction(site):
     backupcmd = f'terminus backup:create {name}.live'
     updatecmd = f'bash sbupdate.bash {name}'
 
-    # print(backupcmd)
-
     output = subprocess.run([updatecmd], shell=True, capture_output=True)
     if(len(str(output.stdout)) > 0):
         print(f"Site - {name} - stdout:" + str(output.stdout))

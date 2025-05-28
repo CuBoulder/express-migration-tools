@@ -1,0 +1,3 @@
+sites:
+- dst: ucbprod-program-engineering-education
+  path: program/engineering-education

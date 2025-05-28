@@ -115,6 +115,12 @@ def enable_linkmod(site):
     print(cmd_enable_linkmod)
     run_command(cmd_enable_linkmod)
 
+def disable_linkmod(site):
+    cmd_disable_linkmod = f'terminus remote:drush {site["dst"]}.live -- pmu ucb_linkmod --yes'
+
+    print(cmd_disable_linkmod)
+    run_command(cmd_disable_linkmod)
+
 def deploy_environment(site):
 
     clear_upstream_cache(site)
@@ -155,12 +161,48 @@ def run_c404(site):
     print(cmd_run_c404)
     run_command(cmd_run_c404)
 
+def unpublish_migration_report(site):
+    cmd_unpublish = f'terminus remote:drush {site["dst"]}.live -- sqlq "update node_field_data a SET status = \'0\' WHERE a.nid =  (select substring(path,7) from path_alias WHERE alias = \'/migration-report\'); update node_field_revision a SET status = \'0\' WHERE a.nid =  (select substring(path,7) from path_alias WHERE alias = \'/migration-report\');"'
+    print(cmd_unpublish)
+    run_command(cmd_unpublish)
+
+    cache_rebuild(site)
+
+
+def configure_general(site):
+    # cmd_general_set = f'terminus remote:drush {site["dst"]}.live -- config:set smtp.settings smtp_allowhtml true --yes'
+    # print(cmd_general_set)
+    # run_command(cmd_general_set)
+    #
+    # cmd_general_set = f'terminus remote:drush {site["dst"]}.live -- config:set system.mail interface.default SMTPMailSystem --yes'
+    # print(cmd_general_set)
+    # run_command(cmd_general_set)
+
+    cmd_general_set = f'terminus remote:drush {site["dst"]}.live -- config:set ucb_site_configuration.configuration site_search_options.default.url "https://www.colorado.edu/search/results" --yes'
+    print(cmd_general_set)
+    run_command(cmd_general_set)
+
+    cmd_general_set = f'terminus remote:drush {site["dst"]}.live -- config:set ucb_site_configuration.configuration site_search_options.default.parameter keys --yes'
+    print(cmd_general_set)
+    run_command(cmd_general_set)
 
 def configure_smtp(site):
     password = ""
     cmd_smtp_password_set = f'terminus remote:drush {site["dst"]}.live -- config:set smtp.settings smtp_password "{password}" --yes'
     print(cmd_smtp_password_set)
     run_command(cmd_smtp_password_set)
+
+def configure_recaptcha(site):
+    site_key = "6LfiWeYpAAAAAKuDrJxtLxXcvS9nvwJfq4s1zbaJ"
+    secret_key = "6LfiWeYpAAAAAAbwda_5NoxMkjS0dwal1PlBhTWQ"
+
+    cmd_recaptcha_site_key_set = f'terminus remote:drush {site["dst"]}.live -- config:set recaptcha_v3.settings site_key "{site_key}" --yes'
+    print(cmd_recaptcha_site_key_set)
+    run_command(cmd_recaptcha_site_key_set)
+
+    cmd_recaptcha_secret_key_set = f'terminus remote:drush {site["dst"]}.live -- config:set recaptcha_v3.settings secret_key "{secret_key}" --yes'
+    print(cmd_recaptcha_secret_key_set)
+    run_command(cmd_recaptcha_secret_key_set)
 
 def configure_beacon(site):
     cmd_beacon_set = f'terminus remote:drush {site["dst"]}.live -- config:set ucb_admin_menus.configuration admin_helpscout_beacon_id 7aeb6f1c-247c-4a83-b44f-4cee2784bb63 -y'
@@ -232,7 +274,7 @@ def deploy_update(site):
     print(cmd_update_deploy_live)
     run_command(cmd_update_deploy_live)
 
-    cmd_enable_modules = f'terminus remote:drush {site["dst"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access ckeditor5_bootstrap_accordion ucb_drush_commands menu_item_extras ucb_styled_block --yes'
+    cmd_enable_modules = f'terminus remote:drush {site["dst"]}.live -- en media_alias_display media_entity_file_replace media_file_delete menu_block ckeditor5_paste_filter scheduler layout_builder_iframe_modal linkit administerusersbyrole google_tag menu_firstchild responsive_preview anchor_link smtp recaptcha_v3 rebuild_cache_access ckeditor5_bootstrap_accordion ucb_drush_commands menu_item_extras ucb_styled_block trash entity_usage paragraphs_library unpublished_404 --yes'
     print(cmd_enable_modules)
     run_command(cmd_enable_modules)
 
@@ -248,9 +290,19 @@ def deploy_update(site):
     print(cmd_updatedb)
     run_command(cmd_updatedb)
 
-    cmd_update_version = f'terminus remote:drush {site["dst"]}.live -- config:set boulder_base.settings web_express_version 20241030 --yes'
+    cmd_update_version = f'terminus remote:drush {site["dst"]}.live -- config:set boulder_base.settings web_express_version 20250521 --yes'
     print(cmd_update_version)
     run_command(cmd_update_version)
+
+    cmd_run_usmp = f'terminus remote:drush {site["dst"]}.live -- usmp'
+    print(cmd_run_usmp)
+    run_command(cmd_run_usmp)
+
+    if(site["dst"] == 'ucbprod-today'):
+        cmd_run_rafs = f'terminus remote:drush {site["dst"]}.live -- rafs'
+        print(cmd_run_rafs)
+        run_command(cmd_run_rafs)
+
 
     cache_rebuild(site)
 
@@ -330,6 +382,11 @@ def unlock_pantheon_site(site):
 
     run_command(cmd_unlock_pantheon_site)
 
+def run_usmp(site):
+    cmd_run_usmp = f'terminus remote:drush {site["dst"]}.live -- usmp'
+    print(cmd_run_usmp)
+    run_command(cmd_run_usmp)
+
 def set_domain(site):
     cmd_set_domain = f'terminus domain:add {site["dst"]}.live {site["dst"]}.agcdn.colorado.edu'
     print(cmd_set_domain)
@@ -396,6 +453,38 @@ def add_training_tag(site):
 
 def print_site(site):
     print(f"https://www.colorado.edu/{site['path']}, https://live-{site['dst']}.pantheonsite.io")
+
+
+def remove_user_roles(site):
+
+    wake_site(site)
+
+    roles = []
+    roles.append('developer')
+    roles.append('architect')
+    roles.append('site_manager')
+    roles.append('content_editor')
+    roles.append('layout_manager')
+    roles.append('site_owner')
+    roles.append('edit_own_content')
+    roles.append('newsletter')
+    roles.append('webform_editor')
+    roles.append('webform_submissions_viewer')
+
+    users = []
+
+    users.append('vapa5978')
+    users.append('Valerie Padilla')
+
+
+    for user in users:
+        for role in roles:
+            cmd_remove_role_from_user = f"terminus remote:drush {site['dst']}.live -- user:role:remove '{role}' '{user}' --yes"
+            print(cmd_remove_role_from_user)
+            run_command(cmd_remove_role_from_user)
+
+
+
 
 def user_config(site):
 
@@ -976,6 +1065,60 @@ def cache_rebuild_sitelist(name: str):
                 pass
 
 @app.command()
+def cache_rebuild_tags():
+
+    sitelist = []
+    output = subprocess.run([f'terminus org:site:list "University of Colorado Boulder" --tag=upstream-tiamat --format=json'], shell=True, capture_output=True)
+    sites_result = json.loads(output.stdout)
+    for site in sites_result:
+        s = {}
+        s['dst'] = sites_result[site]['name']
+        sitelist.append(s)
+
+    print(sitelist)
+    print(f"Number of sites: {len(sitelist)}")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+        for _ in executor.map(cache_rebuild, sitelist):
+            pass
+
+@app.command()
+def disable_linkmod_tags():
+
+    sitelist = []
+    output = subprocess.run([f'terminus org:site:list "University of Colorado Boulder" --tag=upstream-tiamat --format=json'], shell=True, capture_output=True)
+    sites_result = json.loads(output.stdout)
+    for site in sites_result:
+        s = {}
+        s['dst'] = sites_result[site]['name']
+        sitelist.append(s)
+
+    print(sitelist)
+    print(f"Number of sites: {len(sitelist)}")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+        for _ in executor.map(disable_linkmod, sitelist):
+            pass
+
+@app.command()
+def run_usmp_tags():
+
+    sitelist = []
+    output = subprocess.run([f'terminus org:site:list "University of Colorado Boulder" --tag=upstream-tiamat --format=json'], shell=True, capture_output=True)
+    sites_result = json.loads(output.stdout)
+    for site in sites_result:
+        s = {}
+        s['dst'] = sites_result[site]['name']
+        sitelist.append(s)
+
+    print(sitelist)
+    print(f"Number of sites: {len(sitelist)}")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+        for _ in executor.map(run_usmp, sitelist):
+            pass
+
+@app.command()
 def cron_sitelist(name: str):
     with open(name) as input:
         sitelist = yaml.safe_load(input)
@@ -1128,6 +1271,33 @@ def configure_smtp_sitelist(name: str):
         with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
             for _ in executor.map(configure_smtp, sitelist['sites']):
                 pass
+
+@app.command()
+def configure_recaptcha_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+            for _ in executor.map(configure_recaptcha, sitelist['sites']):
+                pass
+
+@app.command()
+def configure_recaptcha_tags():
+
+    sitelist = []
+    output = subprocess.run([f'terminus org:site:list "University of Colorado Boulder" --tag=upstream-tiamat --format=json'], shell=True, capture_output=True)
+    sites_result = json.loads(output.stdout)
+    for site in sites_result:
+        s = {}
+        s['dst'] = sites_result[site]['name']
+        sitelist.append(s)
+
+    print(sitelist)
+    print(f"Number of sites: {len(sitelist)}")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+        for _ in executor.map(configure_recaptcha, sitelist):
+            pass
 
 @app.command()
 def configure_beacon_sitelist(name: str):
@@ -1302,6 +1472,26 @@ def print_site_sitelist(name: str):
                 pass
 
 
+
+@app.command()
+def configure_general_tags():
+
+    sitelist = []
+    output = subprocess.run([f'terminus org:site:list "University of Colorado Boulder" --tag=upstream-tiamat --format=json'], shell=True, capture_output=True)
+    sites_result = json.loads(output.stdout)
+    for site in sites_result:
+        s = {}
+        s['dst'] = sites_result[site]['name']
+        sitelist.append(s)
+
+    print(sitelist)
+    print(f"Number of sites: {len(sitelist)}")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+        for _ in executor.map(configure_general, sitelist):
+            pass
+
+
 @app.command()
 def deploy_prod_update_tags():
 
@@ -1318,6 +1508,24 @@ def deploy_prod_update_tags():
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
         for _ in executor.map(deploy_update, sitelist):
+            pass
+
+@app.command()
+def remove_user_roles_tags():
+
+    sitelist = []
+    output = subprocess.run([f'terminus org:site:list "University of Colorado Boulder" --tag=upstream-tiamat --format=json'], shell=True, capture_output=True)
+    sites_result = json.loads(output.stdout)
+    for site in sites_result:
+        s = {}
+        s['dst'] = sites_result[site]['name']
+        sitelist.append(s)
+
+    print(sitelist)
+    print(f"Number of sites: {len(sitelist)}")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+        for _ in executor.map(remove_user_roles, sitelist):
             pass
 
 @app.command()
@@ -1355,6 +1563,33 @@ def remote_backup_tags():
     with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
         for _ in executor.map(remote_backup, sitelist):
             pass
+
+@app.command()
+def unpublish_migration_report_tags():
+
+    sitelist = []
+    output = subprocess.run([f'terminus org:site:list "University of Colorado Boulder" --tag=upstream-tiamat --format=json'], shell=True, capture_output=True)
+    sites_result = json.loads(output.stdout)
+    for site in sites_result:
+        s = {}
+        s['dst'] = sites_result[site]['name']
+        sitelist.append(s)
+
+    print(sitelist)
+    print(f"Number of sites: {len(sitelist)}")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
+        for _ in executor.map(unpublish_migration_report, sitelist):
+            pass
+
+@app.command()
+def unpublish_migration_report_sitelist(name: str):
+    with open(name) as input:
+        sitelist = yaml.safe_load(input)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            for _ in executor.map(unpublish_migration_report, sitelist['sites']):
+                pass
 
 @app.command()
 def prepare_site(name: str):

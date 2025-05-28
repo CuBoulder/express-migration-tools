@@ -1,0 +1,5 @@
+sites:
+- dst: ucbprod-today
+  path: today
+  src: ucb-today
+  training: ucbtraining-today

@@ -1,0 +1,3 @@
+sites:
+- dst: ucbprod-studentgroups-blackwomensalliance
+  path: studentgroups/blackwomensalliance

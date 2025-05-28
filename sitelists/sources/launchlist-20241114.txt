@@ -1,0 +1,12 @@
+ucb-program-agesgeochronology,colorado.edu/program/agesgeochronology
+ucb-amrc,colorado.edu/amrc
+ucb-cmci,colorado.edu/cmci
+ucb-music,colorado.edu/music
+ucb-sciencediscovery,colorado.edu/sciencediscovery
+ucb-center-music-entrepreneurship,colorado.edu/center/music-entrepreneurship
+ucb-lightingprogram,colorado.edu/lightingprogram
+ucb-mechanical,colorado.edu/mechanical
+ucb-polisci2,colorado.edu/polisci
+ucb-researchinnovation,colorado.edu/researchinnovation
+ucb-registrar2,colorado.edu/registrar
+ucb-behavioral-neuroscience,colorado.edu/behavioral-neuroscience

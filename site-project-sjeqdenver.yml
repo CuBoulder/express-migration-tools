@@ -1,0 +1,3 @@
+sites:
+- dst: ucbprod-project-sjeqdenver
+  path: project/sjeqdenver

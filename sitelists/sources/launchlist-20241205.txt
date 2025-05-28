@@ -1,0 +1,11 @@
+ucb-center-teaching-learning,colorado.edu/center/teaching-learning
+ucb-oue,colorado.edu/oue
+ucb-globalclimatesummit,colorado.edu/globalclimatesummit
+ucb-atlas,colorado.edu/atlas
+ucb-center-a-queer-endeavor,colorado.edu/center/a-queer-endeavor
+ucb-jewishstudies,colorado.edu/jewishstudies
+ucb-cmcinow,colorado.edu/cmcinow
+ucb-biochemistry,colorado.edu/biochemistry
+ucb-crdds,colorado.edu/crdds
+ucb-sciencediscovery,colorado.edu/sciencediscovery
+ucb-program-learningassistant,colorado.edu/program/learningassistant

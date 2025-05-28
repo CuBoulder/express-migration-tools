@@ -1,0 +1,4 @@
+sites:
+- dst: ucbprod-webcentral
+  path: webcentral
+  src: ucb-webcentral

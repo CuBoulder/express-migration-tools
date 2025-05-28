@@ -87,27 +87,27 @@ print(f"P1 Redirects: {len(report['p1'])}\n")
 print(f"Redirects: {len(report['redirects'])}\n")
 
 for row in report['redirects']:
-    print(f"{row['src']} {row['dst']}")
+    print(f"{row['src']}, {row['dst']}")
 
 print("\n")
 
 print(f"Drupal 7: {len(report['drupal7'])}\n")
 
 for row in report['drupal7']:
-    print(f"{row['container']} {row['path']}")
+    print(f"{row['container']}, {row['path']}, https://www.colorado.edu/{row['path']}")
 
 print("\n")
 
 print(f"Drupal 10: {len(report['drupal10'])}\n")
 
 for row in report['drupal10']:
-    print(f"{row['container']} {row['path']}")
+    print(f"{row['container']}, {row['path']}, https://www.colorado.edu/{row['path']}")
 
 print("\n")
 
 print(f"Unknown: {len(report['unknown'])}\n")
 
 for row in report['unknown']:
-    print(f"{row['key']} {row['value']}")
+    print(f"{row['key']}, {row['value']}")
 
 print("\n")

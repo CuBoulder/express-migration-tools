@@ -1,0 +1,13 @@
+sites:
+- dst: ucbdev2-lab-raman-neutron-xray-scattering
+  src: ucbdev-lab-raman-neutron-xray-scattering
+- dst: ucbdev2-rasei
+  src: ucbdev-rasei
+- dst: ucbdev2-lab-developmental-psychopathology
+  src: ucbdev-lab-developmental-psychopathology
+- dst: ucbdev2-lab-miyake
+  src: ucbdev-lab-miyake
+- dst: ucbdev2-lab-dacs
+  src: ucbdev-lab-dacs
+- dst: ucbdev2-project-swarmexcubesat
+  src: ucbdev-project-swarmexcubesat

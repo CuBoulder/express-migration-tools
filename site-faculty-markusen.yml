@@ -1,0 +1,3 @@
+sites:
+- dst: ucbprod-faculty-markusen
+  path: faculty/markusen

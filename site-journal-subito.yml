@@ -1,0 +1,3 @@
+sites:
+- dst: ucbprod-journal-subito
+  path: journal/subito

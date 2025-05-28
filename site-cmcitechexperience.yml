@@ -1,0 +1,6 @@
+sites:
+- dst: ucbprod-cmcitechexperience
+  path: cmcitechexperience
+  src: ucb-cmcitechexperience
+  training: ucbtraining-cmcitechexperience
+

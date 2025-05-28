@@ -1,5 +1,3 @@
 sites:
 - dst: ucbprod-coloradan
   path: coloradan
-  src: ucb-coloradan
-  training: ucbtraining-coloradan

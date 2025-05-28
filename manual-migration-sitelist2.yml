@@ -1,0 +1,15 @@
+sites:
+- dst: ucbprod-bakerrap
+- dst: ucbprod-globalstudiesrap
+- dst: ucbprod-hrap
+- dst: ucbprod-libbyrap
+- dst: ucbprod-srap
+- dst: ucbprod-program-teacherleadership
+- dst: ucbprod-graduateschool
+- dst: ucbprod-lab-emery
+- dst: ucbprod-lab-biochem-instruments
+- dst: ucbprod-lab-wirg
+- dst: ucbprod-urop
+- dst: ucbprod-fiske
+- dst: ucbprod-sportsclubs
+

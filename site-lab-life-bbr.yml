@@ -1,0 +1,3 @@
+sites:
+- dst: ucbprod-lab-life-bbr
+  path: lab/life-bbr
